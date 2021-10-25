@@ -1,6 +1,6 @@
 ---
 title: "Building Chess with D3"
-excerpt: "Short description of portfolio item number 1 ![demo image](/images/chess.gif)"
+excerpt: "Building chess visualizations and play-throughs with D3 ![demo image](/images/chess.gif)"
 collection: portfolio
 ---
 
