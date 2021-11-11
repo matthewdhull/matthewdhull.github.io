@@ -84,7 +84,7 @@ author:
   avatar           : "profile.png"
   bio              : "Your biography for the left-hand sidebar"
   location         : "Palo Alto, CA"
-  employer         :
+  employer         : "Georgia Institute of Technology"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=mXauG9YAAAAJ&hl=en"
   email            :
@@ -94,7 +94,7 @@ author:
   codepen          :
   dribbble         :
   flickr           :
-  facebook         : "disabled"
+  facebook         : 
   foursquare       :
   github           : "matthewdhull"
   google_plus      :
