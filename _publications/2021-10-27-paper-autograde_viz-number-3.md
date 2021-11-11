@@ -12,4 +12,4 @@ First-of-its-kind automatic grading approach for D3 visualizations that scalably
 
 [Download paper here](https://matthewdhull.github.io/files/autograde_viz.pdf)
 
-Recommended citation: Your Name, You. (2015). "Paper Title Number 3." <i>Journal 1</i>. 1(3).
+Recommended citation: Hull, Matthew, et. al. (2021). "Towards Automatic Grading of D3.js Visualizations." <i>IEEE VIS 21</i>. 1(3).
