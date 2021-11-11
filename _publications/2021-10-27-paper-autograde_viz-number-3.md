@@ -10,6 +10,6 @@ citation: 'Hull, Matthew, et. al. (2021). &quot;Towards Automatic Grading of D3.
 ---
 First-of-its-kind automatic grading approach for D3 visualizations that scalably and precisely evaluates data bindings, visual encodings, interactions, and design specifications used in a visualization.
 
-[Download paper here]https://matthewdhull.github.io/files/autograde_viz.pdf)
+[Download paper here](https://matthewdhull.github.io/files/autograde_viz.pdf)
 
 Recommended citation: Your Name, You. (2015). "Paper Title Number 3." <i>Journal 1</i>. 1(3).
