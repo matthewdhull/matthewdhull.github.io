@@ -82,7 +82,7 @@ analytics:
 author:
   name             : "Matthew Hull"
   avatar           : "french_press_invert.png"
-  bio              : "Your biography for the left-hand sidebar"
+  bio              : # "Your biography for the left-hand sidebar"
   location         : "Palo Alto, CA"
   employer         : "Georgia Institute of Technology"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
