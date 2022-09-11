@@ -6,10 +6,10 @@ excerpt: 'First-of-its-kind automatic grading approach for D3 visualizations tha
 date: 2021-10-27
 venue: 'IEEE VIS 21'
 paperurl: 'https://matthewdhull.github.io/files/autograde_viz.pdf'
-citation: 'Hull, Matthew, et. al. (2021). &quot;Towards Automatic Grading of D3.js Visualizations.&quot; <i>IEEE VIS 21</i>. 1(3).'
+citation: 'Hull, Matthew, et. al. (2021). &quot;Towards Automatic Grading of D3.js Visualizations.&quot; <i>IEEE VIS 21</i>.'
 ---
 First-of-its-kind automatic grading approach for D3 visualizations that scalably and precisely evaluates data bindings, visual encodings, interactions, and design specifications used in a visualization.
 
 [Download paper here](https://matthewdhull.github.io/files/autograde_viz.pdf)
 
-Recommended citation: Hull, Matthew, et. al. (2021). "Towards Automatic Grading of D3.js Visualizations." <i>IEEE VIS 21</i>. 1(3).
+Recommended citation: Hull, Matthew, et. al. (2021). "Towards Automatic Grading of D3.js Visualizations." <i>IEEE VIS 21</i>.
