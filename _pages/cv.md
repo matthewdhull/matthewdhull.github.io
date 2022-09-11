@@ -11,30 +11,50 @@ redirect_from:
 
 Education
 ======
-* B.S. in GitHub, GitHub University, 2012
-* M.S. in Jekyll, GitHub University, 2014
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
+* B.M. in Piano Performance, Samford University, 2004
+* M.S. in Computer Science, Georgia Institute of Technology, 2018
 
 Work experience
 ======
-* Summer 2015: Research Assistant
-  * Github University
-  * Duties included: Tagging issues
-  * Supervisor: Professor Git
+* Summer 2021-Present: Research Assistant
+  * Georgia Institute of Technology, College of Computing
+  * DARPA Research - Guaranteeing AI Robustness Against Deception (GARD)
+  * Supervisor: Prof. Dueng Horng (Polo) Chau
 
-* Fall 2015: Research Assistant
-  * Github University
-  * Duties included: Merging pull requests
-  * Supervisor: Professor Hub
-  
+* 2018-Present: Lead Teaching Assistant
+  * Georgia Institute of Technology, College of Computing
+  * Course: CSE 6242 Data and Visual Analytics
+  * Supervisor: Prof. Dueng Horng (Polo) Chau
+
+* 2016-Present: Pilot /First Officer
+  * FedEx Express
+  * 757 / 767 aircraft
+  * Supervisor: Kevin Whearty
+
+* 2014-2016: Advanced Qualification Program Manager
+  * ExpressJet Airlines Flight Training
+  * Supervisor: Jim Barbour
+
+* 2006-2016: Ground / Simulator Instructor
+  * ExpressJet Airlines Flight Training
+  * Embraer 145 Aircraft
+  * Supervisor: Scot McBride
+
+* 2006-2016: Pilot/Captain
+  * ExpressJet Airlines
+  * Embraer 145 Aircraft
+  * Supervisor: Jim Campbell
+
 Skills
 ======
-* Skill 1
-* Skill 2
-  * Sub-skill 2.1
-  * Sub-skill 2.2
-  * Sub-skill 2.3
-* Skill 3
+* Airline Transport Pilot
+  * EMB 145 Type Rating
+  * Boeing 737 Type Rating
+  * Boeing 757 / 767 Type Rating  
+* Certified Flight Instructor (CFI)
+  * Single-Engine Land
+  * Multi-Engine Land
+  * Instrument Airplane
 
 Publications
 ======
