@@ -12,7 +12,7 @@ redirect_from:
 
 Hi, I am a researcher and instructional associate at the Georgia Institute of Technology.  My current research is in machine learning and visualization under Prof. Duen Horng (Polo) Chau.  I am lead teaching assistant for the CSE 6242 - Data and Visual Analytics course offering at Georgia Tech as part of the Master's of Science in Analytics and Master's of Science in Computer Science programs.  
 
-I am also a pilot on the Boeing 767 aircraft for FedEx Express, based in the Bay Area of CA.
+I am also a Captain on the Boeing 767 aircraft for FedEx Express, based in the Bay Area of CA.
 
 <!-- A data-driven personal website
 ======
