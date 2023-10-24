@@ -1,0 +1,17 @@
+- date: 2023-10-20
+  content: 🦘 I will be presenting VisGrader at VIS '23 this week.  See you in Melbourne!
+
+- date: 2023-10-19
+  content: <a href="https://arxiv.org/pdf/2310.12243.pdf">REVAMP</a> is available on arXiv! Check out the <a href="https://github.com/poloclub/revamp">code</a>.
+  
+- date: 2023-10-19
+  content: 📶 <a href="https://arxiv.org/pdf/2310.12347.pdf">VisGrader</a> is available on arXiv! Sample code <a href="https://github.com/poloclub/visgrader">code</a>.
+
+- date: 2023-09-12
+  content: 🎉 Our <a href="https://github.com/poloclub/robust-principles">Robust Principles</a> work is the best on <a href="https://robustbench.github.io/#div_cifar10_Linf_heading">RobustBench CIFAR-10 l_inf = 8/255 leaderboard</a>!
+
+- date: 2023-08-21
+  content: 👏 One paper accepted by BMVC'23! <a href="https://shengyun-peng.github.io/">Anthony</a> will present <a href="https://github.com/poloclub/robust-principles">Robust Principles</a>. Congrats!
+
+- date: 2023-07-15
+  content: 🎉 Our VisGrader paper was accepted by VIS'23! 

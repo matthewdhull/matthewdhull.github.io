@@ -1,0 +1,35 @@
+---
+
+---
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+
+    <body class="bg-white">
+
+        <section id="news" class="bg-white">
+
+            <div class="container">
+                <div class="row">
+
+                    {% assign sorted_news = site.data.news | sort: 'date' | reverse %}
+                    {% for news in sorted_news %}
+
+                    <div class="news-item col-lg-12 col-sm-12 col-xs-12">
+
+                        <div class="news-date">{{ news.date | date: "%Y %b"}}</div>
+                        <div>{{ news.content }}</div>
+                    </div>
+
+                    {% endfor %}
+
+                    
+                </div>
+
+            </div>
+        </section>
+
+    </body>
+</html>

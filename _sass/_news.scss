@@ -1,0 +1,25 @@
+section#news {
+    padding: 2rem 0 2rem 0;
+    font-size: 1rem;
+    line-height: 1rem;
+}
+
+section#news a {
+    color: #4F83E7;
+}
+
+section#news .news-container{
+    display:flex; 
+    flex-wrap: wrap;
+}
+
+
+section#news .news-item{
+    display:flex; 
+    flex-flow: no wrap; 
+    margin-bottom: 0.5rem;
+}
+
+section#news .news-date{
+    flex: 0 0 5rem;
+}
