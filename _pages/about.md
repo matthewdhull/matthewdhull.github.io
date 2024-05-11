@@ -12,7 +12,7 @@ redirect_from:
 
 Hi, I am a second year Machine Learning PhD student at Georgia Tech, advised by Polo Chau.  My current research is in Adversarial Machine Learning using differentiable rendering. I am lead teaching assistant for the CSE 6242 - Data and Visual Analytics course offering at Georgia Tech as part of the Master's of Science in Analytics and Master's of Science in Computer Science programs.  
 
-I am also a Captain on the Boeing 767 aircraft for FedEx Express, based in the Bay Area of CA.
+I have been a pilot for 20+ years and I am currently a Captain on the Boeing 767 aircraft for FedEx Express, based in the Bay Area of California.
 
 {% include latest-news.html %}
 
