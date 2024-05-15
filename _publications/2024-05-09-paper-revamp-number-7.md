@@ -1,8 +1,8 @@
 ---
 title: "Revamp: Automated Simulations of Adversarial Attacks on Arbitrary Objects in Realistic Scenes"
 collection: publications
-permalink: /publication/2024-05-09-paper-revamp-number-7.md
-excerpt: 'Revamp'
+permalink: /publications/2024-05-09-paper-revamp-number-7.md
+excerpt: 'Revamp: Automated Simulations of Adversarial Attacks on Arbitrary Objects in Realistic Scenes'
 date: 2024-05-09
 venue: 'ICLR 24'
 paperurl: 'https://matthewdhull.github.io/files/revamp.pdf'

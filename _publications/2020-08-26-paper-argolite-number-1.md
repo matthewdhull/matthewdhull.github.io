@@ -1,7 +1,7 @@
 ---
 title: "Argo Lite: Open-Source Interactive Graph Exploration and Visualization in Browsers"
 collection: publications
-permalink: /publication/2020-08-26-paper-argolite-number-2
+permalink: /publications/2020-08-26-paper-argolite-number-2
 excerpt: 'In-browser interactive graph exploration and visualization tool.'
 date: 2020-08-26
 venue: 'CIKM 20'

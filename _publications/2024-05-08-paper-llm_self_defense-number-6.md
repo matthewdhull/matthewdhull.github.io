@@ -1,7 +1,7 @@
 ---
 title: "LLM Self Defense: By Self Examination, LLMs Know They Are Being Tricked"
 collection: publications
-permalink: /publication/2024-05-08-paper-llm_self_defense-number-6.md
+permalink: /publications/2024-05-08-paper-llm_self_defense-number-6.md
 excerpt: 'LLM Self Defense'
 date: 2024-05-08
 venue: 'ICLR 24'

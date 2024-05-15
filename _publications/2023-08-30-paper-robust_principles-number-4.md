@@ -1,7 +1,7 @@
 ---
 title: "Robust Principles: Architectural Design Principles for Adversarially Robust CNNs"
 collection: publications
-permalink: /publication/2023-08-30-paper-robust_principles-number-4
+permalink: /publications/2023-08-30-paper-robust_principles-number-4
 excerpt: 'A suite of generalizable robust architectural design principles.'
 date: 2023-08-30
 venue: 'BMVC 23'
