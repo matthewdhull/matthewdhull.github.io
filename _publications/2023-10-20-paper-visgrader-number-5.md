@@ -1,7 +1,7 @@
 ---
 title: "ViSGrader: Automatic Grading of D3 Visualizations"
 collection: publications
-permalink: /publications/2023-10-20-paper-visgrader-number-5.md
+permalink: /publications/2023-10-20-paper-visgrader-number-5
 excerpt: 'Automatic grading of D3 visualizations.'
 date: 2023-10-20
 venue: 'VIS 23'
