@@ -16,8 +16,9 @@ section#news .news-container{
 
 section#news .news-item{
     display:flex; 
-    flex-flow: no wrap; 
+    flex-wrap: nowrap; 
     margin-bottom: 0.5rem;
+    white-space: nowrap;
 }
 
 section#news .news-date{
