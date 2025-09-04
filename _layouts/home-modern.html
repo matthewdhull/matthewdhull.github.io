@@ -1,0 +1,17 @@
+---
+layout: default
+---
+
+{% include base_path %}
+
+<div class="home-modern" id="home-modern">
+  <!-- Background canvas -->
+  <canvas id="bg-experiment" class="home-modern__bg" aria-hidden="true"></canvas>
+  <div class="home-modern__vignette" aria-hidden="true"></div>
+
+  <div class="home-modern__container">
+    {% include home/hero.html %}
+    {% include home/news.html %}
+    {% include home/projects.html %}
+  </div>
+</div>
