@@ -1,0 +1,27 @@
+{% assign avatar = site.author.avatar | default: 'bio-photo.jpg' %}
+<section class="hm-section hm-hero">
+  <div class="hm-hero__text">
+    <h1 class="hm-title">{{ site.name | default: site.title }}</h1>
+    <p class="hm-subtitle">
+      {{ page.hero_blurb | default: site.description }}
+    </p>
+
+    <div class="hm-social">
+      {% if site.author.twitter %}
+        <a class="hm-social__link" href="https://twitter.com/{{ site.author.twitter }}" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      {% endif %}
+      {% if site.author.linkedin %}
+        <a class="hm-social__link" href="https://www.linkedin.com/in/{{ site.author.linkedin }}" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      {% endif %}
+      {% if site.author.google_scholar or site.author.googlescholar %}
+        <a class="hm-social__link" href="{{ site.author.google_scholar | default: site.author.googlescholar }}" aria-label="Google Scholar"><i class="ai ai-google-scholar"></i></a>
+      {% endif %}
+      {% if site.author.github %}
+        <a class="hm-social__link" href="https://github.com/{{ site.author.github }}" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hm-hero__media">
+    <div id="hero-3d" class="hm-avatar" role="img" aria-label="French press 3D wireframe"></div>
+  </div>
+</section>
