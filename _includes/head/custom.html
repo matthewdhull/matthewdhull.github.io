@@ -2,27 +2,27 @@
 
 <!-- start custom head snippets -->
 
-<link rel="apple-touch-icon" sizes="57x57" href="{{ base_path }}/images/apple-touch-icon-57x57.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="60x60" href="{{ base_path }}/images/apple-touch-icon-60x60.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="72x72" href="{{ base_path }}/images/apple-touch-icon-72x72.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="76x76" href="{{ base_path }}/images/apple-touch-icon-76x76.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="114x114" href="{{ base_path }}/images/apple-touch-icon-114x114.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="120x120" href="{{ base_path }}/images/apple-touch-icon-120x120.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="144x144" href="{{ base_path }}/images/apple-touch-icon-144x144.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="152x152" href="{{ base_path }}/images/apple-touch-icon-152x152.png?v=M44lzPylqQ">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ base_path }}/images/apple-touch-icon-180x180.png?v=M44lzPylqQ">
-<link rel="icon" type="image/png" href="{{ base_path }}/images/favicon-32x32.png?v=M44lzPylqQ" sizes="32x32">
-<link rel="icon" type="image/png" href="{{ base_path }}/images/android-chrome-192x192.png?v=M44lzPylqQ" sizes="192x192">
-<link rel="icon" type="image/png" href="{{ base_path }}/images/favicon-96x96.png?v=M44lzPylqQ" sizes="96x96">
-<link rel="icon" type="image/png" href="{{ base_path }}/images/favicon-16x16.png?v=M44lzPylqQ" sizes="16x16">
-<link rel="manifest" href="{{ base_path }}/images/manifest.json?v=M44lzPylqQ">
-<link rel="mask-icon" href="{{ base_path }}/images/safari-pinned-tab.svg?v=M44lzPylqQ" color="#000000">
-<link rel="shortcut icon" href="/images/favicon.ico?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="57x57" href="{{ '/images/apple-touch-icon-57x57.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="60x60" href="{{ '/images/apple-touch-icon-60x60.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ '/images/apple-touch-icon-72x72.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="76x76" href="{{ '/images/apple-touch-icon-76x76.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="114x114" href="{{ '/images/apple-touch-icon-114x114.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="120x120" href="{{ '/images/apple-touch-icon-120x120.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="144x144" href="{{ '/images/apple-touch-icon-144x144.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ '/images/apple-touch-icon-152x152.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ '/images/apple-touch-icon-180x180.png?v=M44lzPylqQ' | relative_url }}">
+<link rel="icon" type="image/png" href="{{ '/images/favicon-32x32.png?v=M44lzPylqQ' | relative_url }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ '/images/android-chrome-192x192.png?v=M44lzPylqQ' | relative_url }}" sizes="192x192">
+<link rel="icon" type="image/png" href="{{ '/images/favicon-96x96.png?v=M44lzPylqQ' | relative_url }}" sizes="96x96">
+<link rel="icon" type="image/png" href="{{ '/images/favicon-16x16.png?v=M44lzPylqQ' | relative_url }}" sizes="16x16">
+<link rel="manifest" href="{{ '/images/manifest.json?v=M44lzPylqQ' | relative_url }}">
+<link rel="mask-icon" href="{{ '/images/safari-pinned-tab.svg?v=M44lzPylqQ' | relative_url }}" color="#000000">
+<link rel="shortcut icon" href="{{ '/images/favicon.ico?v=M44lzPylqQ' | relative_url }}">
 <meta name="msapplication-TileColor" content="#000000">
-<meta name="msapplication-TileImage" content="{{ base_path }}/images/mstile-144x144.png?v=M44lzPylqQ">
-<meta name="msapplication-config" content="{{ base_path }}/images/browserconfig.xml?v=M44lzPylqQ">
+<meta name="msapplication-TileImage" content="{{ '/images/mstile-144x144.png?v=M44lzPylqQ' | relative_url }}">
+<meta name="msapplication-config" content="{{ '/images/browserconfig.xml?v=M44lzPylqQ' | relative_url }}">
 <meta name="theme-color" content="#ffffff">
-<link rel="stylesheet" href="{{ base_path }}/assets/css/academicons.css"/>
+<link rel="stylesheet" href="{{ '/assets/css/academicons.css' | relative_url }}"/>
 
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
 <script type="text/x-mathjax-config">
@@ -34,5 +34,36 @@
   });
 </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+{% if page.layout == 'home-modern' %}
+  <!-- Optional: Tailwind + DaisyUI via CDN (for future components/themes) -->
+  <!-- Loaded only on the homepage to avoid site-wide CSS resets. -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+  <!-- Import map so example JSM modules resolve the 'three' bare specifier -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+      }
+    }
+  </script>
+  <!-- three.js will be imported via ES modules in page footer -->
+{% endif %}
+
+<!-- Set default theme attribute for CSS variables -->
+<script>
+  (function() {
+    try {
+      var saved = localStorage.getItem('theme') || 'mhull';
+      document.documentElement.setAttribute('data-theme', saved);
+    } catch(e) {}
+  })();
+  // Expose base path for module scripts (handles baseurl in dev/prod)
+  window.__BASE_PATH__ = '{{ base_path }}';
+  // Tailwind config (kept minimal; DaisyUI optional use later)
+  window.tailwind = window.tailwind || {};
+  window.tailwind.config = { darkMode: ['class', '[data-theme="mhull"]'] };
+</script>
 
 <!-- end custom head snippets -->
