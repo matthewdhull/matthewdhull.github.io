@@ -164,7 +164,7 @@
 .hm-tile__headerlink { text-decoration: none; }
 .hm-tile:hover { border-color: var(--mh-accent); transform: translateY(-1px); transition: transform .15s ease; }
 .hm-tile__header { color: var(--mh-tile-cool); font-weight: 700; margin-bottom: 0.35rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.hm-tile__excerpt { color: var(--mh-tile-cooler); font-size: .95rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.hm-tile__excerpt { color: var(--mh-tile-cooler); font-size: .95rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-weight: 300; }
 
 /* Icon link row */
 .hm-links { position: absolute; bottom: 0.6rem; left: 1rem; right: 1rem; display: flex; gap: 0.6rem; align-items: center; }
@@ -236,14 +236,59 @@ section#news .news-date { color: var(--mh-muted); }
 .archive { color: var(--mh-text); }
 .archive a { color: var(--mh-tile-cool); text-decoration: none; }
 .archive a:hover { color: #ef6b73; text-decoration: underline; }
-.archive__item-title { color: var(--mh-text); }
+.archive__item-title { color: var(--mh-text); font-size: 1.1rem; }
 .archive__item-title a { color: var(--mh-tile-cool); }
 .archive__item-title a:hover { color: #ef6b73; }
-.archive__item-excerpt { color: var(--mh-muted); }
+.archive__item-excerpt { color: var(--mh-tile-cooler); font-size: 0.85rem; font-weight: 300; }
+.archive__item-excerpt p { color: var(--mh-tile-cooler); font-size: 0.85rem; font-weight: 300; }
+
+/* Publications list: link row & hover tile effect */
+.archive__item .pub-links { display:flex; gap:.6rem; align-items:center; margin-top:.35rem; }
+.archive__item .pub-links a { color: var(--mh-muted); }
+.archive__item .pub-links a:hover { color: var(--mh-accent); }
+.archive__item .pub-links .venue-shorthand { margin-left:auto; }
+.archive__item {
+  position: relative;
+  padding: .35rem .55rem .5rem;
+  border-radius: 5px;
+  border: 1px solid transparent; /* prevent layout shift on hover */
+  transition: all .15s cubic-bezier(.4,0,.2,1);
+}
+.archive__item:hover {
+  background: rgba(16,36,48,.35);
+  border-color: var(--mh-glass-border);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* Optional authors line */
+.pub-authors { color: var(--mh-muted); font-weight: 200; margin: .15rem 0 .2rem; }
+.pub-authors .me { font-weight: 800; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
 
 /* Post content and general links */
 .page__content { color: var(--mh-text); }
+.page__content .page__meta, .page__content .tags, .page__content time, .page__content .reading-time { color: var(--mh-tile-cooler); }
 .page__content a { color: var(--mh-accent); }
 .page__content a:hover { color: var(--mh-accent-strong); }
 .page__content h1, .page__content h2, .page__content h3 { color: var(--mh-accent); }
 .page__content h4, .page__content h5, .page__content h6 { color: var(--mh-text); }
+
+/* Chips for share buttons */
+.hm-share { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.hm-share__title { color: var(--mh-muted); font-size: .9rem; margin-right: .25rem; }
+.hm-chip { display:inline-flex; align-items:center; justify-content:center; gap:.35rem; padding:.25rem .6rem; border:1px solid var(--mh-border); border-radius:999px; color: var(--mh-tile-cool); text-decoration:none; background: rgba(16,36,48,.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); flex: 0 0 112px; }
+.hm-chip:hover { color:#ef6b73; border-color:#ef6b73; }
+
+/* Pagination (previous/next) — make subtle with arrows */
+.pagination { display:flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--mh-border); padding-top: .75rem; }
+.pagination--pager { color: var(--mh-tile-cool); border:1px solid var(--mh-border); background: rgba(16,36,48,.35); border-radius: 999px; font-size: .92rem; padding: .35rem .8rem; }
+.pagination--pager:hover { color:#ef6b73; border-color:#ef6b73; }
+.pagination--pager.disabled { opacity:.45; pointer-events:none; }
+
+/* Related posts cards: ensure cyan-muted text */
+.page__related .archive__item-title a { color: var(--mh-tile-cool); }
+.page__related .archive__item-excerpt,
+.page__related .archive__item-excerpt p,
+.page__related .page__meta,
+.page__related .page__date,
+.page__related time { color: var(--mh-tile-cooler) !important; }
+.page__related-title { color: var(--mh-muted); }
