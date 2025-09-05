@@ -151,7 +151,7 @@
   position: relative;
   background: var(--mh-glass);
   border: 1px solid var(--mh-glass-border);
-  border-radius: 10px; /* a touch rounder for glass */
+  border-radius: 5px; /* a touch rounder for glass */
   padding: 1rem 1rem 1.1rem;
   text-decoration: none;
   color: var(--mh-text);
@@ -226,3 +226,24 @@ section#news .news-date { color: var(--mh-muted); }
   font-size: 0.95rem;
 }
 .theme-toggle:hover { color: var(--mh-accent); border-color: var(--mh-accent); }
+
+/* ===== Global theming for non-home pages (publications, projects, posts) ===== */
+/* Titles and headings */
+.page__title { color: var(--mh-accent); }
+.archive__subtitle { color: var(--mh-muted); border-color: var(--mh-border); }
+
+/* Archive lists */
+.archive { color: var(--mh-text); }
+.archive a { color: var(--mh-tile-cool); text-decoration: none; }
+.archive a:hover { color: #ef6b73; text-decoration: underline; }
+.archive__item-title { color: var(--mh-text); }
+.archive__item-title a { color: var(--mh-tile-cool); }
+.archive__item-title a:hover { color: #ef6b73; }
+.archive__item-excerpt { color: var(--mh-muted); }
+
+/* Post content and general links */
+.page__content { color: var(--mh-text); }
+.page__content a { color: var(--mh-accent); }
+.page__content a:hover { color: var(--mh-accent-strong); }
+.page__content h1, .page__content h2, .page__content h3 { color: var(--mh-accent); }
+.page__content h4, .page__content h5, .page__content h6 { color: var(--mh-text); }
