@@ -14,6 +14,8 @@ body {
   color: $text-color;
   font-family: $global-font-family;
   line-height: 1.5;
+  /* Use theme background globally so archive pages match home */
+  background: var(--mh-bg);
 
   &.overflow--hidden {
     /* when primary navigation is visible, the content in the background won't scroll */
