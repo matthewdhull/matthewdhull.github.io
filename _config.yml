@@ -73,7 +73,7 @@ social:
 
 # Analytics
 analytics:
-  provider               :  "google-universal" # false (default), "google", "google-universal", "custom"
+  provider               :  "custom" # false (default), "google", "google-universal", "custom"
   google:
     tracking_id          :
 
@@ -84,7 +84,7 @@ author:
   avatar           : 
   bio              : # "Your biography for the left-hand sidebar"
   location         : "Palo Alto, CA"
-  employer         : "Georgia Institute of Technology"
+  employer         : "Georgia Tech"
   pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
   googlescholar    : "https://scholar.google.com/citations?user=mXauG9YAAAAJ&hl=en"
   email            :
@@ -113,7 +113,7 @@ author:
   vine             :
   weibo            :
   xing             :
-  youtube          :
+  youtube          : "matthewhull2000"
   wikipedia        :
 
 
