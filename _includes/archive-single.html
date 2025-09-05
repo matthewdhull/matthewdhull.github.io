@@ -47,9 +47,57 @@
         {% endif %}
 
     {% if post.excerpt and site.read_more != 'enabled' %}
-    <p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>
+    <div class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</div>
     {% elsif post.excerpt and site.read_more == 'enabled' %}
-    <p class="archive__item-excerpt" itemprop="description"><p>{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
+    <div class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }} <strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></div>
+    {% endif %}
+    
+    {% comment %} Optional authors list with self highlight {% endcomment %}
+    {% if post.authors %}
+      <p class="pub-authors">
+        {% assign meA = 'Matthew Hull' %}
+        {% assign meB = 'Hull, Matthew' %}
+        {% if post.authors.first %}
+          {%- for a in post.authors -%}
+            {% assign t = a | strip %}
+            {% if t == meA or t == meB %}<span class="me">{{ t }}</span>{% else %}{{ t }}{% endif %}{% unless forloop.last %}, {% endunless %}
+          {%- endfor -%}
+        {% else %}
+          {%- assign authors_str = post.authors | strip -%}
+          {%- assign authors_str = authors_str | replace: 'Matthew Hull', '<span class="me">Matthew Hull</span>' -%}
+          {%- assign authors_str = authors_str | replace: 'Hull, Matthew', '<span class="me">Hull, Matthew</span>' -%}
+          {{ authors_str }}
+        {% endif %}
+      </p>
+    {% endif %}
+
+    {% if post.collection == 'publications' %}
+      <div class="pub-links">
+        {% assign pdf_url = post.pdf | default: post.paperurl %}
+        {% if post.paper-home %}
+          <a href="{{ post.paper-home }}" title="Project/Home"><i class="fa fa-home"></i></a>
+        {% endif %}
+        {% if pdf_url %}
+          <a href="{{ pdf_url }}" title="PDF"><i class="fas fa-file-pdf"></i></a>
+        {% endif %}
+        {% if post.poster %}
+          <a href="{{ post.poster }}" title="Poster"><i class="fas fa-image"></i></a>
+        {% endif %}
+        {% if post.github %}
+          <a href="{{ post.github }}" title="Code"><i class="fab fa-github"></i></a>
+        {% endif %}
+        {% if post.youtube %}
+          <a href="{{ post.youtube }}" title="Video"><i class="fa fa-play"></i></a>
+        {% endif %}
+        {% if post.vimeo %}
+          <a href="{{ post.vimeo }}" title="Video"><i class="fa fa-play"></i></a>
+        {% endif %}
+        {% if post.bibtex %}
+          <a href="{{ base_path }}{{ post.url }}#bibtex" title="BibTeX"><i class="fa fa-quote-right"></i></a>
+        {% endif %}
+        {% assign venue_text = post['venue-shorthand'] | default: post.venue %}
+        {% if venue_text %}<span class="venue-shorthand">{{ venue_text }}</span>{% endif %}
+      </div>
     {% endif %}
     
     {% if post.citation and post.paperurl %}

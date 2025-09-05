@@ -70,27 +70,7 @@
    ========================================================================== */
 
 .author__avatar {
-  display: table-cell;
-  vertical-align: top;
-  width: 36px;
-  // set width only, for non-square avatars
-  // height: 36px;
-
-  @include breakpoint($large) {
-    display: block;
-    width: auto;
-    height: auto;
-  }
-
-  img {
-    max-width: 175px;
-    border-radius: 50%;
-
-    @include breakpoint($large) {
-      padding: 5px;
-      border: 1px solid $border-color;
-    }
-  }
+  display: none; /* hide avatar circle in sidebar */
 }
 
 .author__content {
@@ -119,6 +99,7 @@
 .sidebar .author__name {
   font-family: $sans-serif;
   font-size: $type-size-5;
+  color: var(--mh-tile-cool);
 }
 
 .author__bio {
@@ -167,7 +148,9 @@
   list-style-type: none;
   border: 1px solid $border-color;
   border-radius: $border-radius;
-  background: #fff;
+  background: var(--mh-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: -1;
   box-shadow: 0 0 10px rgba(#000, 0.25);
   cursor: default;
@@ -182,7 +165,7 @@
     box-shadow: none;
   }
 
-  &:before {
+    &:before {
     display: block;
     content: "";
     position: absolute;
@@ -191,7 +174,7 @@
     width: 0;
     border-style: solid;
     border-width: 0 10px 10px;
-    border-color: $border-color transparent;
+      border-color: var(--mh-glass-border) transparent;
     z-index: 0;
 
     @include breakpoint($large) {
@@ -199,7 +182,7 @@
     }
   }
 
-  &:after {
+    &:after {
     display: block;
     content: "";
     position: absolute;
@@ -208,7 +191,7 @@
     width: 0;
     border-style: solid;
     border-width: 0 10px 10px;
-    border-color: #fff transparent;
+      border-color: var(--mh-glass) transparent;
     z-index: 1;
 
     @include breakpoint($large) {
@@ -218,6 +201,7 @@
 
   li {
     white-space: nowrap;
+    color: var(--mh-tile-cool);
   }
 
   a {
@@ -226,12 +210,13 @@
     padding-right: 5px;
     padding-top: 2px;
     padding-bottom: 2px;
-    color: inherit;
+    color: var(--mh-tile-cool);
     font-size: $type-size-5;
     text-decoration: none;
 
-    &:hover {
-      text-decoration: underline;
-    }
+    &:hover { color: #ef6b73; text-decoration: underline; }
   }
+
+  /* Force icons to inherit our cyan rather than brand colors */
+  .fa, .fab, .fas, .far, .fal, .ai { color: var(--mh-tile-cool) !important; }
 }

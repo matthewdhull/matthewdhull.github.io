@@ -14,6 +14,8 @@ layout: compress
   <body>
 
     {% include browser-upgrade.html %}
+    <!-- Site-wide background canvas for palette grid -->
+    <canvas id="bg-site" class="home-modern__bg site-bg" aria-hidden="true"></canvas>
     {% include masthead.html %}
 
     {{ content }}

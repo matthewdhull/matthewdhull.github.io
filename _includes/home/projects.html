@@ -1,0 +1,49 @@
+{%- comment -%}
+  Featured Publications: Only include items explicitly marked featured.
+  If `pub.featured` is missing or false, ignore it. Sort newest first.
+{%- endcomment -%}
+{% assign featured_publications = site.publications
+   | where_exp: 'p', 'p.featured == true'
+   | sort: 'date'
+   | reverse %}
+
+<section class="hm-section hm-projects">
+  <h2 class="hm-heading">Featured Works</h2>
+  <div class="hm-grid">
+    {% for pub in featured_publications %}
+      <div class="hm-tile">
+        <a class="hm-tile__headerlink" href="{{ pub.url | relative_url }}">
+            <div class="hm-tile__header">{{ pub.shorttitle | default: pub.title }}</div>
+        </a>
+        {% if pub.excerpt %}
+          <div class="hm-tile__excerpt">{{ pub.excerpt | markdownify | strip_html }}</div>
+        {% endif %}
+        <div class="hm-links">
+          {% assign pdf_url = pub.pdf | default: pub.paperurl %}
+          {% if pub.paper-home %}
+            <a href="{{ pub.paper-home }}" title="Project/Home"><i class="fa fa-home"></i></a>
+          {% endif %}
+          {% if pdf_url %}
+            <a href="{{ pdf_url }}" title="PDF"><i class="fas fa-file-pdf"></i></a>
+          {% endif %}
+          {% if pub.poster %}
+            <a href="{{ pub.poster }}" title="Poster"><i class="fas fa-image"></i></a>
+          {% endif %}
+          {% if pub.github %}
+            <a href="{{ pub.github }}" title="Code"><i class="fab fa-github"></i></a>
+          {% endif %}
+          {% if pub.youtube %}
+            <a href="{{ pub.youtube }}" title="Video"><i class="fa fa-play"></i></a>
+          {% endif %}
+          {% if pub.bibtex %}
+            <a href="{{ pub.url | relative_url }}#bibtex" title="BibTeX"><i class="fa fa-quote-right"></i></a>
+          {% endif %}
+          {% assign venue_text = pub['venue-shorthand'] | default: pub.venue %}
+          {% if venue_text %}
+            <span class="hm-venue venue-shorthand">{{ venue_text }}</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
