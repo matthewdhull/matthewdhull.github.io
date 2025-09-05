@@ -1,6 +1,15 @@
 <script src="{{ '/assets/js/main.min.js' | relative_url }}"></script>
 {% if page.layout == 'home-modern' %}
-  <script type="module" src="{{ '/assets/js/bg-experiment.module.js' | relative_url }}"></script>
+  <script type="module">
+    const p = new URLSearchParams(window.location.search);
+    const bg = (p.get('bg')||'').toLowerCase();
+    const exp = p.get('experiment');
+    if (bg === 'depth' || exp === '1') {
+      import('{{ '/assets/js/bg-depth-bands.module.js' | relative_url }}');
+    } else {
+      import('{{ '/assets/js/bg-palette-grid.module.js' | relative_url }}');
+    }
+  </script>
   <!-- <script type="module" src="{{ '/assets/js/hero-obj.module.js' | relative_url }}"></script> -->
 {% endif %}
 
