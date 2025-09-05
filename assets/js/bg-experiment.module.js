@@ -88,7 +88,7 @@
 
     // Bright spots (normalized positions)
     const spots = [
-      {x: 0.22, y: 0.88, amp: 1.0, spread: 0.55}, // lower-left bias
+      {x: 0.22, y: 0.95, amp: 1.0, spread: 0.55}, // lower-left bias
       {x: 0.88, y: 0.10, amp: 0.8,  spread: 0.6},  // upper-right bias
       {x: 0.70, y: 0.7, amp: 0.35, spread: 0.5}  // subtle near lower-right edge
     ];
