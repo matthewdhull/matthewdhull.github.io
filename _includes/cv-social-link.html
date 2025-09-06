@@ -1,0 +1,9 @@
+<div class="cv-social-link">
+  <div class="cv-social-link-icon-wrapper" {% if include.link.color %}style="color: {{ include.link.color }};"{% endif %}>
+    {% if include.link.class %}<i class="{{ include.link.class }}" aria-hidden="true"></i>{% endif %}
+  </div>
+  <div class="cv-social-link-text-wrapper">
+    <a href="{{ include.link.url }}">{{ include.link.description }}</a>
+  </div>
+</div>
+
