@@ -1,0 +1,33 @@
+- name: OS
+  items:
+    - Mac OS X
+    - Ubuntu
+    - Unix Command Line
+    - Windows
+
+- name: Programming
+  items:
+    - Python
+    - JavaScript
+    - R
+    - SQL
+    - Objective-C
+
+- name: Web and Writing
+  items: 
+    - D3
+    - three.js
+    - LaTeX
+    - Markdown
+    - Git
+    - Jekyll
+    - HTML
+    - CSS
+
+- name: Graphics
+  items: 
+  - Blender
+  - Cinema 4D
+  - After Effects
+  - Adobe Photoshop
+  - Affinity Designer

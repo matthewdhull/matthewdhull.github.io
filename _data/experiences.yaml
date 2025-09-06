@@ -1,0 +1,51 @@
+- institution: Georgia Institute of Technology
+  location: "Atlanta, GA"
+  position: PhD Researcher
+  year: "June 2023 — Present"
+  description: "PhD Researcher working on machine learning and data visualization projects."
+  institution-url: http://gatech.edu
+  type: academic
+
+- institution: Georgia Institute of Technology
+  location: "Atlanta, GA"
+  position: Instructional Associate Researcher
+  year: "May 2021 — May 2023"
+  description: "Instructional Associate Researcher supporting teaching and research efforts."
+  institution-url: http://gatech.edu
+  type: academic
+
+- institution: Georgia Institute of Technology
+  location: "Atlanta, GA"
+  position: Instructional Associate
+  year: "May 2021 — May 2023"
+  description: "Instructional Associate assisting in large-scale courses and academic projects."
+  institution-url: http://gatech.edu
+  type: academic
+
+- institution: FedEx Express
+  location: "Cologne, Germany | Oakland, CA"
+  position: Pilot - Captain, Boeing 767 Aircraft
+  year: "Aug. 2016 — Present"
+  description: "Captain on the Boeing 767 aircraft, responsible for international and domestic flight operations."
+  type: industry
+
+- institution: ExpressJet Airlines
+  location: "Atlanta, GA"
+  position: Manager - Advanced Qualification Program
+  year: "Jan. 2014 — Aug. 2016"
+  description: "Manager for the Advanced Qualification Program, overseeing pilot training data and compliance."
+  type: industry
+
+- institution: ExpressJet Airlines
+  location: "Houston, TX"
+  position: Lead Ground and Simulator Instructor
+  year: "May 2007 — Dec. 2013"
+  description: "Lead Ground and Simulator Instructor for the Embraer 145 Aircraft, providing training for new and current pilots."
+  type: industry
+
+- institution: ExpressJet Airlines
+  location: "Houston, TX"
+  position: Pilot - Captain, Embraer 145 Aircraft
+  year: "May 2006 — Aug. 2016"
+  description: "Captain on the Embraer 145 aircraft, responsible for regional airline operations."
+  type: industry

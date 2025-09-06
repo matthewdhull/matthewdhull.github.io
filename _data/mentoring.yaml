@@ -1,0 +1,9 @@
+# - name: mentee name
+#   intern: where interned
+#   intern-url: https
+#   year: "when interned year"
+#   degree: "Ph.D. in Computer Science, Harvard University"
+#   awards:
+#     - "Award or fellowship"
+#   url: mentee url
+#   description: "Dictionary learning for responsible AI"

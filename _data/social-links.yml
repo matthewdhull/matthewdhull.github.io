@@ -1,0 +1,42 @@
+- id: github
+  description: "@matthewdhull"
+  color: "#6e5494"
+  class: "fab fa-github"
+  url: "https://github.com/matthewdhull"
+  cv-group: 1
+
+- id: scholar
+  description: "Google Scholar"
+  color: "#4285F4"
+  class: "fas fa-graduation-cap"
+  url: "https://scholar.google.com/citations?user=mXauG9YAAAAJ&hl=en"
+  cv-group: 2
+
+- id: linkedin
+  description: "mdhull"
+  color: "#0a66c2"
+  class: "fab fa-linkedin"
+  url: "https://www.linkedin.com/in/mdhull/"
+  cv-group: 2
+
+- id: twitter
+  description: "@samfu_1"
+  color: "#1da1f2"
+  class: "fab fa-twitter"
+  url: "https://twitter.com/samfu_1"
+  cv-group: 2
+
+- id: cv
+  description: "CV PDF"
+  color: "#E74C3C"
+  class: "fas fa-file-pdf"
+  url: "/files/MatthewHull-CV.pdf"
+  cv-group: 1
+
+- id: home
+  description: "sites.gatech.edu/matthewhull"
+  color: "#515151"
+  class: "fas fa-home icon"
+  url: "https://sites.gatech.edu/matthewhull"
+  on-homepage: false
+  cv-group: 1

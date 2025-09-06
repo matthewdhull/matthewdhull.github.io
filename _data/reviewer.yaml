@@ -1,0 +1,11 @@
+- venue: International Joint Conference on Artificial Intelligence (IJCAI)
+  venue-shorthand: IJCAI
+  years:
+    - year: 2025
+      url: https://2025.ijcai.org
+
+- venue: ACM International Conference on Information & Knowledge Management (CIKM)
+  venue-shorthand: CIKM
+  years:
+    - year: 2020
+      url: https://dl.acm.org/doi/proceedings/10.1145/3340531

@@ -1,0 +1,53 @@
+- institution: Georgia Institute of Technology
+  position: Head Teaching Assistant / Instructional Associate
+  location: "Atlanta, GA"
+  year: Aug. 2019 - Present
+  class: "Data and Visual Analytics (CSE 6242)"
+  instructor: Duen Horng (Polo) Chau
+  description: "Served as Head Teaching Assistant and Instructional Associate for Data and Visual Analytics (CSE 6242), coordinating course logistics, managing teaching staff, and supporting 1200+ students each semester."
+  institution-url: http://gatech.edu
+  class-url: http://poloclub.gatech.edu/cse6242/
+  ta: true
+
+- institution: Georgia Institute of Technology
+  position: Teaching Assistant / Instructional Associate
+  location: "Atlanta, GA"
+  year: Aug. 2018 - May 2019
+  class: "Data and Visual Analytics (CSE 6242)"
+  instructor: Duen Horng (Polo) Chau
+  description: "Served as Teaching Assistant and Instructional Associate for Data and Visual Analytics (CSE 6242), supporting 900+ students each semester with assignments, office hours, and project mentoring."
+  institution-url: http://gatech.edu
+  class-url: http://poloclub.gatech.edu/cse6242/
+  ta: true
+
+- institution: Georgia Institute of Technology
+  position: Graduate Teaching Assistant
+  location: "Atlanta, GA"
+  year: Jan. 2018 - May. 2018
+  class: "Data and Visual Analytics (CSE 6242)"
+  instructor: Duen Horng (Polo) Chau
+  description: "Graduate Teaching Assistant for Data and Visual Analytics (CSE 6242), mentoring student teams, holding office hours, and assisting with coursework for 800+ students."
+  institution-url: http://gatech.edu
+  class-url: http://poloclub.gatech.edu/cse6242/
+  ta: true
+
+- institution: ExpressJet Airlines
+  position: Simulator Instructor
+  location: "Houston, TX"
+  year: Jan. 2016 - Aug. 2016
+  class: "Embraer 145 Aircraft"
+  description: "Simulator Instructor for the Embraer 145 Aircraft, conducting training sessions for pilots on flight operations and procedures."
+
+- institution: ExpressJet Airlines
+  position: Lead Ground Instructor
+  location: "Houston, TX"
+  year: Jan. 2012 - Dec. 2013
+  class: "Embraer 145 Aircraft"
+  description: "Lead Ground Instructor for the Embraer 145 Aircraft, overseeing curriculum development and conducting classroom training for pilot trainees."
+
+- institution: ExpressJet Airlines
+  position: Ground Instructor
+  location: "Houston, TX"
+  year: Jul. 2007 - Dec. 2012
+  class: "Embraer 145 Aircraft"
+  description: "Ground Instructor for the Embraer 145 Aircraft, delivering ground school lessons on aircraft systems and operations."
