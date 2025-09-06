@@ -1,12 +1,14 @@
 ---
 title: "Revamp: Automated Simulations of Adversarial Attacks on Arbitrary Objects in Realistic Scenes"
+authors: "Matthew Hull and Zijie J. Wang and Duen Horng Chau"
 shorttitle: "Revamp"
 collection: publications
 permalink: /publications/2024-05-09-paper-revamp-number-7
 excerpt: 'Automated simulations for adversarial object attacks in realistic scenes.'
 date: 2024-05-09
-venue: 'ICLR'
+venue: 'International Conference on Learning Representations (Tiny Papers at ICLR)'
 venue-shorthand: "ICLR'24"
+location: Vienna, Austria
 featured: true
 paperurl: 'https://matthewdhull.github.io/files/revamp.pdf'
 pdf: 'https://openreview.net/pdf?id=XCLrySEUBe'

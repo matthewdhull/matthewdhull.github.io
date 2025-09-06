@@ -1,11 +1,13 @@
 ---
 title: "DetectorDetective: Investigating the Effects of Adversarial Examples on Object Detectors"
+authors: "Sivapriya Vellaichamy, Matthew Hull, Zijie J Wang, Nilaksh Das, ShengYun Peng, Haekyu Park, and Duen Horng (Polo) Chau"
 shorttitle: "DetectorDetective"
 collection: publications
 permalink: /publication/2022-06-19-detector_detective-number-3
 excerpt: 'Visualize Adversarial Examples on Object Detectors.'
 date: 2022-06-19
-venue: 'CVPR'
+venue: 'Conference on Computer Vision and Pattern Recognition (CVPR)'
+location: 'New Orleans, LA, USA'
 venue-short: "CVPR'22"
 paper-home: 'https://github.com/poloclub/detector-detective'
 github: 'https://github.com/poloclub/detector-detective'

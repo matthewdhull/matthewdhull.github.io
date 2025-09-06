@@ -2,8 +2,9 @@
 title: "RenderBender: A Survey on Adversarial Attacks Using Differentiable Rendering"
 shorttitle: "RenderBender"
 authors: "Matthew Hull, Haoran Wang, Matthew Lau, Alec Helbling, Mansi Phute, Chao Zhang, Zsolt Kira, Willian Lunardi, Martin Andreoni, Wenke Lee, and Duen Horng Chau"
-venue: "IJCAI"
+venue: "International Joint Conference on Artificial Intelligence (IJCAI)"
 venue-shorthand: IJCAI'25
+location: Montréal, Canada
 featured: true
 year: 2025
 pdf: https://poloclub.github.io/papers/25-ijcai-survey-adv-diff-rendering.pdf

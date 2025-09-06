@@ -1,8 +1,9 @@
 ---
 title: "3D Gaussian Splat Vulnerabilities"
 authors: "Matthew Hull, Haoyang Yang, Pratham Mehta, Mansi Phute, Aeree Cho, Haoran Wang, Matthew Lau, Wenke Lee, Willian Lunardi, Martin Andreoni, and Duen Horng Chau"
-venue: "CVPR"
+venue: "CVPR Workshop on Neural Fields Beyond Conventional Cameras (NFBCC)"
 venue-shorthand: CVPR'25
+location: Nashville, TN
 featured: true
 year: 2025
 pdf: https://poloclub.github.io/papers/25-cvpr-nfbcc-workshop-3dgs-attack.pdf

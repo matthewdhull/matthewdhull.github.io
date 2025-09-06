@@ -1,10 +1,12 @@
 ---
 title: "Towards Automatic Grading of D3.js Visualizations"
+authors: "Matthew Hull, Connor Guerin, Justin Chen, Susanta Routray, Duen Horng (Polo) Chau"
 collection: publications
 permalink: /publication/2021-10-27-paper-autograde_viz-number-3
 excerpt: Automatic Grading of D3.js Visualizations.'
 date: 2021-10-27
-venue: 'IEEE VIS'
+venue: 'IEEE Visualization Conference (VIS)'
+location: 'Virtual'
 venue-shorthand: "VIS'21"
 poster: 'https://poloclub.github.io/papers/21-vis-autograde-poster.pdf'
 youtube: 'https://youtu.be/hA2I36Gm0YM'

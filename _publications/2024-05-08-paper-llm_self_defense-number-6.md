@@ -1,11 +1,13 @@
 ---
 title: "LLM Self Defense"
+authors: "Mansi Phute, Alec Helbling, Matthew Hull, ShengYun Peng, Sebastian Szyller, Cory Cornelius, and Duen Horng Chau"
 collection: publications
 permalink: /publications/2024-05-08-paper-llm_self_defense-number-6
 excerpt: "LLM's can filter out harmful content produced by themselves!"
 date: 2024-05-08
-venue: 'ICLR'
+venue: 'International Conference on Learning Representations (Tiny Papers at ICLR)'
 venue-shorthand: "ICLR'24"
+location: Vienna, Austria
 featured: true
 paperurl: 'https://arxiv.org/pdf/2308.07308'
 github: 'https://github.com/poloclub/llm-self-defense'
