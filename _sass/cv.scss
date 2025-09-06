@@ -268,11 +268,22 @@ $cv-content-offset: calc(#{$cv-date-col} + #{$cv-gap});
 
 /* Print styles for CV page only */
 @media print {
-  body.cv-layout {
-    background: #fff !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .cv-wrapper { padding: 0.75in; }
-  a { color: #000 !important; text-decoration: underline !important; }
+  html, body, #cv { background: #fff !important; }
+  html { min-height: auto !important; height: auto !important; }
+  body { padding-bottom: 0 !important; height: auto !important; }
+  body.cv-layout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Page settings */
+  @page { size: Letter; margin: 0.5in; }
+  .cv-wrapper { padding: 0; max-width: none; }
+  /* Keep the layout scale consistent for print */
+  body.cv-layout { font-size: 11pt; }
+  a { color: #000 !important; text-decoration: none !important; }
+  /* Remove any site backgrounds, canvases, shadows */
+  .site-bg, .home-modern__bg, .masthead, .page__footer, canvas { display: none !important; }
+  *, *::before, *::after { box-shadow: none !important; text-shadow: none !important; }
+  hr { border: 0; border-top: 1px solid #eee; }
+  /* Avoid stray final blank page */
+  #cv { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+  .cv-reference:last-child { margin-bottom: 0 !important; }
+  #cv > *:last-child { margin-bottom: 0 !important; }
 }
