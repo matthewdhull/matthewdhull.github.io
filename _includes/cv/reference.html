@@ -1,0 +1,6 @@
+<div class="cv-reference">
+  <div class="cv-ref-name"><a href="{{ reference.url }}"><b>{% if reference.phd == true %}Dr. {% endif %}{{ reference.name }}</b></a>, {{ reference.position }}</div>
+  {% if reference.group %}<div class="cv-ref-group">{{ reference.group }}</div>{% endif %}
+  {% if reference.institution %}<div class="cv-ref-institution"><i>{{ reference.institution }}</i></div>{% endif %}
+  {% if reference.website %}<div class="cv-ref-website cv-blue-link"><a href="{{ reference.url }}">{{ reference.website }}</a></div>{% endif %}
+</div>

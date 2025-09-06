@@ -1,9 +1,11 @@
 ---
 title: "Navigating the Safety Landscape: Measuring Risks in Finetuning Large Language Models"
+authors: "ShengYun Peng, Pin-Yu Chen, Matthew Hull, Duen Horng Chau"
 shorttitle: "Navigating the LLM Safety Landscape"
 authors: "ShengYun Peng, Pin-Yu Chen, Matthew Hull, Duen Horng Chau"
-venue: "NeurIPS"
+venue: "Neural Information Processing Systems (NeurIPS)"
 venue-shorthand: "NeurIPS'24"
+location: Vancouver, Canada
 featured: true
 year: 2024
 pdf: https://arxiv.org/abs/2405.17374

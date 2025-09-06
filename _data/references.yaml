@@ -1,0 +1,26 @@
+- name: Polo Chau
+  position: Professor
+  group: School of Computational Science and Engineering
+  institution: Georgia Institute of Technology
+  location: Atlanta, GA, USA
+  phd: true
+  website: "cc.gatech.edu/~dchau/"
+  url: "https://cc.gatech.edu/~dchau/"
+
+- name: Mahdi Roozbahani
+  position: Lecturer
+  group: School of Computational Science and Engineering
+  institution: Georgia Institute of Technology
+  location: Atlanta, GA, USA
+  phd: true
+  website: "cse.gatech.edu/people/mahdi-roozbahani/"
+  url: "https://cse.gatech.edu/people/mahdi-roozbahani/"
+
+- name: James Barbour
+  position: Director - Flight Standards and Training
+  group: Flight Standards and Training
+  institution: Avelo Airlines
+  location: USA
+  phd: false
+  website: ""
+  url: "mailto:JBarbour@aveloair.com"

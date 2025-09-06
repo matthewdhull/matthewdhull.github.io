@@ -1,10 +1,12 @@
 ---
 title: "Argo Lite: Open-Source Interactive Graph Exploration and Visualization in Browsers"
+authors: "Siwei Li, Zhiyan Zhou, Anish Upadhayay, Omar Shaikh, Scott Freitas, Haekyu Park, Zijie J Wang, Susanta Routray, Matthew Hull, and Duen Horng Chau"
 collection: publications
 permalink: /publications/2020-08-26-paper-argolite-number-2
 excerpt: 'In-browser interactive graph exploration and visualization tool.'
 date: 2020-08-26
-venue: 'CIKM'
+venue: 'Conference on Information and Knowledge Management (CIKM)'
+location: 'Virtual'
 venue-shorthand: "CIKM'20"
 paperurl: 'https://matthewdhull.github.io/files/argolite.pdf'
 github: 'https://github.com/poloclub/argo-graph-lite'

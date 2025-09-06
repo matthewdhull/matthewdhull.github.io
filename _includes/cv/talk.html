@@ -1,0 +1,11 @@
+<div class="cv-talk-title"><b>{{ include.talk.name }}</b></div>
+{% if include.talk.items %}
+  {% assign items = include.talk.items | sort: 'year' | reverse %}
+  {% for t in items %}
+    <div class="cv-row">
+      <div class="cv-left-date">{{ t.month }} {{ t.year }}</div>
+      <div>{{ t.location }}</div>
+    </div>
+  {% endfor %}
+{% endif %}
+<div class="cv-spacer"></div>

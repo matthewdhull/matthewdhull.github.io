@@ -1,12 +1,14 @@
 ---
 title: "Robust Principles: Architectural Design Principles for Adversarially Robust CNNs"
+authors: "ShengYun Peng, Weilin Xu, Cory Cornelius, Matthew Hull, Kevin Li, Rahul Duggal, Mansi Phute, Jason Martin, and Duen Horng (Polo) Chau"
 shorttitle: "Robust Principles"
 collection: publications
 permalink: /publications/2023-08-30-paper-robust_principles-number-4
 excerpt: 'A suite of generalizable robust architectural design principles.'
 date: 2023-08-30
-venue: 'BMVC'
+venue: 'British Machine Vision Conference (BMVC)'
 venue-shorthand: "BMVC'23"
+location: "Aberdeen, UK"
 paperurl: 'https://arxiv.org/pdf/2308.16258.pdf'
 github: 'https://github.com/poloclub/robust-principles'
 youtube: 'https://www.youtube.com/watch?v=S-N1iuA0hAY'

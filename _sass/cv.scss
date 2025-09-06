@@ -1,0 +1,289 @@
+// Local color aliases to match sample CV styles
+// Map to theme variables so they compile even if exact names don't exist.
+$blue: $info-color !default;
+$dark-blue: mix(#000, $blue, 25%) !default;
+$orange: $warning-color !default;
+// $silver: $light-gray !default;
+$silver: rgb(153,153,153);
+$mid-gray: $gray !default;
+$dark-gray: #414141;
+$near-white: $code-background-color !default;
+$gold: mix(#ffa500, #b8860b, 50%) !default; // warm accent for awards
+$black-025: rgba(0,0,0,0.025) !default;
+$white: #fff !default;
+// Breakpoint alias used by sample styles
+$mobile: $small !default;
+
+// Make the CV page white, clean, and print-friendly without touching the rest
+body.cv-layout {
+  background: $white !important;
+  color: $dark-gray !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.cv-wrapper {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem 1rem;
+  background: $white;
+}
+
+/* Two-column rows: date left, content right */
+$cv-date-col: 140px !default;
+$cv-gap: 1.25rem !default;
+$cv-content-offset: calc(#{$cv-date-col} + #{$cv-gap});
+.cv-row {
+  display: grid;
+  grid-template-columns: $cv-date-col 1fr;
+  column-gap: $cv-gap;
+  align-items: start;
+}
+
+#cv {
+	margin-top: 1rem;
+	margin-bottom: 3rem;
+}
+
+#cv > * {
+	grid-column: text-start / page-end;
+}
+
+#cv a {
+	color: $text-color;
+	text-decoration: none;
+}
+
+#cv a:hover {
+	color: $blue;
+}
+
+#cv a b {
+	color: $dark-gray;
+}
+
+#cv a b:hover {
+	color: $blue;
+}
+
+#cv-title {
+	margin-bottom: 0rem;
+	margin-left: $cv-content-offset;
+}
+
+#cv-title a {
+	font-size: 2.25rem;}
+
+#cv-title > a, #cv-title > a:hover {
+	color: $dark-gray;
+	font-weight: 500;
+	text-decoration: none;
+}
+
+
+#cv-subtitle {
+	font-size: 1.25rem;
+	margin-top: 0rem;
+	margin-bottom: 0.25rem;
+	margin-left: $cv-content-offset;
+}
+
+#cv h2 {
+	margin-top: 1.25rem;
+	font-weight: 400;
+	font-size: 2rem;
+	/* align section headers with right column */
+	margin-left: $cv-content-offset;
+}
+
+#cv h3 {
+	font-weight: 300;
+	font-size: 1.5rem;
+	margin-top: 0rem;
+	margin-left: $cv-content-offset;
+}
+
+.cv-ai {
+	color: $orange;
+}
+
+.cv-vis {
+	color: $blue;
+}
+
+.cv-image-links-wrapper {
+	display: flex;
+	font-size: 0.85rem;
+	margin-left: $cv-content-offset;
+	max-width: 720px;
+}
+
+.cv-intro { margin-left: $cv-content-offset; max-width: 720px; }
+
+.cv-image-links {
+	flex: 1;
+}
+
+.cv-social-link {
+	display: flex;
+}
+
+.cv-social-link-icon-wrapper {
+	flex: 0 0 25px;
+	text-align: center;
+	margin-right: 0.5rem;
+}
+
+.cv-social-link-text-wrapper {
+	flex: 1;
+}
+
+.cv-social-link-text-wrapper > a {
+	color: $text-color;
+}
+
+#cv-toc {
+	grid-column: page-start / kicker-end;
+}
+
+#cv-toc > ul {
+	list-style-type: none;
+}
+
+.cv-left-date {
+    text-align: right;
+    font-size: 0.7rem;
+    color: $gray;
+}
+
+.cv-left-date-article {
+	color: $silver !important;
+}
+
+.cv-authors {
+	font-weight: 400 !important;
+	font-size: 0.875rem;
+}
+
+.cv-author {
+	color: $mid-gray !important;
+}
+
+.cv-description {
+	color: $silver !important;
+	font-size: 0.875rem;
+	font-weight: 300;
+}
+
+.cv-spacer-large { height: 1rem; display: block; }
+.cv-spacer { height: 0.75rem; display: block; }
+.cv-spacer-medium { height: 0.5rem; display: block; }
+.cv-spacer-small { height: 0.25rem; display: block; }
+
+.appears-on, .appears-on a { font-size: 0.825rem; font-weight: 400; }
+.grouped-article, .grouped-article-description { font-size: 0.825rem !important; }
+.grouped-article-title { font-weight: 500 }
+.grouped-article { padding-left: 1rem; border-left: 1px solid $border-color; }
+
+.cv-award { color: $dark-gray; font-weight: 600; }
+.cv-service-title {
+  margin-top: 0.7rem;
+  margin-bottom: 0rem;
+  /* align subsection labels with the content column */
+  margin-left: $cv-content-offset;
+}
+
+/* Reviewer list: venue with inline years */
+.cv-venue-entry {
+  margin-bottom: 0.25rem;
+  /* align reviewer lines under the content column */
+  margin-left: $cv-content-offset;
+}
+.cv-venue-years-inline { color: $gray; }
+
+.pub-misc {
+	font-size: 0.7rem;
+	font-weight: 200;
+	margin-top: 0.3rem;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	align-items: center;
+}
+
+.pub-misc a { 
+	color: $gray !important;
+	white-space: nowrap;
+	background-color: rgb(240,240,240);
+	padding: 0.15rem 0.4rem 0.15rem 0.4rem !important;
+	border-radius: 1rem;
+	text-decoration: none;
+}
+
+/* References */
+.cv-reference { margin-left: calc(#{$cv-date-col} + #{$cv-gap}); margin-bottom: 1rem; }
+.cv-ref-name { color: $dark-gray; }
+.cv-ref-group { color: $dark-gray; }
+.cv-ref-institution { color: $mid-gray; }
+.cv-ref-website a { color: $blue !important; }
+
+/* Talks */
+.cv-talk-title { margin-left: calc(#{$cv-date-col} + #{$cv-gap}); font-weight: 600; }
+
+@media screen and (max-width: $mobile) {
+  #cv h2 { margin-left: 0; }
+  #cv h3 { margin-left: 0; }
+  .cv-service-title { margin-left: 0; }
+  .cv-venue-entry { margin-left: 0; }
+  #cv-title, #cv-subtitle, .cv-image-links-wrapper, .cv-intro { margin-left: 0; }
+}
+
+.pub-misc a:hover { color: $white !important; text-decoration: none; background-color: $blue; }
+.equal-contribution { color: $gray; }
+.cv-blue-link a { color: $blue !important; }
+.cv-blue-link a:hover { color: $dark-blue !important; }
+
+.bibtex-wrapper {
+	overflow-x: scroll;
+	background-color: $black-025;
+	border-radius: 0.5rem;
+	padding-left: 1rem;
+	padding-top: 0.75rem;
+	padding-bottom: 0rem;
+	margin-top: 1rem;
+	margin-bottom: 0.5rem;
+	font-size: 0.75rem;
+}
+
+.highlight { width: 0; }
+
+@media screen and (max-width: $mobile) {
+    .cv-row { grid-template-columns: 1fr; }
+    .cv-left-date { text-align: left; }
+    .cv-left-date-article { padding-left: 1rem !important; border-left: 1px solid $border-color; }
+    .cv-image-links-wrapper { display: block; }
+}
+
+/* Print styles for CV page only */
+@media print {
+  html, body, #cv { background: #fff !important; }
+  html { min-height: auto !important; height: auto !important; }
+  body { padding-bottom: 0 !important; height: auto !important; }
+  body.cv-layout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Page settings */
+  @page { size: Letter; margin: 0.5in; }
+  .cv-wrapper { padding: 0; max-width: none; }
+  /* Keep the layout scale consistent for print */
+  body.cv-layout { font-size: 11pt; }
+  a { color: #000 !important; text-decoration: none !important; }
+  /* Remove any site backgrounds, canvases, shadows */
+  .site-bg, .home-modern__bg, .masthead, .page__footer, canvas { display: none !important; }
+  *, *::before, *::after { box-shadow: none !important; text-shadow: none !important; }
+  hr { border: 0; border-top: 1px solid #eee; }
+  /* Avoid stray final blank page */
+  #cv { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+  .cv-reference:last-child { margin-bottom: 0 !important; }
+  #cv > *:last-child { margin-bottom: 0 !important; }
+}

@@ -1,12 +1,14 @@
 ---
 title: "VisGrader: Automatic Grading of D3 Visualizations"
+authors: "Matthew Hull, Vivian Pednekar, Hannah Murray, Nimisha Roy, Emmanuel Tung, Susanta Routray, Connor Guerin, Justin Chen, Zijie J. Wang, Seongmin Lee, Mahdi Roozbahani, and Duen Horng Chau"
 shorttitle: "VisGrader"
 collection: publications
 permalink: /publications/2023-10-20-paper-visgrader-number-5
 excerpt: 'Automatic grading of D3 visualizations.'
 date: 2023-10-20
-venue: 'IEEE VIS'
+venue: 'IEEE Transactions on Visualization and Computer Graphics (TVCG)'
 venue-shorthand: "VIS'23"
+location: Melbourne, Australia
 featured: true
 paperurl: 'https://arxiv.org/pdf/2310.12347.pdf'
 youtube: 'https://youtu.be/XnTfiAiYLNM'
