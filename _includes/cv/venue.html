@@ -1,0 +1,4 @@
+<div class="cv-venue-entry">
+  {{ venue.venue }}{% if venue.venue-shorthand %} (<b>{{ venue.venue-shorthand }}</b>){% endif %}
+  <span class="cv-venue-years-inline">{% for y in venue.years %}{{ y.year }}{% unless forloop.last %}, {% endunless %}{% endfor %}</span>
+</div>

@@ -1,0 +1,95 @@
+{%- comment -%}
+  Structure this include to output exactly two top-level elements:
+  1) left tag in the date column, 2) everything else in a right wrapper
+{%- endcomment -%}
+{% if include.label %}
+  <div class="cv-left-date">{{ include.label }}{{ include.idx }}</div>
+{% else %}
+  <div class="cv-left-date cv-left-date-article">{{ pub.date | default: pub.year | date: "%Y" }}</div>
+{% endif %}
+
+<div class="cv-pub-right">
+  {%- comment -%} Title {%- endcomment -%}
+  <div>
+    {% if pub.url %}
+      <a href="{{ pub.url }}"><b>{{ pub.title }}</b></a>
+    {% else %}
+      <b>{{ pub.title }}</b>
+    {% endif %}
+  </div>
+
+  {%- comment -%} Authors {%- endcomment -%}
+  <div class="cv-description cv-authors">
+    {% assign meA = 'Matthew Hull' %}
+    {% assign meB = 'Hull, Matthew' %}
+    {% if pub.authors and pub.authors.first %}
+      {% for person in pub.authors %}
+        {% assign t = person | strip %}
+        {% capture rendered %}{% include person.html person=t %}{% endcapture %}
+        {% assign star = '' %}{% for p in pub.equal-contribution %}{% if t == p %}{% assign star = '*' %}{% endif %}{% endfor %}
+        {% if t == meA or t == meB %}<b class="cv-author-me">{{ rendered | strip }}</b>{{ star }}{% else %}{{ rendered | strip }}{{ star }}{% endif %}{% unless forloop.last %}, {% endunless %}
+      {% endfor %}
+    {% elsif pub.authors %}
+      {%- assign authors_str = pub.authors | strip -%}
+      {%- assign authors_str = authors_str | replace: 'Matthew Hull', '<b class="cv-author-me">Matthew Hull</b>' -%}
+      {%- assign authors_str = authors_str | replace: 'Hull, Matthew', '<b class="cv-author-me">Hull, Matthew</b>' -%}
+      {{ authors_str }}
+    {% endif %}
+  </div>
+
+  {%- comment -%} Venue line {%- endcomment -%}
+{% assign venue_disp = pub.venue | default: pub['venue-shorthand'] %}
+  {% assign year_disp = pub.date | date: "%Y" %}
+  {% if pub.year %}{% assign year_disp = pub.year %}{% endif %}
+  <div class="cv-description"><i>{% if venue_disp %}{{ venue_disp }}{% endif %}{% if pub.location %}, {{ pub.location }}{% endif %}{% if year_disp %}, {{ year_disp }}{% endif %}.</i></div>
+
+  {%- comment -%} Buttons {%- endcomment -%}
+  {% assign project_url = pub['paper-home'] | default: pub.url %}
+  {% assign pdf_url = pub.paperurl | default: pub.pdf %}
+  {% assign code_url = pub.github | default: pub.code %}
+  {% assign video_url = pub.youtube | default: pub.video %}
+
+  <div class="pub-misc">
+    {% if pub.coming-soon == true %}
+      <a><i class="fas fa-arrow-right" aria-hidden="true"></i> More coming soon!</a>
+    {% endif %}
+
+    {% if project_url %}<a href="{{ project_url }}"><i class="fas fa-link" aria-hidden="true"></i> Project</a>{% endif %}
+    {% if pub.demo %}<a href="{{ pub.demo }}"><i class="fas fa-play" aria-hidden="true"></i> Demo</a>{% endif %}
+    {% if pdf_url %}<a href="{{ pdf_url }}"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</a>{% endif %}
+    {% if pub.blog %}<a href="{{ pub.blog }}"><i class="fas fa-newspaper" aria-hidden="true"></i> Blog</a>{% endif %}
+    {% if video_url %}<a href="{{ video_url }}"><i class="fas fa-film" aria-hidden="true"></i> Video</a>{% endif %}
+    {% if pub.preview %}<a href="{{ pub.preview }}"><i class="fas fa-eye" aria-hidden="true"></i> Preview</a>{% endif %}
+    {% if pub.talk %}<a href="{{ pub.talk }}"><i class="fas fa-video" aria-hidden="true"></i> Talk</a>{% endif %}
+    {% if pub.recording %}<a href="{{ pub.recording }}"><i class="fas fa-video" aria-hidden="true"></i> Recording</a>{% endif %}
+    {% if pub.slides %}<a href="{{ pub.slides }}"><i class="fas fa-window-maximize" aria-hidden="true"></i> Slides</a>{% endif %}
+    {% if pub.poster %}<a href="{{ pub.poster }}"><i class="fas fa-image" aria-hidden="true"></i> Poster</a>{% endif %}
+    {% if code_url %}<a href="{{ code_url }}"><i class="fas fa-code" aria-hidden="true"></i> Code</a>{% endif %}
+    {% if pub.data %}<a href="{{ pub.data }}"><i class="fas fa-database" aria-hidden="true"></i> Data</a>{% endif %}
+    {% if feature.slides %}<a href="{{ feature.slides }}"><i class="fas fa-window-maximize" aria-hidden="true"></i> Slides</a>{% endif %}
+    {% if pub.bibtex %}
+      {% if selectedBoolForBibtex == true %}
+        <a style="cursor:pointer" onclick="toggleBibtex('_{{ pub.id }}_selected')"><i class="fas fa-book" aria-hidden="true"></i> BibTeX</a>
+      {% endif %}
+      {% if selectedBoolForBibtex == false %}
+        <a style="cursor:pointer" onclick="toggleBibtex('_{{ pub.id }}')"><i class="fas fa-book" aria-hidden="true"></i> BibTeX</a>
+      {% endif %}
+    {% endif %}
+    {% if pub.doi %}<a href="https://doi.org/{{ pub.doi }}"><i class="fas fa-anchor" aria-hidden="true"></i> DOI</a>{% endif %}
+    {% if pub.award %}<span class="cv-award"><i class="fas fa-trophy" aria-hidden="true"></i> {{ pub.award }}</span>{% endif %}
+    {% if pub.highlight %}<span class="cv-award"><i class="fas fa-star" aria-hidden="true"></i> {{ pub.highlight }}</span>{% endif %}
+    {% if pub.equal-contribution %}<span class="equal-contribution"> *Authors contributed equally</span>{% endif %}
+  </div>
+
+  {%- comment -%} BibTeX blocks {%- endcomment -%}
+  {% if pub.bibtex %}
+    {% if selectedBoolForBibtex == true %}
+    <div class="highlighter-rouge bibtex bibtex-wrapper" style="display: none;" id="_{{ pub.id }}_selected"><div class="highlight"><pre>{{ pub.bibtex }}</pre></div></div>
+    {% endif %}
+    {% if selectedBoolForBibtex == false %}
+    <div class="highlighter-rouge bibtex bibtex-wrapper" style="display: none;" id="_{{ pub.id }}"><div class="highlight"><pre>{{ pub.bibtex }}</pre></div></div>
+    {% endif %}
+  {% endif %}
+
+  <div class="cv-spacer-large"></div>
+</div>
