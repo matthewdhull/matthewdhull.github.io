@@ -227,6 +227,10 @@ I am a Ph.D. student in Machine Learning at Georgia Tech advised by Duen Horng (
 {% include cv/member.html member=member %}
 {% endfor %}
 
+## Certifications
+
+{% include cv/certifications.html %}
+
 ## References
 
 {% for reference in site.data.references %}

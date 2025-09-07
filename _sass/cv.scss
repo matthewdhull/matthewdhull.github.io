@@ -202,6 +202,13 @@ $cv-content-offset: calc(#{$cv-date-col} + #{$cv-gap});
 }
 .cv-venue-years-inline { color: $gray; }
 
+/* Certifications */
+.cv-certifications {
+  margin-left: $cv-content-offset;
+  margin-bottom: 0.75rem;
+}
+.cv-cert { margin-bottom: 0.25rem; }
+
 .pub-misc {
 	font-size: 0.7rem;
 	font-weight: 200;
