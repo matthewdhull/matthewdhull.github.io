@@ -9,6 +9,9 @@ on:
       - '_sass/**'
       - '_includes/**'
       - '_data/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
 
 jobs:
   build:
@@ -36,6 +39,13 @@ jobs:
       - name: Install PDF deps
         run: npm ci
 
+      - name: Debug: list repo and scripts dir
+        run: |
+          pwd
+          ls -la
+          echo '--- scripts ---'
+          ls -la scripts || true
+
       - name: Generate CV PDF
         run: npm run cv:pdf
 
@@ -50,4 +60,3 @@ jobs:
           else
             echo "No changes in PDF"
           fi
-
