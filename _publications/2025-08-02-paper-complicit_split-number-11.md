@@ -3,7 +3,7 @@ title: "ComplicitSplat: Downstream Models are Vulnerable to Blackbox Attacks by 
 authors: "Matthew Hull, Haoyang Yang, Pratham Mehta, Mansi Phute, Aeree Cho, Haoran Wang, Matthew Lau, Wenke Lee, Willian Lunardi, Martin Andreoni, and Duen Horng Chau"
 venue: "arXiv"
 venue-shorthand: arXiv
-# location: Nashville, TN
+# location: 
 featured: false
 year: 2025
 pdf: https://arxiv.org/pdf/2508.11854
