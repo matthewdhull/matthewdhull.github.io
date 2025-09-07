@@ -39,7 +39,7 @@ jobs:
       - name: Install PDF deps
         run: npm ci
 
-      - name: Debug: list repo and scripts dir
+      - name: Debug - list repo and scripts dir
         run: |
           pwd
           ls -la
