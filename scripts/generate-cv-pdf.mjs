@@ -23,7 +23,11 @@ async function main() {
   }
 
   const server = await serve(SITE_DIR, PORT);
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    // GitHub Actions lacks a Chrome sandbox; disable it for CI.
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
   const url = `http://localhost:${PORT}/cv/`;
   await page.goto(url, { waitUntil: 'networkidle0' });
@@ -49,4 +53,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
