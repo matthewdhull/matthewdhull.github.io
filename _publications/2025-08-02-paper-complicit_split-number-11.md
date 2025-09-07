@@ -12,7 +12,7 @@ github: https://github.com/poloclub/complicit-splat
 # icon: 3dgs-vulnerabilities.png
 # icon-fit: cover
 # brand: 3DGS Vulnerabilities
-# poster: https://poloclub.github.io/papers/25-cvpr-nfbcc-workshop-3dgs-attack-poster.pdf
+# poster: 
 collaboration: TII
 excerpt: "Downstream models are vulnerable to blackbox attacks by 3dgs camouflages"
 pub-type: "preprint"
