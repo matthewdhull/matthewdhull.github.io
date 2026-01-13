@@ -1,3 +1,9 @@
+- venue: Conference on Vision and Pattern Recognition (CVPR)
+  venue-shorthand: CVPR
+  years:
+    - year: 2026
+      url: https://cvpr.thecvf.com/Conferences/2026
+
 - venue: International Joint Conference on Artificial Intelligence (IJCAI)
   venue-shorthand: IJCAI
   years:
