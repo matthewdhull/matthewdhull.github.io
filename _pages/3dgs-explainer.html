@@ -1,0 +1,1455 @@
+---
+layout: default
+title: "3D Gaussian Splatting Explainer"
+permalink: /3dgs-explainer/
+author_profile: false
+custom_css:
+- /assets/css/3dgs-explainer.css
+---
+
+<main class="gs-explainer">
+  <div class="gs-explainer__wrap">
+    <header class="gs-explainer__hero" id="intro">
+      <h1>3D Gaussian Splatting, from Curve to Primitive</h1>
+      <p>
+        This explainer shows how a simple Gaussian curve grows into a 3D ellipsoid and
+        becomes a fast rendering primitive. Each section introduces one idea and keeps
+        the math close to the visual it controls.
+      </p>
+      <nav class="gs-explainer__nav" aria-label="Explainer sections">
+        <a href="#intro">Intro</a>
+        <a href="#gaussian-1d">1D Gaussian</a>
+        <a href="#level-sets">Level Sets</a>
+
+      </nav>
+    </header>
+
+    <section class="gs-section" id="gaussian-1d">
+      <span class="gs-section__meta">Section 1</span>
+      <h2>What Is a Gaussian?</h2>
+      <p>
+        Start with a one-dimensional Gaussian curve. We will animate the curve, then let
+        you shift the mean to see how the equation moves the bell along the x-axis.
+      </p>
+      <div class="gs-controls">
+        <label for="gaussian1d-mu"><span id="gaussian1d-mu-label" class="gs-katex-inline"></span> (mean)</label>
+        <input id="gaussian1d-mu" type="range" min="-1.5" max="1.5" step="0.05" value="0">
+        <span id="gaussian1d-mu-value">0.00</span>
+      </div>
+      <div class="gs-controls">
+        <label for="gaussian1d-variance"><span id="gaussian1d-variance-label" class="gs-katex-inline"></span>
+          (variance)</label>
+        <input id="gaussian1d-variance" type="range" min="0.3" max="2.5" step="0.05" value="1.0">
+        <span id="gaussian1d-variance-value">1.00</span>
+      </div>
+      <div id="gaussian1d-chart" class="gs-viz"></div>
+      <div id="gaussian1d-equation" class="gs-equation" aria-label="Gaussian equation"></div>
+    </section>
+
+    <section class="gs-section gs-derivation" id="gaussian-1d-to-2d">
+      <span class="gs-section__meta">Section 1.5</span>
+      <h2>From Independent Gaussians to a Quadratic Form</h2>
+      <p>
+        Before moving to a full 2D Gaussian density, we can see how the familiar 1D Gaussian extends naturally when two
+        independent variables are combined. The key idea is that products of Gaussians turn into sums inside the
+        exponential.
+      </p>
+      From 1D to 2D: take $\boldsymbol{x} \in \mathbb{R}^2$ and the 2D Gaussian becomes:
+      <div class="gs-equation">
+        $$
+        g(\boldsymbol{x}) =
+        \exp \left(
+        -\frac12 (\boldsymbol{x}-\boldsymbol{\mu})^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x}-\boldsymbol{\mu})
+        \right)
+        $$
+      </div>
+      <details>
+        <summary>Show full derivation</summary>
+        <div class="gs-derivation__body">
+          <div class="gs-equation">
+            $$
+            \begin{align*}
+            g(\boldsymbol{x}) &= g(x_1,x_2) = g(x_1)g(x_2) \qquad \text{joint probability density} \\
+            \end{align*}
+            $$
+            $$
+            g_1(x_1) = \exp \left(-\frac{(x_1-\mu_1)^2}{2\sigma_1^2}\right),
+            \qquad
+            g_2(x_2) = \exp \left(-\frac{(x_2-\mu_2)^2}{2\sigma_2^2}\right)\\
+            $$
+          </div>
+          <div class="gs-equation">
+            $$
+            \begin{align*}
+            g(x_1,x_2) &= \exp \left(-\frac{(x_1-\mu_1)^2}{2\sigma_1^2}\right)
+            \exp \left(-\frac{(x_2-\mu_2)^2}{2\sigma_2^2}\right) \\
+            &= \exp \left(
+            -\frac{(x_1-\mu_1)^2}{2\sigma_1^2}
+            -\frac{(x_2-\mu_2)^2}{2\sigma_2^2}
+            \right) & \exp(a)\exp(b)=\exp(a+b) \\
+            &= \exp \left(
+            -\frac12
+            \left[
+            \frac{(x_1-\mu_1)^2}{\sigma_1^2}
+            +
+            \frac{(x_2-\mu_2)^2}{\sigma_2^2}
+            \right]
+            \right)
+            \end{align*}
+            $$
+          </div>
+          Now define the deviation vector ${\boldsymbol{\delta}}$ and the precision matrix $\boldsymbol{D}$:
+          <div class="gs-equation">
+            $$
+            \boldsymbol{\delta} = \boldsymbol{x}-\boldsymbol{\mu} =
+            \begin{bmatrix}
+            x_1-\mu_1 \\
+            x_2-\mu_2
+            \end{bmatrix},
+            \qquad
+            \boldsymbol{D} =
+            \begin{bmatrix}
+            \frac{1}{\sigma_1^2} & 0 \\
+            0 & \frac{1}{\sigma_2^2}
+            \end{bmatrix}
+            $$
+          </div>
+          <div class="gs-equation">
+            $$
+            \begin{align*}
+            \boldsymbol{\delta}^\top {\boldsymbol{D}} \boldsymbol{\delta} &=
+            (x_1-\mu_1)\frac{1}{\sigma_1^2}(x_1-\mu_1)
+            +
+            (x_2-\mu_2)\frac{1}{\sigma_2^2}(x_2-\mu_2) \\
+            &=
+            \frac{(x_1-\mu_1)^2}{\sigma_1^2}
+            +
+            \frac{(x_2-\mu_2)^2}{\sigma_2^2}
+            \end{align*}
+            $$
+          </div>
+          Substituting back into the Gaussian expression:
+          <div class="gs-equation">
+            $$
+            g(\boldsymbol{x}) =
+            \exp \left(
+            -\frac12 (\boldsymbol{x}-\boldsymbol{\mu})^\top \boldsymbol{D} (\boldsymbol{x}-\boldsymbol{\mu})
+            \right)
+            $$
+          </div>
+          Connecting $\boldsymbol{D}$ to the covariance matrix $\boldsymbol{\Sigma}$:
+          <div class="gs-equation">
+            $$
+            \boldsymbol{\Sigma} =
+            \begin{bmatrix}
+            \sigma_1^2 & 0 \\
+            0 & \sigma_2^2
+            \end{bmatrix},
+            \qquad
+            \boldsymbol{\Sigma}^{-1} = \boldsymbol{D}
+            $$
+          </div>
+          <div class="gs-equation">
+            $$
+            g(\boldsymbol{x}) =
+            \exp \left(
+            -\frac12 (\boldsymbol{x}-\boldsymbol{\mu})^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x}-\boldsymbol{\mu})
+            \right)
+            $$
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="gs-section" id="gaussian-footprint">
+      <span class="gs-section__meta">Section 1.75</span>
+      <h2>From Probability Density to Geometric Footprint</h2>
+      <p>
+        Up to this point, we have treated the Gaussian as a probability density.
+        In graphics, we reinterpret the same function as a geometric footprint.
+      </p>
+      <p>
+        Nothing about the equation changes.
+        What changes is how we use its parameters.
+      </p>
+      <div class="gs-equation">
+        $$
+        g(x) = \exp\left(
+        -\frac{1}{2}(x-\mu)^\top \Sigma^{-1}(x-\mu)
+        \right),
+        \qquad x \in \mathbb{R}^2
+        $$
+      </div>
+      <p>
+        In this setting:
+      </p>
+      <p>
+        &bull; the mean $\mu$; controls where the footprint is centered<br>
+        &bull; the covariance $\Sigma$; controls its shape and orientation
+      </p>
+      <p>
+        Rather than measuring uncertainty, $\Sigma$ now describes how far the footprint extends in each direction.
+      </p>
+      <h3>Mean as position</h3>
+      <p>
+        The mean $\mu$ $\in$ $\mathbb{R}^2$ specifies the center of the Gaussian.
+      </p>
+      <p>
+        Changing $\mu$ translates the entire density field without altering its shape:
+      </p>
+      <div class="gs-equation">
+        $$
+        x \;\mapsto\; x - \mu
+        $$
+      </div>
+      <div class="gs-inline-viz">
+        <div class="gs-inline-viz__plot">
+          <div class="gs-inline-viz__label gs-inline-viz__label--x">
+            <span class="gs-inline-katex" data-katex="\,x_1\,"></span>
+          </div>
+          <div class="gs-inline-viz__label gs-inline-viz__label--y">
+            <span class="gs-inline-katex" data-katex="x_2"></span>
+          </div>
+          <div class="gs-inline-viz__legend">
+            <span class="gs-inline-katex"
+              data-katex="\boldsymbol{\mu}(\boldsymbol{x})=\begin{bmatrix}\sin x_1 \\ \cos x_2\end{bmatrix}"></span>
+          </div>
+          <svg viewBox="0 0 240 240" role="img" aria-label="2D Gaussian footprint moving with mean"
+            class="gs-inline-viz__svg">
+            <defs>
+              <radialGradient id="gs-mu-gradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#f2a65a" stop-opacity="0.9"></stop>
+                <stop offset="70%" stop-color="#f2a65a" stop-opacity="0.3"></stop>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <rect x="32" y="32" width="176" height="176" fill="none" stroke="#e1d8cc" stroke-width="1"></rect>
+            <line x1="32" y1="120" x2="208" y2="120" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="120" y1="32" x2="120" y2="208" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="78" y1="116" x2="78" y2="124" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="162" y1="116" x2="162" y2="124" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="116" y1="78" x2="124" y2="78" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="116" y1="162" x2="124" y2="162" stroke="#d9cec1" stroke-width="1"></line>
+            <g>
+              <animateTransform attributeName="transform" type="rotate" from="0 120 120" to="360 120 120" dur="20s"
+                repeatCount="indefinite"></animateTransform>
+              <g transform="translate(120 120)">
+                <g transform="translate(48 0)">
+                  <circle r="28" fill="url(#gs-mu-gradient)"></circle>
+                  <circle r="1.5" fill="#d9643a"></circle>
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="-360 0 0" dur="20s"
+                      repeatCount="indefinite"></animateTransform>
+                    <text x="0" y="-12" text-anchor="middle" font-size="14" fill="#d9643a" font-weight="600">μ</text>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <p>
+        In rendering terms, this is exactly what we expect from a point primitive:
+        moving the position moves the footprint.
+      </p>
+      <h3>Covariance as shape</h3>
+      <p>
+        A Gaussian goes on forever, but for rendering we need a finite geometric primitive that is easier to work with.
+        We can get this by clipping the Gaussian with a constant $c$, such that $g(\boldsymbol{x}) = c$.
+      </p>
+      <div class="gs-levelset-viz">
+        <div class="gs-levelset-viz__label gs-levelset-viz__label--x">
+          <span class="gs-inline-katex" data-katex="x_1"></span>
+        </div>
+        <div class="gs-levelset-viz__label gs-levelset-viz__label--y">
+          <span class="gs-inline-katex" data-katex="x_2"></span>
+        </div>
+        <div class="gs-levelset-viz__control">
+          <span class="gs-levelset-viz__hint" aria-hidden="true">&#x2192;</span>
+          <label class="gs-levelset-viz__toggle" for="levelset-toggle">
+            <input id="levelset-toggle" type="checkbox">
+            level sets
+          </label>
+          <label for="levelset-c"><span class="gs-inline-katex" data-katex="c"></span></label>
+          <input id="levelset-c" type="range" min="0.05" max="0.9" step="0.01" value="0.3">
+          <span id="levelset-c-value">0.30</span>
+        </div>
+        <svg viewBox="0 0 320 220" role="img" aria-label="Level set clipping of three 2D Gaussians">
+          <defs>
+            <radialGradient id="gs-level-grad-1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#f2a65a" stop-opacity="0.8"></stop>
+              <stop offset="70%" stop-color="#f2a65a" stop-opacity="0.35"></stop>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+            </radialGradient>
+            <radialGradient id="gs-level-grad-2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#6ab0de" stop-opacity="0.75"></stop>
+              <stop offset="70%" stop-color="#6ab0de" stop-opacity="0.3"></stop>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+            </radialGradient>
+            <radialGradient id="gs-level-grad-3" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#f28c8c" stop-opacity="0.7"></stop>
+              <stop offset="70%" stop-color="#f28c8c" stop-opacity="0.28"></stop>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+            </radialGradient>
+            <clipPath id="gs-clip-1">
+              <ellipse id="gs-clip-1-ellipse" cx="110" cy="120" rx="42" ry="60"></ellipse>
+            </clipPath>
+            <clipPath id="gs-clip-2">
+              <ellipse id="gs-clip-2-ellipse" cx="190" cy="90" rx="50" ry="35"></ellipse>
+            </clipPath>
+            <clipPath id="gs-clip-3">
+              <ellipse id="gs-clip-3-ellipse" cx="210" cy="150" rx="45" ry="45"></ellipse>
+            </clipPath>
+          </defs>
+          <rect x="16" y="16" width="288" height="188" fill="none" stroke="#e1d8cc" stroke-width="1"></rect>
+          <line x1="16" y1="110" x2="304" y2="110" stroke="#d9cec1" stroke-width="1"></line>
+          <line x1="160" y1="16" x2="160" y2="204" stroke="#d9cec1" stroke-width="1"></line>
+          <g clip-path="url(#gs-clip-1)">
+            <ellipse cx="110" cy="120" rx="80" ry="110" fill="url(#gs-level-grad-1)"></ellipse>
+          </g>
+          <g clip-path="url(#gs-clip-2)">
+            <ellipse cx="190" cy="90" rx="100" ry="70" fill="url(#gs-level-grad-2)"></ellipse>
+          </g>
+          <g clip-path="url(#gs-clip-3)">
+            <circle cx="210" cy="150" r="80" fill="url(#gs-level-grad-3)"></circle>
+          </g>
+          <g opacity="0.8">
+            <ellipse id="gs-outline-1" cx="110" cy="120" rx="42" ry="60" fill="none" stroke="#f2a65a"
+              stroke-width="1.5"></ellipse>
+          </g>
+          <g opacity="0.8">
+            <ellipse id="gs-outline-2" cx="190" cy="90" rx="50" ry="35" fill="none" stroke="#6ab0de" stroke-width="1.5">
+            </ellipse>
+          </g>
+          <g opacity="0.8">
+            <ellipse id="gs-outline-3" cx="210" cy="150" rx="45" ry="45" fill="none" stroke="#f28c8c"
+              stroke-width="1.5"></ellipse>
+          </g>
+        </svg>
+      </div>
+      <p>
+        The covariance matrix $\boldsymbol{\Sigma} \in \mathbb{R}^{2\times2}$ determines the <b>shape and
+          orientation</b> of the Gaussian footprint in the plane.
+        Fixing a constant $c \in (0,1)$, the level set is equivalent to $(\boldsymbol{x}-\boldsymbol{\mu})^\top
+        \boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}) = c$.
+      </p>
+      <p>
+        In two dimensions, these level sets are <b>ellipses</b>.
+      </p>
+      <p>
+        Recall that $\boldsymbol{\Sigma}$ is symmetric and positive semi-definite, guaranteeing that all eigenvalues are
+        non-negative and that the level sets are closed curves
+      </p>
+      <div class="gs-equation">
+        $$
+        \boldsymbol{\Sigma} =
+        \begin{bmatrix}
+        \sigma_1^2 & \sigma_{12} \\
+        \sigma_{12} & \sigma_2^2
+        \end{bmatrix}
+        $$
+      </div>
+      <p>
+        Linear algebra gives a factorization that is useful for controlling the Gaussian's shape:
+      </p>
+      <div class="gs-equation">
+        $$
+        \boldsymbol{\Sigma} = \boldsymbol{Q}\boldsymbol{\Lambda}\boldsymbol{Q}^\top,
+        \qquad
+        \boldsymbol{\Lambda} = \mathrm{diag}(\lambda_1,\lambda_2),
+        \qquad
+        \lambda_1,\lambda_2 \ge 0
+        $$
+      </div>
+      <div class="gs-equation">
+        $$
+        \boldsymbol{Q} =
+        \begin{bmatrix}
+        \cos\theta & -\sin\theta \\
+        \sin\theta & \cos\theta
+        \end{bmatrix},
+        \qquad
+        \boldsymbol{\Lambda} =
+        \begin{bmatrix}
+        \lambda_1 & 0 \\
+        0 & \lambda_2
+        \end{bmatrix},
+        \qquad
+        \boldsymbol{Q}^\top =
+        \begin{bmatrix}
+        \cos\theta & \sin\theta \\
+        -\sin\theta & \cos\theta
+        \end{bmatrix}
+        $$
+      </div>
+      <p>
+        Taking this factorization and substituting into the fixed level set $g(x)=c$ yields:
+      </p>
+      <div class="gs-equation">
+        $$
+        g(\boldsymbol{x}) = (x-\mu)^\top \boldsymbol{\Sigma}^{-1} (x-\mu) = (\boldsymbol{Q}^\top(x-\mu))^\top
+        \boldsymbol{\Lambda}^{-1}
+        (\boldsymbol{Q}^\top(x-\mu)) = c
+        $$
+      </div>
+      <p>
+        Let $u=\boldsymbol{Q}^\top(x-\mu)$, then:
+      </p>
+      <div class="gs-equation">
+        $$
+        \frac{u_1^2}{\lambda_1} + \frac{u_2^2}{\lambda_2} = c
+        $$
+      </div>
+      <p>
+        That is exactly the equation of an ellipse. So:
+      </p>
+      <p>
+        &bull; larger $\lambda_i$ &rarr; larger radius along axis $i$<br>
+        &bull; smaller $\lambda_i$ &rarr; smaller radius (faster decay along that axis)
+      </p>
+      <p>
+        This is how eigenvalues control scale.
+      </p>
+      <p>
+        For rendering, it's better to use a slightly different form of this eigendecomposition that
+        protects against sign ambiguity and degenerate values.
+      </p>
+      <p>
+        Introduce $\boldsymbol{R}$ as a rotation matrix (same role as $\boldsymbol{Q}$), then define
+        $\boldsymbol{S} = \mathrm{diag}(s_1, s_2)$ where $s_i = \sqrt{\lambda_i}$.
+      </p>
+      <div class="gs-equation">
+        $$
+        \boldsymbol{\Lambda} = \boldsymbol{S}\boldsymbol{S}^\top
+        \qquad\Rightarrow\qquad
+        \boldsymbol{\Sigma} = \boldsymbol{R}\boldsymbol{S}\boldsymbol{S}^\top \boldsymbol{R}^\top
+        $$
+      </div>
+      This parameterization guarantees that $\boldsymbol{\Sigma}$ remains symmetric and positive for all slider values.
+      <div class="gs-scale-viz">
+        <div class="gs-scale-viz__plot" id="gs-scale-plot">
+          <div class="gs-scale-viz__label gs-scale-viz__label--x">
+            <span class="gs-inline-katex" data-katex="x_1"></span>
+          </div>
+          <div class="gs-scale-viz__label gs-scale-viz__label--y">
+            <span class="gs-inline-katex" data-katex="x_2"></span>
+          </div>
+          <div class="gs-scale-axis-label gs-scale-axis-label--s1">
+            <span class="gs-inline-katex" data-katex="s_1"></span>
+          </div>
+          <div class="gs-scale-axis-label gs-scale-axis-label--s2">
+            <span class="gs-inline-katex" data-katex="s_2"></span>
+          </div>
+          <svg id="gs-scale-svg" viewBox="0 0 300 220" role="img" aria-label="Single Gaussian with axis controls">
+            <defs>
+              <radialGradient id="gs-scale-grad" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stop-color="#6ab0de" stop-opacity="0.8"></stop>
+                <stop offset="85%" stop-color="#6ab0de" stop-opacity="0.35"></stop>
+                <stop offset="100%" stop-color="#6ab0de" stop-opacity="0.15"></stop>
+              </radialGradient>
+            </defs>
+            <rect x="20" y="20" width="260" height="180" fill="none" stroke="#e1d8cc" stroke-width="1"></rect>
+            <line x1="20" y1="110" x2="280" y2="110" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="150" y1="20" x2="150" y2="200" stroke="#d9cec1" stroke-width="1"></line>
+            <g id="gs-scale-group" transform="translate(150 110) rotate(0)">
+              <ellipse id="gs-scale-ellipse" cx="0" cy="0" rx="50" ry="30" fill="url(#gs-scale-grad)"></ellipse>
+              <ellipse id="gs-scale-outline" cx="0" cy="0" rx="50" ry="30" fill="none" stroke="#6ab0de" stroke-width="1"
+                opacity="0.6"></ellipse>
+              <line id="gs-scale-axis-1" x1="-50" y1="0" x2="50" y2="0" stroke="#1b6d85" stroke-width="2" opacity="0.9">
+              </line>
+              <line id="gs-scale-axis-2" x1="0" y1="-30" x2="0" y2="30" stroke="#d9643a" stroke-width="2" opacity="0.9">
+              </line>
+            </g>
+          </svg>
+        </div>
+        <div class="gs-scale-viz__controls">
+          <div class="gs-eq-control">
+            <div class="gs-eq-row gs-eq-row--matrix">
+              <span class="gs-inline-katex"
+                data-katex="\boldsymbol{\Sigma}({\color{#6b4ca3}{\theta}},{ \color{#1b6d85}{s_1}}, {\color{#d9643a}{s_2})}=\boldsymbol{\Sigma}("></span>
+              <span class="gs-eq-slider-wrap">
+                <input id="scale-theta" class="gs-eq-slider gs-eq-slider--theta" type="range" min="-90" max="90"
+                  step="1" value="20">
+              </span>
+              <span class="gs-inline-katex" data-katex=","></span>
+              <span class="gs-eq-slider-wrap">
+                <input id="scale-s1" class="gs-eq-slider gs-eq-slider--s1" type="range" min="10" max="70" step="1"
+                  value="40">
+              </span>
+              <span class="gs-inline-katex" data-katex=","></span>
+              <span class="gs-eq-slider-wrap">
+                <input id="scale-s2" class="gs-eq-slider gs-eq-slider--s2" type="range" min="10" max="70" step="1"
+                  value="25">
+              </span>
+              <span class="gs-inline-katex" data-katex=")"></span>
+            </div>
+            <div class="gs-eq-row">
+              <span class="gs-inline-katex"
+                data-katex="= \boldsymbol{R}(\color{#6b4ca3}{\theta})\begin{bmatrix}\color{#1b6d85}{s_1^2} & 0 \\ 0 & \color{#d9643a}{s_2^2}\end{bmatrix}\boldsymbol{R}(\color{#6b4ca3}{\theta})^\top"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>
+        Changing $\boldsymbol{\Sigma}$ reshapes the footprint. This is the geometric object we will render -- and
+        eventually project, rasterize, and optimize.
+      </p>
+    </section>
+
+    <section class="gs-section" id="ellipses-to-ellipsoids">
+      <span class="gs-section__meta">Section 2.5</span>
+      <h2>From Ellipses to Ellipsoids</h2>
+      <div class="gs-question">
+        <p>What happens when we add one more dimension?</p>
+      </div>
+      <p>
+        So far, we have described a Gaussian footprint in 2 dimensions, where the input $\boldsymbol{x}$ lives in the
+        plane and the level sets form ellipses. When the input is in 3 dimensions <i>i.e.,</i> $\boldsymbol{x} \in
+        \mathbb{R}^3$, the mean $\boldsymbol{\mu}$
+        becomes a point in space, and the covariance $\boldsymbol{\Sigma}$ becomes a
+        $3\times3$ matrix.
+      </p>
+      <p>
+        This dimensional change means that geometry of the level sets no longer traces curves -- it traces closed
+        surfaces. <b>An ellipse becomes an ellipsoid.</b> We still have
+        $\boldsymbol{\Sigma} = \boldsymbol{R}\,\boldsymbol{S}\,\boldsymbol{S}^\top\,\boldsymbol{R}^\top$, except
+        $\boldsymbol{R}$ is a 3D rotation and
+        $\boldsymbol{S} = \mathrm{diag}(s_1, s_2, s_3)$ controls scale
+        along three axes.
+      </p>
+
+      <div class="gs-reveal">
+        <div class="gs-reveal__viz">
+          <div id="gs-reveal-canvas" class="gs-reveal__canvas"></div>
+          <div class="gs-reveal__controls">
+            <label class="gs-reveal__switch">
+              <input id="reveal-toggle-3d" type="checkbox">
+              <span class="gs-reveal__switch-label">switch to 3D</span>
+            </label>
+            <div class="gs-reveal__slider">
+              <label class="gs-reveal__slider-label gs-reveal__slider-label--s1"> $s_1$ </label>
+              <input id="reveal-s1" class="gs-eq-slider gs-eq-slider--s1" type="range" min="0.6" max="2.2" step="0.05"
+                value="1.4">
+            </div>
+            <div class="gs-reveal__slider">
+              <label class="gs-reveal__slider-label gs-reveal__slider-label--s2"> $s_2$ </label>
+              <input id="reveal-s2" class="gs-eq-slider gs-eq-slider--s2" type="range" min="0.6" max="2.2" step="0.05"
+                value="1.1">
+            </div>
+            <div class="gs-reveal__slider gs-reveal__slider--s3">
+              <label class="gs-reveal__slider-label gs-reveal__slider-label--s3"> $s_3$ </label>
+              <input id="reveal-s3" class="gs-eq-slider gs-eq-slider--s3" type="range" min="0.4" max="2.2" step="0.05"
+                value="0.9">
+            </div>
+            <div class="gs-reveal__slider">
+              <label class="gs-reveal__slider-label gs-reveal__slider-label--theta">
+                <span class="gs-inline-katex" data-katex="$\theta$"></span>
+              </label>
+              <input id="reveal-theta" class="gs-eq-slider gs-eq-slider--theta" type="range" min="-60" max="60" step="1"
+                value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <p class="gs-final-line">
+    Once we understand the splat as a 3D ellipsoid, projection becomes a geometric operation.
+  </p>
+  </section>
+
+  <section class="gs-section" id="primitives-to-scenes">
+    <span class="gs-section__meta">Section 3</span>
+    <h2>From Primitives to Scenes</h2>
+    <p>Can a collection of simple shapes describe a 3D scene?</p>
+    <p>Before thinking about images or optimization, look at the scene itself.</p>
+    <div class="gs-scene-sequence" data-stage="1">
+      <div class="gs-scene-sequence__main">
+        <div class="gs-scene-sequence__canvas" id="scene-3d-canvas"></div>
+      </div>
+      <div class="gs-scene-sequence__views">
+        <div class="gs-scene-sequence__view-row gs-scene-sequence__view-row--renders">
+          <div class="gs-scene-view" data-view="1">
+            <canvas id="scene-view-1"></canvas>
+          </div>
+          <div class="gs-scene-view" data-view="2">
+            <canvas id="scene-view-2"></canvas>
+          </div>
+          <div class="gs-scene-view" data-view="3">
+            <canvas id="scene-view-3"></canvas>
+          </div>
+        </div>
+        <div class="gs-scene-sequence__view-row gs-scene-sequence__view-row--splats">
+          <div class="gs-scene-view gs-scene-view--splats" data-view="1">
+            <canvas id="scene-splat-view-1"></canvas>
+          </div>
+          <div class="gs-scene-view gs-scene-view--splats" data-view="2">
+            <canvas id="scene-splat-view-2"></canvas>
+          </div>
+          <div class="gs-scene-view gs-scene-view--splats" data-view="3">
+            <canvas id="scene-splat-view-3"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>
+      What you see here is a real 3D scene.
+      It is continuous, structured, and exists in space.
+    </p>
+    <p>
+      Nothing about this scene is discrete yet.
+    </p>
+    <p>
+      Now freeze the scene and look at a single image.
+    </p>
+    <p>
+      What information does one view actually give us?
+    </p>
+    <p>
+      From a single image, we can sketch a rough approximation — but much of the 3D structure is missing.
+    </p>
+    <p>
+      Suppose we try to approximate this image using many small, local primitives.
+    </p>
+    <p>
+      Placed carefully, these primitives can trace silhouettes and surfaces.
+    </p>
+    <p>
+      But from one view alone, we cannot tell where they should sit in space.
+    </p>
+    <p>
+      Now look at the same scene from different viewpoints.
+    </p>
+    <p>
+      Each view adds constraints.
+    </p>
+    <p>
+      Together, these images begin to agree on the shape of the scene.
+    </p>
+    <p>
+      If the same primitives appear consistently across views, they must correspond to something real in 3D.
+    </p>
+    <p>
+      But for this to work, the primitives must be able to adjust — together — to satisfy all views at once.
+    </p>
+    <p class="gs-key-line">
+      So where do these primitives come from?
+    </p>
+    <p>
+      In practice, they are initialized at 3D sample points on the scene, obtained from sparse reconstruction methods
+      such as structure from motion.
+    </p>
+    <p>
+      We will not cover that process here.
+    </p>
+    <p>
+      What matters is what happens next.
+    </p>
+    <p>
+      Each primitive we introduced earlier — an ellipsoid defined by a position $\boldsymbol{\mu}$ and a covariance
+      $\boldsymbol{\Sigma}$ — already encodes geometry.
+    </p>
+    <p>
+      They can move, stretch, rotate, and fade.
+    </p>
+    <p>
+      If these primitives can change their shape and position, then they can adapt to better explain the scene.
+    </p>
+    <p>
+      The same equations that describe how a primitive appears also describe how it can be changed.
+    </p>
+    <p class="gs-final-line">
+      To understand how these primitives adapt, we need to see how a 3D ellipsoid becomes a 2D footprint on the image
+      plane.
+    </p>
+  </section>
+
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+</script>
+<script>
+  (function () {
+    if (!window.katex) {
+      return;
+    }
+    var nodes = document.querySelectorAll('.gs-inline-katex[data-katex]');
+    nodes.forEach(function (node) {
+      window.katex.render(node.getAttribute('data-katex'), node, { throwOnError: false });
+    });
+  })();
+</script>
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
+  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
+
+  const reveal = document.querySelector('.gs-reveal');
+  const canvasHost = document.getElementById('gs-reveal-canvas');
+  const eqStates = document.querySelectorAll('.gs-reveal__state');
+  const s1 = document.getElementById('reveal-s1');
+  const s2 = document.getElementById('reveal-s2');
+  const s3 = document.getElementById('reveal-s3');
+  const theta = document.getElementById('reveal-theta');
+  const revealToggle = document.getElementById('reveal-toggle-3d');
+
+  if (!reveal || !canvasHost || !s1 || !s2 || !s3 || !theta || !revealToggle) {
+    // nothing
+  } else {
+    if (revealToggle.checked) {
+      reveal.classList.add('gs-reveal--expanded', 'gs-reveal--active');
+    }
+    const scene = new THREE.Scene();
+    scene.background = null;
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.set(0, 0, 10);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    const revealDpr = Math.min(1.5, window.devicePixelRatio || 1);
+    renderer.setPixelRatio(revealDpr);
+    canvasHost.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.enabled = false;
+
+    const light = new THREE.DirectionalLight(0xffffff, 0.2);
+    light.position.set(2, 3, 2);
+    scene.add(light);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambient);
+
+    const grid = new THREE.GridHelper(4, 8, 0xd9cec1, 0xf0e7dc);
+    grid.material.opacity = 0;
+    grid.material.transparent = true;
+    grid.visible = false;
+    scene.add(grid);
+
+    const zAxis = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -1.5, 0), new THREE.Vector3(0, 1.5, 0)]),
+      new THREE.LineBasicMaterial({ color: 0xd9cec1, transparent: true, opacity: 0 })
+    );
+    zAxis.visible = false;
+    scene.add(zAxis);
+
+    const axisMaterialX = new THREE.MeshStandardMaterial({ color: 0x1b6d85, transparent: true, opacity: 0.75 });
+    const axisMaterialY = new THREE.MeshStandardMaterial({ color: 0xd9643a, transparent: true, opacity: 0.75 });
+    const axisMaterialZ = new THREE.MeshStandardMaterial({ color: 0x6b4ca3, transparent: true, opacity: 0.0 });
+    const arrowMatX = new THREE.MeshStandardMaterial({ color: 0x1b6d85, transparent: false, opacity: 1 });
+    const arrowMatY = new THREE.MeshStandardMaterial({ color: 0xd9643a, transparent: false, opacity: 1 });
+    const arrowMatZ = new THREE.MeshStandardMaterial({ color: 0x6b4ca3, transparent: true, opacity: 0 });
+
+    const axisRadius = 0.08;
+    const axisLength = 3.6;
+    const axisGeom = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 12);
+
+    const axisX = new THREE.Mesh(axisGeom, axisMaterialX);
+    axisX.rotation.z = Math.PI / 2;
+    const axisY = new THREE.Mesh(axisGeom, axisMaterialY);
+    const axisZ = new THREE.Mesh(axisGeom, axisMaterialZ);
+    axisZ.rotation.x = Math.PI / 2;
+    axisZ.scale.y = 0;
+
+    const arrowGeom = new THREE.ConeGeometry(0.22, 0.6, 16);
+    const arrowX = new THREE.Mesh(arrowGeom, arrowMatX);
+    arrowX.position.set(axisLength / 2, 0, 0);
+    arrowX.rotation.z = -Math.PI / 2;
+    const arrowY = new THREE.Mesh(arrowGeom, arrowMatY);
+    arrowY.position.set(0, axisLength / 2, 0);
+    arrowY.rotation.x = 0;
+    const arrowZ = new THREE.Mesh(arrowGeom, arrowMatZ);
+    arrowZ.position.set(0, 0, -axisLength / 2);
+    arrowZ.rotation.x = Math.PI / 2;
+    arrowZ.visible = false;
+    axisZ.visible = false;
+
+    const axisGroup = new THREE.Group();
+    axisGroup.add(axisX, axisY, axisZ, arrowX, arrowY, arrowZ);
+    scene.add(axisGroup);
+
+    const makeLabel = (text, color) => {
+      const canvas = document.createElement('canvas');
+      const pixelRatio = Math.max(2, window.devicePixelRatio || 1);
+      const baseWidth = 140;
+      const baseHeight = 80;
+      canvas.width = baseWidth * pixelRatio;
+      canvas.height = baseHeight * pixelRatio;
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      ctx.clearRect(0, 0, baseWidth, baseHeight);
+      ctx.fillStyle = color;
+      ctx.font = '44px KaTeX_Main, Times New Roman, serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, baseWidth / 2, baseHeight / 2);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.95 });
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(0.6, 0.3, 1);
+      return sprite;
+    };
+
+    const labelX = makeLabel('s₁', '#1b6d85');
+    const labelY = makeLabel('s₂', '#d9643a');
+    const labelZ = makeLabel('s₃', '#6b4ca3');
+    labelZ.material.opacity = 0;
+    labelX.scale.set(1.8, 0.9, 1);
+    labelY.scale.set(1.8, 0.9, 1);
+    labelZ.scale.set(1.8, 0.9, 1);
+    labelX.position.set(axisLength / 2 + 0.7, 0, 0);
+    labelY.position.set(0, axisLength / 2 + 0.7, 0);
+    labelZ.position.set(0, 0, axisLength / 2 + 0.7);
+    axisGroup.add(labelX, labelY, labelZ);
+
+    const geometry = new THREE.SphereGeometry(1, 48, 36);
+    const material = new THREE.MeshStandardMaterial({ color: 0x6ab0de, roughness: 0.6, metalness: 0.0, transparent: true, opacity: 0.65 });
+    const ellipsoid = new THREE.Mesh(geometry, material);
+    scene.add(ellipsoid);
+
+    const group = new THREE.Group();
+    group.add(ellipsoid);
+    group.add(axisGroup);
+    scene.add(group);
+
+    let autoRotate = true;
+    let revealStarted = false;
+    let zScale = 0.08;
+    let revealTime = 0;
+    let zPierceProgress = 0;
+    let isResetting = false;
+    let resetProgress = 0;
+    const flatCamera = new THREE.Vector3(0, 0, 10);
+    const targetCamera = new THREE.Vector3();
+
+    const resize = () => {
+      const rect = canvasHost.getBoundingClientRect();
+      renderer.setSize(rect.width, rect.height, false);
+      camera.aspect = rect.width / rect.height;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const updateScales = () => {
+      const v1 = parseFloat(s1.value);
+      const v2 = parseFloat(s2.value);
+      const v3 = parseFloat(s3.value);
+      const t = THREE.MathUtils.degToRad(parseFloat(theta.value));
+      group.rotation.z = t;
+      ellipsoid.scale.set(v1, v2, zScale * v3);
+    };
+
+    const stopAuto = () => {
+      autoRotate = false;
+      controls.enabled = true;
+    };
+
+    [s1, s2, s3, theta].forEach((input) => {
+      input.addEventListener('input', () => {
+        stopAuto();
+        updateScales();
+      });
+    });
+    let collapseTimer = null;
+
+    revealToggle.addEventListener('change', () => {
+      if (revealToggle.checked) {
+        if (collapseTimer) {
+          window.clearTimeout(collapseTimer);
+          collapseTimer = null;
+        }
+        reveal.classList.add('gs-reveal--active');
+        reveal.classList.add('gs-reveal--expanded');
+        reveal.classList.remove('gs-reveal--collapsing');
+        isResetting = false;
+        autoRotate = true;
+        controls.enabled = false;
+        revealTime = 0;
+      } else {
+        reveal.classList.remove('gs-reveal--active');
+        reveal.classList.add('gs-reveal--collapsing');
+        zScale = 0.08;
+        zPierceProgress = 0;
+        isResetting = true;
+        resetProgress = 0;
+        autoRotate = true;
+        controls.enabled = false;
+        revealTime = 0;
+        axisZ.visible = true;
+        arrowZ.visible = true;
+        zAxis.visible = true;
+        grid.visible = true;
+        axisMaterialZ.opacity = Math.max(axisMaterialZ.opacity, 1);
+        arrowMatZ.opacity = Math.max(arrowMatZ.opacity, 1);
+        labelZ.material.opacity = Math.max(labelZ.material.opacity, 1);
+        grid.material.opacity = Math.max(grid.material.opacity, 0.25);
+        zAxis.material.opacity = Math.max(zAxis.material.opacity, 0.4);
+        light.intensity = 0.2;
+        material.roughness = 0.6;
+        material.opacity = 0.65;
+        if (collapseTimer) {
+          window.clearTimeout(collapseTimer);
+        }
+        collapseTimer = window.setTimeout(() => {
+          reveal.classList.remove('gs-reveal--expanded');
+          reveal.classList.remove('gs-reveal--collapsing');
+          collapseTimer = null;
+        }, 380);
+      }
+    });
+
+    const animate = (time) => {
+      requestAnimationFrame(animate);
+      controls.update();
+      if (!revealStarted) {
+        revealStarted = true;
+      }
+
+      if (reveal.classList.contains('gs-reveal--active')) {
+        revealTime += 0.01;
+        zScale = Math.min(1, zScale + 0.003);
+        zPierceProgress = Math.min(1, zPierceProgress + 0.012);
+        const axisOpacity = zPierceProgress > 0 ? 1 : 0;
+        axisZ.visible = axisOpacity > 0;
+        arrowZ.visible = axisOpacity > 0;
+        zAxis.visible = axisOpacity > 0;
+        grid.visible = zPierceProgress >= 1;
+        grid.material.opacity = zPierceProgress >= 1 ? Math.min(0.25, grid.material.opacity + 0.005) : 0;
+        zAxis.material.opacity = Math.min(0.4, zPierceProgress * 0.5);
+        axisMaterialX.opacity = Math.min(0.9, axisMaterialX.opacity + 0.01);
+        axisMaterialY.opacity = Math.min(0.9, axisMaterialY.opacity + 0.01);
+        axisMaterialZ.opacity = axisOpacity;
+        arrowMatZ.opacity = axisOpacity;
+        labelZ.material.opacity = Math.min(0.9, labelZ.material.opacity + 0.01);
+        light.intensity = Math.min(0.7, light.intensity + 0.006);
+        material.roughness = Math.max(0.35, material.roughness - 0.003);
+        material.opacity = Math.min(0.85, material.opacity + 0.004);
+        const pierceOffset = -axisLength / 2 + axisLength * zPierceProgress;
+        const axisLengthNow = axisLength * zPierceProgress;
+        axisZ.scale.y = Math.max(0.001, zPierceProgress);
+        axisZ.position.set(0, 0, pierceOffset - axisLengthNow / 2);
+        arrowZ.position.set(0, 0, pierceOffset);
+        if (autoRotate) {
+          const angle = Math.sin(revealTime * 0.22) * 0.6;
+          const revealBlend = Math.min(1, revealTime / 1.6);
+          targetCamera.set(5.2 * Math.cos(angle), 2.1 + 0.6 * Math.sin(revealTime * 0.18), 5.2 * Math.sin(angle) + 6.4);
+          camera.position.lerpVectors(flatCamera, targetCamera, revealBlend);
+          camera.lookAt(0, 0, 0);
+        }
+      } else {
+        zPierceProgress = 0;
+        axisZ.scale.y = 0;
+        axisZ.position.set(0, 0, 0);
+        arrowZ.position.set(0, 0, -axisLength / 2);
+        axisMaterialZ.opacity = Math.max(0, axisMaterialZ.opacity - 0.2);
+        arrowMatZ.opacity = Math.max(0, arrowMatZ.opacity - 0.2);
+        labelZ.material.opacity = Math.max(0, labelZ.material.opacity - 0.2);
+        grid.material.opacity = Math.max(0, grid.material.opacity - 0.2);
+        zAxis.material.opacity = Math.max(0, zAxis.material.opacity - 0.2);
+        if (axisMaterialZ.opacity === 0) {
+          axisZ.visible = false;
+          arrowZ.visible = false;
+          zAxis.visible = false;
+          grid.visible = false;
+        }
+        if (isResetting) {
+          resetProgress = Math.min(1, resetProgress + 0.08);
+          camera.position.lerpVectors(camera.position, flatCamera, resetProgress);
+          camera.lookAt(0, 0, 0);
+          if (resetProgress >= 1) {
+            isResetting = false;
+          }
+        }
+      }
+
+      updateScales();
+      renderer.render(scene, camera);
+    };
+    animate();
+  }
+
+  const sceneWrap = document.querySelector('.gs-scene-sequence');
+  const sceneCanvasHost = document.getElementById('scene-3d-canvas');
+  const view1 = document.getElementById('scene-view-1');
+  const view2 = document.getElementById('scene-view-2');
+  const view3 = document.getElementById('scene-view-3');
+  const splatView1 = document.getElementById('scene-splat-view-1');
+  const splatView2 = document.getElementById('scene-splat-view-2');
+  const splatView3 = document.getElementById('scene-splat-view-3');
+
+  if (sceneWrap && sceneCanvasHost && view1 && view2 && view3 && splatView1 && splatView2 && splatView3) {
+    const scene = new THREE.Scene();
+    const skyCanvas = document.createElement('canvas');
+    skyCanvas.width = 256;
+    skyCanvas.height = 256;
+    const skyCtx = skyCanvas.getContext('2d');
+    const skyGradient = skyCtx.createLinearGradient(0, 0, 0, skyCanvas.height);
+    skyGradient.addColorStop(0, '#cfe4ff');
+    skyGradient.addColorStop(1, '#ffffff');
+    skyCtx.fillStyle = skyGradient;
+    skyCtx.fillRect(0, 0, skyCanvas.width, skyCanvas.height);
+    const skyTexture = new THREE.CanvasTexture(skyCanvas);
+    skyTexture.needsUpdate = true;
+    scene.background = skyTexture;
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xeadfcb, 0.7);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.5);
+    dir.position.set(3, 4, 2);
+    scene.add(dir);
+
+    const platformMat = new THREE.MeshStandardMaterial({ color: 0x6aa769, roughness: 0.9, transparent: true, opacity: 1 });
+    const platform = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.1, 2.1, 0.15, 32),
+      platformMat
+    );
+    platform.position.y = -0.55;
+    const sceneGroup = new THREE.Group();
+    sceneGroup.add(platform);
+
+    const houseGroup = new THREE.Group();
+    const wallsMat = new THREE.MeshStandardMaterial({ color: 0xd45a4a, roughness: 0.7, transparent: true, opacity: 1 });
+    const walls = new THREE.Mesh(
+      new THREE.BoxGeometry(1.2, 1.1, 1.2),
+      wallsMat
+    );
+    walls.position.y = 0.15;
+    houseGroup.add(walls);
+
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0x9d9d9d, roughness: 0.6, transparent: true, opacity: 1 });
+    const roof = new THREE.Mesh(
+      new THREE.ConeGeometry(0.95, 0.5, 4),
+      roofMat
+    );
+    roof.rotation.y = Math.PI / 4;
+    roof.position.y = 1.02;
+    houseGroup.add(roof);
+
+    const chimneyMat = new THREE.MeshStandardMaterial({ color: 0x6f6f6f, roughness: 0.7, transparent: true, opacity: 1 });
+    const chimney = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.4, 0.18),
+      chimneyMat
+    );
+    chimney.position.set(0.3, 1.22, 0.1);
+    houseGroup.add(chimney);
+    sceneGroup.add(houseGroup);
+
+    const points = [];
+    const colors = [];
+    const addPoint = (x, y, z, color) => {
+      points.push(x, y, z);
+      colors.push(color.r, color.g, color.b);
+    };
+
+    const addGridPlane = (center, uDir, vDir, uCount, vCount, color, trimTop) => {
+      for (let i = 0; i < uCount; i += 1) {
+        for (let j = 0; j < vCount; j += 1) {
+          if (trimTop && j === vCount - 1) {
+            continue;
+          }
+          const u = (i / (uCount - 1)) - 0.5;
+          const v = (j / (vCount - 1)) - 0.5;
+          addPoint(
+            center.x + uDir.x * u + vDir.x * v,
+            center.y + uDir.y * u + vDir.y * v,
+            center.z + uDir.z * u + vDir.z * v,
+            color
+          );
+        }
+      }
+    };
+
+    const wallColor = new THREE.Color(0xd45a4a);
+    const roofColor = new THREE.Color(0x2f2f2f);
+    const lawnColor = new THREE.Color(0x6aa769);
+    const chimneyColor = new THREE.Color(0x6f6f6f);
+
+    const hx = 0.6;
+    const hy = 0.55;
+    const hz = 0.6;
+    const wallCenterY = 0.15;
+    addGridPlane(new THREE.Vector3(0, wallCenterY, hz), new THREE.Vector3(1.2, 0, 0), new THREE.Vector3(0, 1.1, 0), 8, 6, wallColor, true);
+    addGridPlane(new THREE.Vector3(0, wallCenterY, -hz), new THREE.Vector3(1.2, 0, 0), new THREE.Vector3(0, 1.1, 0), 8, 6, wallColor, true);
+    addGridPlane(new THREE.Vector3(hx, wallCenterY, 0), new THREE.Vector3(0, 0, 1.2), new THREE.Vector3(0, 1.1, 0), 8, 6, wallColor, true);
+    addGridPlane(new THREE.Vector3(-hx, wallCenterY, 0), new THREE.Vector3(0, 0, 1.2), new THREE.Vector3(0, 1.1, 0), 8, 6, wallColor, true);
+
+    const chX = 0.09;
+    const chZ = 0.09;
+    const chCenterY = 1.22;
+    addGridPlane(new THREE.Vector3(chimney.position.x, chCenterY, chimney.position.z + chZ), new THREE.Vector3(0.18, 0, 0), new THREE.Vector3(0, 0.4, 0), 4, 4, chimneyColor, true);
+    addGridPlane(new THREE.Vector3(chimney.position.x, chCenterY, chimney.position.z - chZ), new THREE.Vector3(0.18, 0, 0), new THREE.Vector3(0, 0.4, 0), 4, 4, chimneyColor, true);
+    addGridPlane(new THREE.Vector3(chimney.position.x + chX, chCenterY, chimney.position.z), new THREE.Vector3(0, 0, 0.18), new THREE.Vector3(0, 0.4, 0), 4, 4, chimneyColor, true);
+    addGridPlane(new THREE.Vector3(chimney.position.x - chX, chCenterY, chimney.position.z), new THREE.Vector3(0, 0, 0.18), new THREE.Vector3(0, 0.4, 0), 4, 4, chimneyColor, true);
+
+    roof.updateMatrixWorld(true);
+    const roofGeom = roof.geometry.clone().toNonIndexed();
+    const roofPos = roofGeom.attributes.position;
+    const roofTriCount = roofPos.count / 3;
+    const roofSteps = 6;
+
+    const sampleTriangleGrid = (ax, ay, az, bx, by, bz, cx, cy, cz, steps) => {
+      const temp = new THREE.Vector3();
+      for (let i = 0; i <= steps; i += 1) {
+        for (let j = 0; j <= steps - i; j += 1) {
+          const u = i / steps;
+          const v = j / steps;
+          const w = 1 - u - v;
+          const px = ax * w + bx * u + cx * v;
+          const py = ay * w + by * u + cy * v;
+          const pz = az * w + bz * u + cz * v;
+          temp.set(px, py, pz);
+          temp.applyMatrix4(roof.matrixWorld);
+          addPoint(temp.x, temp.y, temp.z, roofColor);
+        }
+      }
+    };
+
+    for (let i = 0; i < roofTriCount; i += 1) {
+      const ax = roofPos.getX(i * 3);
+      const ay = roofPos.getY(i * 3);
+      const az = roofPos.getZ(i * 3);
+      const bx = roofPos.getX(i * 3 + 1);
+      const by = roofPos.getY(i * 3 + 1);
+      const bz = roofPos.getZ(i * 3 + 1);
+      const cx = roofPos.getX(i * 3 + 2);
+      const cy = roofPos.getY(i * 3 + 2);
+      const cz = roofPos.getZ(i * 3 + 2);
+      sampleTriangleGrid(ax, ay, az, bx, by, bz, cx, cy, cz, roofSteps);
+    }
+
+    const topY = platform.position.y + 0.075;
+    for (let ring = 1; ring <= 6; ring += 1) {
+      const r = (ring / 6) * 2.0;
+      const count = 18;
+      for (let a = 0; a < count; a += 1) {
+        const angle = (a / count) * Math.PI * 2;
+        addPoint(Math.cos(angle) * r, topY, Math.sin(angle) * r, lawnColor);
+      }
+    }
+
+    const pointGeometry = new THREE.BufferGeometry();
+    pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+    pointGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+    const dotMaterial = new THREE.PointsMaterial({
+      size: 0.04,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.25
+    });
+
+    const splatCanvas = document.createElement('canvas');
+    splatCanvas.width = 64;
+    splatCanvas.height = 64;
+    const splatCtx = splatCanvas.getContext('2d');
+    const splatGradient = splatCtx.createRadialGradient(32, 32, 2, 32, 32, 32);
+    splatGradient.addColorStop(0, 'rgba(255,255,255,0.85)');
+    splatGradient.addColorStop(1, 'rgba(255,255,255,0)');
+    splatCtx.fillStyle = splatGradient;
+    splatCtx.fillRect(0, 0, 64, 64);
+    const splatTexture = new THREE.CanvasTexture(splatCanvas);
+
+    const splatMaterial = new THREE.PointsMaterial({
+      size: 0.16,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.7,
+      map: splatTexture,
+      depthWrite: false
+    });
+
+    const dotPoints = new THREE.Points(pointGeometry, dotMaterial);
+    const splatPoints = new THREE.Points(pointGeometry, splatMaterial);
+    sceneGroup.add(dotPoints, splatPoints);
+
+    scene.add(sceneGroup);
+
+    const mainCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    mainCamera.position.set(3.2, 2.2, 3.4);
+    mainCamera.lookAt(0, 0, 0);
+
+    const viewCameras = [
+      new THREE.PerspectiveCamera(35, 1, 0.1, 100),
+      new THREE.PerspectiveCamera(35, 1, 0.1, 100),
+      new THREE.PerspectiveCamera(35, 1, 0.1, 100)
+    ];
+    viewCameras[0].position.set(3.2, 1.9, 3.4);
+    viewCameras[1].position.set(-3.2, 1.9, 3.0);
+    viewCameras[2].position.set(0.0, 2.1, -3.6);
+    viewCameras.forEach((camera) => camera.lookAt(0, 0, 0));
+
+    const mainRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    const sceneDpr = Math.min(1.5, window.devicePixelRatio || 1);
+    mainRenderer.setPixelRatio(sceneDpr);
+    sceneCanvasHost.appendChild(mainRenderer.domElement);
+
+    const renderCanvasToTarget = (renderer, camera, canvas) => {
+      // Ensure no pixels from the previous pass survive resizes or zero-opacity draws.
+      renderer.clear(true, true, true);
+      renderer.render(scene, camera);
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
+      }
+    };
+
+    let viewDirty = true;
+
+    const resize = () => {
+      const rect = sceneCanvasHost.getBoundingClientRect();
+      mainRenderer.setSize(rect.width, rect.height, false);
+      mainCamera.aspect = rect.width / rect.height;
+      mainCamera.updateProjectionMatrix();
+      const renderCanvases = [view1, view2, view3];
+      const splatCanvases = [splatView1, splatView2, splatView3];
+      renderCanvases.forEach((canvas, index) => {
+        const vRect = canvas.getBoundingClientRect();
+        canvas.width = Math.max(1, Math.round(vRect.width));
+        canvas.height = Math.max(1, Math.round(vRect.height));
+        viewCameras[index].aspect = vRect.width / vRect.height;
+        viewCameras[index].updateProjectionMatrix();
+      });
+      splatCanvases.forEach((canvas) => {
+        const vRect = canvas.getBoundingClientRect();
+        canvas.width = Math.max(1, Math.round(vRect.width));
+        canvas.height = Math.max(1, Math.round(vRect.height));
+      });
+      viewDirty = true;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const setSceneOpacity = (opacity) => {
+      platformMat.opacity = opacity;
+      wallsMat.opacity = opacity;
+      roofMat.opacity = opacity;
+      chimneyMat.opacity = opacity;
+    };
+
+    const renderViews = () => {
+      const rect = sceneCanvasHost.getBoundingClientRect();
+      const savedRotation = sceneGroup.rotation.y;
+      const savedDotOpacity = dotMaterial.opacity;
+      const savedSplatOpacity = splatMaterial.opacity;
+      const savedSceneOpacity = {
+        platform: platformMat.opacity,
+        walls: wallsMat.opacity,
+        roof: roofMat.opacity,
+        chimney: chimneyMat.opacity
+      };
+
+      sceneGroup.rotation.y = 0;
+      mainRenderer.setPixelRatio(1);
+
+      // Top row: clean renders (no splats).
+      dotPoints.visible = false;
+      splatPoints.visible = false;
+      setSceneOpacity(1);
+      [view1, view2, view3].forEach((canvas, index) => {
+        mainRenderer.setSize(canvas.width, canvas.height, false);
+        renderCanvasToTarget(mainRenderer, viewCameras[index], canvas);
+      });
+
+      // Bottom row: splats only.
+      dotPoints.visible = true;
+      splatPoints.visible = true;
+      setSceneOpacity(0);
+      dotMaterial.opacity = 0.22;
+      splatMaterial.opacity = 0.85;
+      [splatView1, splatView2, splatView3].forEach((canvas, index) => {
+        mainRenderer.setSize(canvas.width, canvas.height, false);
+        renderCanvasToTarget(mainRenderer, viewCameras[index], canvas);
+      });
+
+      // Restore main scene state.
+      platformMat.opacity = savedSceneOpacity.platform;
+      wallsMat.opacity = savedSceneOpacity.walls;
+      roofMat.opacity = savedSceneOpacity.roof;
+      chimneyMat.opacity = savedSceneOpacity.chimney;
+      dotMaterial.opacity = savedDotOpacity;
+      splatMaterial.opacity = savedSplatOpacity;
+      dotPoints.visible = true;
+      splatPoints.visible = true;
+      mainRenderer.setPixelRatio(sceneDpr);
+      mainRenderer.setSize(rect.width, rect.height, false);
+      sceneGroup.rotation.y = savedRotation;
+    };
+
+    const animateScene = () => {
+      requestAnimationFrame(animateScene);
+      const rotMain = Math.sin(performance.now() * 0.0004) * 0.35;
+      sceneGroup.rotation.y = rotMain;
+
+      dotMaterial.opacity = 0.25;
+      splatMaterial.opacity = 0.7;
+      setSceneOpacity(1);
+
+      mainRenderer.render(scene, mainCamera);
+      if (viewDirty) {
+        renderViews();
+        viewDirty = false;
+      }
+    };
+    animateScene();
+  }
+</script>
+<script>
+  (function () {
+    var theta = document.getElementById('scale-theta');
+    var s1 = document.getElementById('scale-s1');
+    var s2 = document.getElementById('scale-s2');
+    var group = document.getElementById('gs-scale-group');
+    var ellipse = document.getElementById('gs-scale-ellipse');
+    var outline = document.getElementById('gs-scale-outline');
+    var axis1 = document.getElementById('gs-scale-axis-1');
+    var axis2 = document.getElementById('gs-scale-axis-2');
+    var plot = document.getElementById('gs-scale-plot');
+    var svg = document.getElementById('gs-scale-svg');
+    var labelS1 = document.querySelector('.gs-scale-axis-label--s1');
+    var labelS2 = document.querySelector('.gs-scale-axis-label--s2');
+
+    if (!theta || !s1 || !s2 || !group || !ellipse || !outline || !axis1 || !axis2 || !plot || !svg || !labelS1 || !labelS2) {
+      return;
+    }
+
+    var kLevel = Math.sqrt(-2 * Math.log(0.3));
+
+    function update() {
+      var t = parseFloat(theta.value);
+      var v1 = parseFloat(s1.value);
+      var v2 = parseFloat(s2.value);
+      var rx = v1 * kLevel * 0.6;
+      var ry = v2 * kLevel * 0.6;
+
+      group.setAttribute('transform', 'translate(150 110) rotate(' + t + ')');
+      ellipse.setAttribute('rx', rx.toFixed(2));
+      ellipse.setAttribute('ry', ry.toFixed(2));
+      outline.setAttribute('rx', rx.toFixed(2));
+      outline.setAttribute('ry', ry.toFixed(2));
+
+      axis1.setAttribute('x1', (-rx).toFixed(2));
+      axis1.setAttribute('x2', rx.toFixed(2));
+      axis2.setAttribute('y1', (-ry).toFixed(2));
+      axis2.setAttribute('y2', ry.toFixed(2));
+
+
+      var radians = (t * Math.PI) / 180;
+      var cosT = Math.cos(radians);
+      var sinT = Math.sin(radians);
+      var centerX = 150;
+      var centerY = 110;
+
+      var s1x = rx * cosT;
+      var s1y = rx * sinT;
+      var s2x = ry * sinT;
+      var s2y = -ry * cosT;
+
+      var s1Len = Math.hypot(s1x, s1y) || 1;
+      var s2Len = Math.hypot(s2x, s2y) || 1;
+      var s1Offset = 10;
+      var s2Offset = 10;
+
+      var s1PosX = centerX + s1x + (s1x / s1Len) * s1Offset;
+      var s1PosY = centerY + s1y + (s1y / s1Len) * s1Offset;
+      var s2PosX = centerX + s2x + (s2x / s2Len) * s2Offset;
+      var s2PosY = centerY + s2y + (s2y / s2Len) * s2Offset;
+
+      var svgRect = svg.getBoundingClientRect();
+      var plotRect = plot.getBoundingClientRect();
+      var scaleX = svgRect.width / 300;
+      var scaleY = svgRect.height / 220;
+
+      labelS1.style.left = (svgRect.left - plotRect.left + s1PosX * scaleX) + 'px';
+      labelS1.style.top = (svgRect.top - plotRect.top + s1PosY * scaleY) + 'px';
+      labelS2.style.left = (svgRect.left - plotRect.left + s2PosX * scaleX) + 'px';
+      labelS2.style.top = (svgRect.top - plotRect.top + s2PosY * scaleY) + 'px';
+    }
+
+    theta.addEventListener('input', update);
+    s1.addEventListener('input', update);
+    s2.addEventListener('input', update);
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+<script>
+  (function () {
+    var slider = document.getElementById('levelset-c');
+    var value = document.getElementById('levelset-c-value');
+    var toggle = document.getElementById('levelset-toggle');
+    var clip1 = document.getElementById('gs-clip-1-ellipse');
+    var clip2 = document.getElementById('gs-clip-2-ellipse');
+    var clip3 = document.getElementById('gs-clip-3-ellipse');
+    var out1 = document.getElementById('gs-outline-1');
+    var out2 = document.getElementById('gs-outline-2');
+    var out3 = document.getElementById('gs-outline-3');
+
+    if (!slider || !value || !toggle || !clip1 || !clip2 || !clip3 || !out1 || !out2 || !out3) {
+      return;
+    }
+
+    var baseC = 0.3;
+    var baseScale = Math.sqrt(-2 * Math.log(baseC));
+    var base = [
+      { rx: 42, ry: 60, clip: clip1, outline: out1 },
+      { rx: 50, ry: 35, clip: clip2, outline: out2 },
+      { rx: 45, ry: 45, clip: clip3, outline: out3 }
+    ];
+
+    function update() {
+      var c = Math.max(0.05, Math.min(0.9, parseFloat(slider.value)));
+      var scale = Math.sqrt(-2 * Math.log(c)) / baseScale;
+      value.textContent = c.toFixed(2);
+
+      if (!toggle.checked) {
+        base.forEach(function (item) {
+          item.clip.setAttribute('rx', 999);
+          item.clip.setAttribute('ry', 999);
+          item.outline.style.opacity = '0';
+        });
+        slider.disabled = true;
+        return;
+      }
+
+      slider.disabled = false;
+      base.forEach(function (item) {
+        var rx = item.rx * scale;
+        var ry = item.ry * scale;
+        item.clip.setAttribute('rx', rx.toFixed(2));
+        item.clip.setAttribute('ry', ry.toFixed(2));
+        item.outline.setAttribute('rx', rx.toFixed(2));
+        item.outline.setAttribute('ry', ry.toFixed(2));
+        item.outline.style.opacity = '0.85';
+      });
+    }
+
+    slider.addEventListener('input', update);
+    toggle.addEventListener('change', update);
+    update();
+  })();
+</script>
+<script src="{{ '/assets/js/3dgs-explainer/gaussian1d.js' | relative_url }}"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+</script>

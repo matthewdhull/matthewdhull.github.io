@@ -35,6 +35,12 @@
 </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
 
+{% if page.custom_css %}
+  {% for stylesheet in page.custom_css %}
+    <link rel="stylesheet" href="{{ stylesheet | relative_url }}">
+  {% endfor %}
+{% endif %}
+
 {% if page.layout == 'home-modern' %}
   <!-- Optional: Tailwind + DaisyUI via CDN (for future components/themes) -->
   <!-- Loaded only on the homepage to avoid site-wide CSS resets. -->
