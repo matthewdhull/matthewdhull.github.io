@@ -1,0 +1,147 @@
+---
+layout: default
+title: "3DGS Optimization Explainer"
+permalink: /3dgs-optimization/
+author_profile: false
+custom_css:
+  - /assets/css/3dgs-optimization.css
+---
+
+<main class="gso-page">
+  <div class="gso-wrap">
+    <header class="gso-hero" id="opt-intro">
+      <h1>Gaussian Splatting Optimization (2D Toy Version)</h1>
+      <p>
+        This page shows a tiny, differentiable 2D Gaussian optimizer in-browser: render, compare to a reference image,
+        compute gradients, update parameters, and rerender.
+      </p>
+    </header>
+
+    <section class="gso-section" id="opt-single">
+      <span class="gso-meta">Part A</span>
+      <h2>Single Gaussian: Full Optimization Loop</h2>
+      <p class="gso-intro-line">
+        Watch one Gaussian evolve: render the current scene, compare against the reference, compute gradients for each
+        parameter, then update.
+      </p>
+      <div class="gso-pipeline-card">
+        <div class="gso-controls gso-controls--top">
+          <div class="gso-row">
+            <button id="opt-step" type="button">Step</button>
+            <button id="opt-play10" type="button">Play 10</button>
+            <button id="opt-playpause" type="button">Play</button>
+            <button id="opt-reset" type="button">Reset</button>
+          </div>
+          <div class="gso-row">
+            <label for="opt-lr">Learning rate</label>
+            <input id="opt-lr" type="range" min="0.005" max="0.15" step="0.005" value="0.05">
+            <span id="opt-lr-value">0.05</span>
+          </div>
+        </div>
+
+        <div class="gso-pipeline">
+          <div class="gso-stage">
+            <h3>Reference Image</h3>
+            <canvas id="opt-ref-canvas" class="gso-canvas-frame" width="320" height="320"></canvas>
+          </div>
+          <div class="gso-arrow" aria-hidden="true">→</div>
+          <div class="gso-stage">
+            <h3>Gaussian Scene</h3>
+            <canvas id="opt-pred-canvas" class="gso-canvas-frame" width="320" height="320"></canvas>
+          </div>
+          <div class="gso-arrow" aria-hidden="true">→</div>
+          <div class="gso-stage gso-stage--error">
+            <h3>Error Map</h3>
+            <canvas id="opt-error-canvas" width="320" height="320"></canvas>
+            <div class="gso-error-eq">
+              <span class="gso-k" data-katex="\mathcal{L}=\frac{1}{N}\sum_{ij}\left\|\hat I_{ij}-I_{ij}\right\|_2^2"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gso-metrics gso-metrics--pipeline">
+          <div>Iteration: <strong id="opt-iter">0</strong></div>
+          <div>Loss (MSE): <strong id="opt-loss">0.000000</strong></div>
+        </div>
+      </div>
+      <div class="gso-card gso-grad-card">
+        <h3>Current Gradients</h3>
+        <p class="gso-small">
+          Hover a row to highlight which geometric attribute this gradient updates in the Gaussian scene.
+        </p>
+        <table class="gso-grad-table">
+          <tbody>
+            <tr data-param="mu"><td><span class="gso-k" data-katex="\partial \mathcal{L}/\partial \mu_x,\;\partial \mathcal{L}/\partial \mu_y"></span></td><td>moves center</td><td id="opt-grad-mux">0.000000</td></tr>
+            <tr data-param="sx"><td><span class="gso-k" data-katex="\partial \mathcal{L}/\partial \sigma_x"></span></td><td>changes horizontal spread</td><td id="opt-grad-sx">0.000000</td></tr>
+            <tr data-param="sy"><td><span class="gso-k" data-katex="\partial \mathcal{L}/\partial \sigma_y"></span></td><td>changes vertical spread</td><td id="opt-grad-sy">0.000000</td></tr>
+            <tr data-param="theta"><td><span class="gso-k" data-katex="\partial \mathcal{L}/\partial \theta"></span></td><td>rotates principal axes</td><td id="opt-grad-theta">0.000000</td></tr>
+            <tr data-param="alpha"><td><span class="gso-k" data-katex="\partial \mathcal{L}/\partial \alpha"></span></td><td>changes opacity / intensity</td><td id="opt-grad-alpha">0.000000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="gso-section" id="opt-single-math">
+      <span class="gso-meta">Math</span>
+      <h2>How Each Step Connects to the Visual</h2>
+      <p class="gso-small">
+        These are the same ingredients you saw in the previous explainer: Gaussian shape from
+        <span class="gso-k" data-katex="\boldsymbol{\Sigma}"></span>, a rendered image, then gradient-driven updates.
+      </p>
+      <h3>1) Render the current Gaussian scene</h3>
+      <div class="gso-eq"><span class="gso-k" data-katex="\hat{G}_{ij}=\exp\!\left(-\frac12\left(\frac{x_r^2}{\sigma_x^2}+\frac{y_r^2}{\sigma_y^2}\right)\right),\;\begin{bmatrix}x_r\\y_r\end{bmatrix}= \begin{bmatrix}\cos\theta & \sin\theta\\-\sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x-\mu_x\\y-\mu_y\end{bmatrix}"></span></div>
+      <div class="gso-eq"><span class="gso-k" data-katex="\hat{I}_{ij}=\alpha\,\hat{G}_{ij}\,\boldsymbol{c}"></span></div>
+
+      <h3>2) Compare prediction to the reference image</h3>
+      <div class="gso-eq"><span class="gso-k" data-katex="\mathcal{L}=\frac{1}{N}\sum_{ij}\left\|\hat{I}_{ij}-I_{ij}\right\|_2^2"></span></div>
+      <p class="gso-small">The error map shows this pixelwise mismatch directly.</p>
+
+      <h3>3) Compute gradients, then update parameters</h3>
+      <div class="gso-eq"><span class="gso-k" data-katex="\frac{\partial \mathcal{L}}{\partial p}=\frac{2}{N}\sum_{ij}(\hat{I}_{ij}-I_{ij})\frac{\partial \hat{I}_{ij}}{\partial p}"></span></div>
+      <div class="gso-eq"><span class="gso-k" data-katex="\frac{\partial \hat{I}}{\partial \mu_x},\frac{\partial \hat{I}}{\partial \mu_y}\Rightarrow \text{position},\;\frac{\partial \hat{I}}{\partial \sigma_x},\frac{\partial \hat{I}}{\partial \sigma_y}\Rightarrow \text{shape},\;\frac{\partial \hat{I}}{\partial \theta}\Rightarrow \text{rotation},\;\frac{\partial \hat{I}}{\partial \alpha}\Rightarrow \text{opacity}"></span></div>
+      <div class="gso-eq"><span class="gso-k" data-katex="p\leftarrow p-\eta\,\frac{\partial\mathcal{L}}{\partial p}"></span></div>
+    </section>
+
+    <section class="gso-section" id="opt-multi">
+      <span class="gso-meta">Part B</span>
+      <h2>From One to Many: 8 Fixed Gaussians</h2>
+      <p>
+        Here we keep exactly eight initialized points (no densify, no prune) and jointly optimize position, rotation,
+        scale, and opacity for all of them.
+      </p>
+      <div class="gso-grid2">
+        <div class="gso-card">
+          <h3>Reference Image</h3>
+          <canvas id="opt-multi-ref-canvas" width="320" height="320"></canvas>
+        </div>
+        <div class="gso-card">
+          <h3>8-Gaussian Fit</h3>
+          <canvas id="opt-multi-pred-canvas" width="320" height="320"></canvas>
+          <div class="gso-row">
+            <button id="opt-multi-step" type="button">Step</button>
+            <button id="opt-multi-play10" type="button">Play 10</button>
+            <button id="opt-multi-reset" type="button">Reset</button>
+          </div>
+          <div>Loss (MSE): <strong id="opt-multi-loss">0.000000</strong></div>
+        </div>
+      </div>
+      <div class="gso-eq"><span class="gso-k" data-katex="\hat{I}_{ij}=\sum_{k=1}^{8}\alpha_k\,\hat{G}_{k,ij}\,\boldsymbol{c}_k,\qquad \mathcal{L}=\frac{1}{N}\sum_{ij}\left\|\hat{I}_{ij}-I_{ij}\right\|_2^2"></span></div>
+      <p class="gso-next">
+        To understand how these primitives adapt in full 3D pipelines, the next step is projection from 3D ellipsoids to
+        2D image footprints.
+      </p>
+    </section>
+  </div>
+</main>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script>
+  (function () {
+    if (!window.katex) return;
+    document.querySelectorAll('.gso-k[data-katex]').forEach(function (node) {
+      window.katex.render(node.getAttribute('data-katex'), node, { throwOnError: false });
+    });
+  })();
+</script>
+<script src="/assets/js/3dgs-optimization/main.js"></script>

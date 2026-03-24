@@ -20,16 +20,16 @@ custom_css:
         <a href="#intro">Intro</a>
         <a href="#gaussian-1d">1D Gaussian</a>
         <a href="#level-sets">Level Sets</a>
-
+        <a href="/3dgs-optimization/">Optimization Tutorial</a>
       </nav>
     </header>
 
     <section class="gs-section" id="gaussian-1d">
       <span class="gs-section__meta">Section 1</span>
-      <h2>What Is a Gaussian?</h2>
+      <h2>The 1D Gaussian</h2>
       <p>
-        Start with a one-dimensional Gaussian curve. We will animate the curve, then let
-        you shift the mean to see how the equation moves the bell along the x-axis.
+        Start with a one-dimensional Gaussian curve and experiment with how the mean and variance effect the shape of
+        the graph.
       </p>
       <div class="gs-controls">
         <label for="gaussian1d-mu"><span id="gaussian1d-mu-label" class="gs-katex-inline"></span> (mean)</label>
@@ -39,8 +39,8 @@ custom_css:
       <div class="gs-controls">
         <label for="gaussian1d-variance"><span id="gaussian1d-variance-label" class="gs-katex-inline"></span>
           (variance)</label>
-        <input id="gaussian1d-variance" type="range" min="0.3" max="2.5" step="0.05" value="1.0">
-        <span id="gaussian1d-variance-value">1.00</span>
+        <input id="gaussian1d-variance" type="range" min="0.0" max="2" step="0.05" value="0.4">
+        <span id="gaussian1d-variance-value">0.40</span>
       </div>
       <div id="gaussian1d-chart" class="gs-viz"></div>
       <div id="gaussian1d-equation" class="gs-equation" aria-label="Gaussian equation"></div>
@@ -48,11 +48,11 @@ custom_css:
 
     <section class="gs-section gs-derivation" id="gaussian-1d-to-2d">
       <span class="gs-section__meta">Section 1.5</span>
-      <h2>From Independent Gaussians to a Quadratic Form</h2>
+      <h2>The 2D Gaussian (Quadratic Form)</h2>
       <p>
-        Before moving to a full 2D Gaussian density, we can see how the familiar 1D Gaussian extends naturally when two
-        independent variables are combined. The key idea is that products of Gaussians turn into sums inside the
-        exponential.
+        Let's extend the Gaussian into 2D by combining two independent variables. The key idea is that products of
+        Gaussians turn into sums inside the
+        exponential $\exp{(\cdot)}$.
       </p>
       From 1D to 2D: take $\boldsymbol{x} \in \mathbb{R}^2$ and the 2D Gaussian becomes:
       <div class="gs-equation">
@@ -64,7 +64,7 @@ custom_css:
         $$
       </div>
       <details>
-        <summary>Show full derivation</summary>
+        <summary>How? - (derivation)</summary>
         <div class="gs-derivation__body">
           <div class="gs-equation">
             $$
@@ -212,35 +212,36 @@ custom_css:
           </div>
           <div class="gs-inline-viz__legend">
             <span class="gs-inline-katex"
-              data-katex="\boldsymbol{\mu}(\boldsymbol{x})=\begin{bmatrix}\sin x_1 \\ \cos x_2\end{bmatrix}"></span>
+              data-katex="\boldsymbol{\mu}(\boldsymbol{x})=\begin{bmatrix}\sin\!\left(x_1/2\right) \\ \cos\!\left(x_2/2\right)\end{bmatrix}"></span>
           </div>
-          <svg viewBox="0 0 240 240" role="img" aria-label="2D Gaussian footprint moving with mean"
+          <svg viewBox="0 0 280 240" role="img" aria-label="2D Gaussian footprint moving with mean"
             class="gs-inline-viz__svg">
             <defs>
               <radialGradient id="gs-mu-gradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#f2a65a" stop-opacity="0.9"></stop>
-                <stop offset="70%" stop-color="#f2a65a" stop-opacity="0.3"></stop>
+                <stop offset="0%" stop-color="#f2a65a" stop-opacity="0.8"></stop>
+                <stop offset="70%" stop-color="#f2a65a" stop-opacity="0.35"></stop>
                 <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
               </radialGradient>
             </defs>
-            <rect x="32" y="32" width="176" height="176" fill="none" stroke="#e1d8cc" stroke-width="1"></rect>
-            <line x1="32" y1="120" x2="208" y2="120" stroke="#d9cec1" stroke-width="1"></line>
-            <line x1="120" y1="32" x2="120" y2="208" stroke="#d9cec1" stroke-width="1"></line>
-            <line x1="78" y1="116" x2="78" y2="124" stroke="#d9cec1" stroke-width="1"></line>
-            <line x1="162" y1="116" x2="162" y2="124" stroke="#d9cec1" stroke-width="1"></line>
-            <line x1="116" y1="78" x2="124" y2="78" stroke="#d9cec1" stroke-width="1"></line>
-            <line x1="116" y1="162" x2="124" y2="162" stroke="#d9cec1" stroke-width="1"></line>
+            <rect x="24" y="32" width="232" height="176" fill="none" stroke="#e1d8cc" stroke-width="1"></rect>
+            <line x1="24" y1="120" x2="256" y2="120" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="140" y1="32" x2="140" y2="208" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="84" y1="116" x2="84" y2="124" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="196" y1="116" x2="196" y2="124" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="136" y1="78" x2="144" y2="78" stroke="#d9cec1" stroke-width="1"></line>
+            <line x1="136" y1="162" x2="144" y2="162" stroke="#d9cec1" stroke-width="1"></line>
             <g>
-              <animateTransform attributeName="transform" type="rotate" from="0 120 120" to="360 120 120" dur="20s"
+              <animateTransform attributeName="transform" type="rotate" from="0 140 120" to="360 140 120" dur="20s"
                 repeatCount="indefinite"></animateTransform>
-              <g transform="translate(120 120)">
-                <g transform="translate(48 0)">
-                  <circle r="28" fill="url(#gs-mu-gradient)"></circle>
+              <g transform="translate(140 120)">
+                <g transform="translate(24 0)">
+                  <circle r="96" fill="url(#gs-mu-gradient)"></circle>
                   <circle r="1.5" fill="#d9643a"></circle>
                   <g>
                     <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="-360 0 0" dur="20s"
                       repeatCount="indefinite"></animateTransform>
-                    <text x="0" y="-12" text-anchor="middle" font-size="14" fill="#d9643a" font-weight="600">μ</text>
+                    <text x="0" y="-12" text-anchor="middle" font-size="14" fill="#d9643a" font-weight="600"
+                      font-style="italic">μ</text>
                   </g>
                 </g>
               </g>
@@ -265,14 +266,17 @@ custom_css:
           <span class="gs-inline-katex" data-katex="x_2"></span>
         </div>
         <div class="gs-levelset-viz__control">
-          <span class="gs-levelset-viz__hint" aria-hidden="true">&#x2192;</span>
-          <label class="gs-levelset-viz__toggle" for="levelset-toggle">
-            <input id="levelset-toggle" type="checkbox">
-            level sets
-          </label>
-          <label for="levelset-c"><span class="gs-inline-katex" data-katex="c"></span></label>
-          <input id="levelset-c" type="range" min="0.05" max="0.9" step="0.01" value="0.3">
-          <span id="levelset-c-value">0.30</span>
+          <div class="gs-levelset-viz__control-row">
+            <span class="gs-levelset-viz__hint" aria-hidden="true">&#x2192;</span>
+            <label class="gs-levelset-viz__toggle" for="levelset-toggle">
+              <input id="levelset-toggle" type="checkbox">
+              level sets
+            </label>
+            <label for="levelset-c"><span class="gs-inline-katex" data-katex="c"></span></label>
+            <input id="levelset-c" type="range" min="0.05" max="0.9" step="0.01" value="0.3">
+            <span id="levelset-c-value">0.30</span>
+          </div>
+          <div class="gs-levelset-viz__helper">Enable gaussian clipping for a level set</div>
         </div>
         <svg viewBox="0 0 320 220" role="img" aria-label="Level set clipping of three 2D Gaussians">
           <defs>
@@ -332,13 +336,11 @@ custom_css:
           orientation</b> of the Gaussian footprint in the plane.
         Fixing a constant $c \in (0,1)$, the level set is equivalent to $(\boldsymbol{x}-\boldsymbol{\mu})^\top
         \boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}) = c$.
-      </p>
-      <p>
         In two dimensions, these level sets are <b>ellipses</b>.
       </p>
       <p>
         Recall that $\boldsymbol{\Sigma}$ is symmetric and positive semi-definite, guaranteeing that all eigenvalues are
-        non-negative and that the level sets are closed curves
+        non-negative and that the level sets are closed curves.
       </p>
       <div class="gs-equation">
         $$
@@ -361,6 +363,11 @@ custom_css:
         \lambda_1,\lambda_2 \ge 0
         $$
       </div>
+      <p>
+        Here $\boldsymbol{Q}$ is a rotation matrix whose columns are the ellipse’s principal directions, and
+        $\boldsymbol{\Lambda}$ is a diagonal matrix whose entries $\lambda_1, \lambda_2$ control the spread of the
+        Gaussian along those axes.
+      </p>
       <div class="gs-equation">
         $$
         \boldsymbol{Q} =
@@ -466,26 +473,36 @@ custom_css:
           <div class="gs-eq-control">
             <div class="gs-eq-row gs-eq-row--matrix">
               <span class="gs-inline-katex"
-                data-katex="\boldsymbol{\Sigma}({\color{#6b4ca3}{\theta}},{ \color{#1b6d85}{s_1}}, {\color{#d9643a}{s_2})}=\boldsymbol{\Sigma}("></span>
-              <span class="gs-eq-slider-wrap">
-                <input id="scale-theta" class="gs-eq-slider gs-eq-slider--theta" type="range" min="-90" max="90"
+                data-katex="\boldsymbol{\Sigma}({\color{#6b4ca3}{\theta}},{ \color{#1b6d85}{s_1}}, {\color{#d9643a}{s_2})}=\boldsymbol{\Sigma}\bigg("></span>
+              <span class="gs-eq-slider-wrap gs-eq-slider-wrap--symbolic gs-eq-slider-wrap--theta">
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--left">&theta;</span>
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--right">&theta;</span>
+                <input id="scale-theta" class="gs-eq-slider gs-eq-slider--symbolic" type="range" min="-90" max="90"
                   step="1" value="20">
               </span>
               <span class="gs-inline-katex" data-katex=","></span>
-              <span class="gs-eq-slider-wrap">
-                <input id="scale-s1" class="gs-eq-slider gs-eq-slider--s1" type="range" min="10" max="70" step="1"
+              <span class="gs-eq-slider-wrap gs-eq-slider-wrap--symbolic gs-eq-slider-wrap--s1">
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--left">s<span
+                    class="gs-eq-slider-sub">1</span></span>
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--right">s<span
+                    class="gs-eq-slider-sub">1</span></span>
+                <input id="scale-s1" class="gs-eq-slider gs-eq-slider--symbolic" type="range" min="10" max="70" step="1"
                   value="40">
               </span>
               <span class="gs-inline-katex" data-katex=","></span>
-              <span class="gs-eq-slider-wrap">
-                <input id="scale-s2" class="gs-eq-slider gs-eq-slider--s2" type="range" min="10" max="70" step="1"
+              <span class="gs-eq-slider-wrap gs-eq-slider-wrap--symbolic gs-eq-slider-wrap--s2">
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--left">s<span
+                    class="gs-eq-slider-sub">2</span></span>
+                <span class="gs-eq-slider-symbol gs-eq-slider-symbol--right">s<span
+                    class="gs-eq-slider-sub">2</span></span>
+                <input id="scale-s2" class="gs-eq-slider gs-eq-slider--symbolic" type="range" min="10" max="70" step="1"
                   value="25">
               </span>
-              <span class="gs-inline-katex" data-katex=")"></span>
+              <span class="gs-inline-katex" data-katex="\bigg)"></span>
             </div>
             <div class="gs-eq-row">
               <span class="gs-inline-katex"
-                data-katex="= \boldsymbol{R}(\color{#6b4ca3}{\theta})\begin{bmatrix}\color{#1b6d85}{s_1^2} & 0 \\ 0 & \color{#d9643a}{s_2^2}\end{bmatrix}\boldsymbol{R}(\color{#6b4ca3}{\theta})^\top"></span>
+                data-katex="\phantom{\boldsymbol{\Sigma}({\color{#6b4ca3}{\theta}},{ \color{#1b6d85}{s_1}}, {\color{#d9643a}{s_2})}}= \boldsymbol{R}(\color{#6b4ca3}{\theta}){\color{#111111}{\left[\begin{matrix}\color{#1b6d85}{s_1^2} & 0 \\ 0 & \color{#d9643a}{s_2^2}\end{matrix}\right]}}\boldsymbol{R}(\color{#6b4ca3}{\theta})^\top"></span>
             </div>
           </div>
         </div>
@@ -551,12 +568,16 @@ custom_css:
           </div>
         </div>
       </div>
+      <p>
+        Continue to the interactive optimization walkthrough:
+        <a href="/3dgs-optimization/">2D Gaussian Splatting Optimization</a>.
+      </p>
   </div>
+  </section>
+  <!-- 
   <p class="gs-final-line">
     Once we understand the splat as a 3D ellipsoid, projection becomes a geometric operation.
   </p>
-  </section>
-
   <section class="gs-section" id="primitives-to-scenes">
     <span class="gs-section__meta">Section 3</span>
     <h2>From Primitives to Scenes</h2>
@@ -662,7 +683,7 @@ custom_css:
       plane.
     </p>
   </section>
-
+ -->
 
   </div>
 </main>
@@ -713,8 +734,8 @@ custom_css:
     camera.position.set(0, 0, 10);
     camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
-    const revealDpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    const revealDpr = Math.min(2.5, window.devicePixelRatio || 1);
     renderer.setPixelRatio(revealDpr);
     canvasHost.appendChild(renderer.domElement);
 
@@ -751,7 +772,7 @@ custom_css:
     const arrowMatY = new THREE.MeshStandardMaterial({ color: 0xd9643a, transparent: false, opacity: 1 });
     const arrowMatZ = new THREE.MeshStandardMaterial({ color: 0x6b4ca3, transparent: true, opacity: 0 });
 
-    const axisRadius = 0.08;
+    const axisRadius = 0.05;
     const axisLength = 3.6;
     const axisGeom = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 12);
 
@@ -1193,8 +1214,8 @@ custom_css:
     viewCameras[2].position.set(0.0, 2.1, -3.6);
     viewCameras.forEach((camera) => camera.lookAt(0, 0, 0));
 
-    const mainRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
-    const sceneDpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const mainRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    const sceneDpr = Math.min(2.5, window.devicePixelRatio || 1);
     mainRenderer.setPixelRatio(sceneDpr);
     sceneCanvasHost.appendChild(mainRenderer.domElement);
 
@@ -1331,6 +1352,25 @@ custom_css:
 
     var kLevel = Math.sqrt(-2 * Math.log(0.3));
 
+    function updateSliderFill(slider) {
+      var min = parseFloat(slider.min);
+      var max = parseFloat(slider.max);
+      var value = parseFloat(slider.value);
+      if (Number.isNaN(min) || Number.isNaN(max) || Number.isNaN(value) || max === min) {
+        return;
+      }
+      var pct = ((value - min) / (max - min)) * 100;
+      var wrap = slider.closest('.gs-eq-slider-wrap--symbolic');
+      if (wrap) {
+        wrap.style.setProperty('--fill-pct', pct.toFixed(2) + '%');
+        if (pct < 50) {
+          wrap.classList.add('gs-eq-slider-wrap--symbol-on-light');
+        } else {
+          wrap.classList.remove('gs-eq-slider-wrap--symbol-on-light');
+        }
+      }
+    }
+
     function update() {
       var t = parseFloat(theta.value);
       var v1 = parseFloat(s1.value);
@@ -1380,6 +1420,10 @@ custom_css:
       labelS1.style.top = (svgRect.top - plotRect.top + s1PosY * scaleY) + 'px';
       labelS2.style.left = (svgRect.left - plotRect.left + s2PosX * scaleX) + 'px';
       labelS2.style.top = (svgRect.top - plotRect.top + s2PosY * scaleY) + 'px';
+
+      updateSliderFill(theta);
+      updateSliderFill(s1);
+      updateSliderFill(s2);
     }
 
     theta.addEventListener('input', update);
