@@ -1,3 +1,11 @@
+- venue: Security, Privacy, and Adversarial Robustness in 3D Generative Vision Models Workshop
+  venue-shorthand: SPAR-3D
+  venue-at: CVPR
+  years:
+    - year: 2026
+      url: https://www.spar3d.org
+
+
 - venue: Conference on Vision and Pattern Recognition (CVPR)
   venue-shorthand: CVPR
   years:
