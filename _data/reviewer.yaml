@@ -1,4 +1,4 @@
-- venue: European Conference on Computer Vision (ECCV)
+- venue: European Conference on Computer Vision
   venue-shorthand: ECCV
   venue-at: ECCV
   years:
@@ -14,25 +14,25 @@
       url: https://www.spar3d.org
 
 
-- venue: Conference on Vision and Pattern Recognition (CVPR)
+- venue: Conference on Vision and Pattern Recognition
   venue-shorthand: CVPR
   years:
     - year: 2026
       url: https://cvpr.thecvf.com/Conferences/2026
 
-- venue: Conference on Artificial Intelligence (AAAI)
+- venue: Conference on Artificial Intelligence
   venue-shorthand: AAAI
   years:
     - year: 2026
       url: https://aaai.org/conference/aaai/aaai-26/      
 
-- venue: International Joint Conference on Artificial Intelligence (IJCAI)
+- venue: International Joint Conference on Artificial Intelligence
   venue-shorthand: IJCAI
   years:
     - year: 2025
       url: https://2025.ijcai.org
 
-- venue: ACM International Conference on Information & Knowledge Management (CIKM)
+- venue: ACM International Conference on Information & Knowledge Management
   venue-shorthand: CIKM
   years:
     - year: 2020
