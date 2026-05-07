@@ -1,3 +1,10 @@
+- venue: IEEE Visualization
+  venue-shorthand: VIS
+  venue-at: VIS
+  years:
+    - year: 2026
+      url: https://ieeevis.org/year/2026
+
 - venue: European Conference on Computer Vision
   venue-shorthand: ECCV
   venue-at: ECCV
