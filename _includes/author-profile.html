@@ -20,7 +20,6 @@
   </div>
 
   <div class="author__urls-wrapper">
-    <button class="btn btn--inverse">Follow</button>
     <ul class="author__urls social-icons">
       {% if author.location %}
         <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> {{ author.location }}</li>
@@ -42,9 +41,8 @@
       <li><a href="{{ author.orcid }}"><i class="ai ai-orcid ai-fw"></i> ORCID</a></li>
       {% endif %}
       {% if author.twitter %}
-        <li><a href="https://twitter.com/{{ author.twitter }}" aria-label="X" title="X">
-          <svg width="0.95em" height="0.95em" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-0.1em"><path d="M3 3h5.2l5.1 6.8L17.6 3H21l-7.2 9.6L21 21h-5.2l-5.1-6.8L6.4 21H3l7.2-9.4L3 3z"/></svg>
-        X.com </a></li>
+        <li><a href="https://twitter.com/{{ author.twitter }}" aria-label="X (Twitter)" title="X (Twitter)">
+          <svg width="0.95em" height="0.95em" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-0.1em"><path d="M3 3h5.2l5.1 6.8L17.6 3H21l-7.2 9.6L21 21h-5.2l-5.1-6.8L6.4 21H3l7.2-9.4L3 3z"/></svg> Profile</a></li>
       {% endif %}
 
       {% if author.uri %}

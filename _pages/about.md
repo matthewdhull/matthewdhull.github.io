@@ -3,6 +3,7 @@ permalink: /
 title: "Matthew Hull"
 layout: home-modern
 excerpt: "About me"
+description: "Matthew Hull is a Machine Learning PhD student at Georgia Tech (advised by Polo Chau) researching adversarial machine learning and simulation with differentiable rendering."
 author_profile: false
 redirect_from:
   - /about/
