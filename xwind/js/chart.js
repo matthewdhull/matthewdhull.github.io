@@ -181,10 +181,12 @@ export function createChart(svg) {
     const a0 = pt(0, r), a90 = pt(90, r);
     wedge.setAttribute("d", `M ${O.x} ${O.y} L ${a0.x} ${a0.y} A ${r} ${r} 0 0 1 ${a90.x} ${a90.y} Z`);
 
-    // angle ray from origin out to the wind point
+    // angle ray from origin all the way out to the chart edge (so the angle is
+    // easy to read), with the wind point marked at the magnitude arc
     const P = pt(off, r);
+    const E = pt(off, R_MAX);
     ray.setAttribute("x1", O.x); ray.setAttribute("y1", O.y);
-    ray.setAttribute("x2", P.x); ray.setAttribute("y2", P.y);
+    ray.setAttribute("x2", E.x); ray.setAttribute("y2", E.y);
     dot.setAttribute("cx", P.x); dot.setAttribute("cy", P.y);
 
     // component drop-lines

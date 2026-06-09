@@ -126,7 +126,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr);
   gap: 1.1rem;
-  align-items: end;
+  align-items: start;   /* readout can grow downward without shoving the sliders */
 }
 @media (max-width: 880px) {
   .xw-controls { grid-template-columns: 1fr 1fr; }
@@ -159,6 +159,7 @@ html, body {
   border: 1px solid #9ec3e6;
   border-radius: 4px;
   padding: 0.5rem 0.7rem;
+  min-height: 3.4rem;   /* reserve space so head/tail-wind swaps don't jump layout */
 }
 .xw-readout b { color: var(--hi-comp); }
 .xw-readout .hw { color: var(--blue); }

@@ -35,7 +35,7 @@ export function createRunway(svg) {
     }));
   }
   // N marker
-  const nt = el("text", { x: 0, y: -160, "text-anchor": "middle", "font-size": 14, fill: "#1d6fb8", "font-weight": 700 });
+  const nt = el("text", { x: 0, y: -160, "text-anchor": "middle", "font-size": 14, fill: "#e9efe2", "font-weight": 700 });
   nt.textContent = "N"; svg.append(nt);
 
   // rotating runway group
@@ -70,9 +70,9 @@ export function createRunway(svg) {
 
   // wind origin arrow (upwind side, pointing downwind)
   const windArrow = el("g");
-  const waLine = el("line", { stroke: "#5a7186", "stroke-width": 2.5 });
-  const waHead = el("polygon", { fill: "#5a7186" });
-  const waLabel = el("text", { "font-size": 12, fill: "#3a5468", "font-weight": 700, "text-anchor": "middle" });
+  const waLine = el("line", { stroke: "#dee5d8", "stroke-width": 3 });
+  const waHead = el("polygon", { fill: "#dee5d8" });
+  const waLabel = el("text", { "font-size": 12.5, fill: "#e9efe2", "font-weight": 700, "text-anchor": "middle" });
   windArrow.append(waLine, waHead, waLabel);
   svg.append(windArrow);
 
@@ -90,9 +90,11 @@ export function createRunway(svg) {
     dirs.forEach((B, i) => {
       const num = bvec((B + 180) % 360);          // the number sits on the -B threshold
       const right = bvec((B + 90) % 360);         // right wing of a pilot landing toward B
+      // set well off to the side (a real sock sits clear of the runway, never
+      // blowing over it) — fully extended it still won't reach the pavement
       const base = {
-        x: num.x * (HALF_LEN - 48) + right.x * (HALF_W + 14),
-        y: num.y * (HALF_LEN - 48) + right.y * (HALF_W + 14),
+        x: num.x * (HALF_LEN - 40) + right.x * (HALF_W + 58),
+        y: num.y * (HALF_LEN - 40) + right.y * (HALF_W + 58),
       };
       updateSock(socks[i], base, st);
     });
@@ -122,20 +124,22 @@ export function createRunway(svg) {
   return { update };
 }
 
-// Top-down high-wing GA silhouette (Cessna-172-ish), nose toward -y.
+// Top-down high-wing GA silhouette (Cessna-172-ish), nose toward -y. Coloured
+// (not white) so it stands out from the white runway markings.
 function mkPlane() {
   const g = el("g");
-  const FILL = "#f4f7f3", LINE = "#27331f";
-  const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.6, "stroke-linejoin": "round", ...a }));
-  // main wing (high, set slightly forward)
-  add("rect", { x: -17, y: -5.4, width: 34, height: 4.6, rx: 2.3 });
+  const FILL = "#f4c63d", LINE = "#243018";
+  const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.7, "stroke-linejoin": "round", ...a }));
+  // main wing — long, gently tapered, set slightly forward
+  add("path", { d: "M -18 -3.2 L 18 -3.2 L 17 1.6 L -17 1.6 Z" });
   // horizontal stabilizer
-  add("rect", { x: -8, y: 8, width: 16, height: 3.6, rx: 1.8 });
-  // fuselage + pointed nose + vertical fin
-  add("path", { d: "M 0 -14 L 2.7 -8 L 2.7 11 Q 2.7 13.5 0 14 Q -2.7 13.5 -2.7 11 L -2.7 -8 Z" });
-  add("path", { d: "M 0 8 L -1.7 14 L 1.7 14 Z" });
-  // prop disc hint
-  add("line", { x1: -5.5, y1: -12.5, x2: 5.5, y2: -12.5, stroke: LINE, "stroke-width": 1.2 });
+  add("path", { d: "M -8.5 8.4 L 8.5 8.4 L 7.5 11.6 L -7.5 11.6 Z" });
+  // fuselage with pointed nose and tapered tail
+  add("path", { d: "M 0 -14.5 Q 2.8 -11 2.8 -6 L 2.4 9 Q 2 13.5 0 14.5 Q -2 13.5 -2.4 9 L -2.8 -6 Q -2.8 -11 0 -14.5 Z" });
+  // vertical fin at the tail
+  add("path", { d: "M 0 7.5 L -1.8 14.5 L 1.8 14.5 Z" });
+  // prop disc
+  add("line", { x1: -5, y1: -13, x2: 5, y2: -13, stroke: LINE, "stroke-width": 1.3 });
   return { g };
 }
 

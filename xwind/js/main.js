@@ -47,7 +47,7 @@ subscribe((st) => {
     ? `<span class="hw">Headwind ${hw.toFixed(0)} kt</span>`
     : `<b>Tailwind ${(-hw).toFixed(0)} kt</b>`;
   readout.innerHTML =
-    `Intended <b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind <b>${d.rawOff}°</b> off the nose<br>` +
+    `<b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind <b>${d.rawOff}°</b> off the nose<br>` +
     `${along} &middot; <b>Crosswind ${xw.toFixed(0)} kt</b>`;
 });
 
