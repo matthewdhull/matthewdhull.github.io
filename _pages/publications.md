@@ -2,7 +2,7 @@
 layout: archive
 title: "Publications"
 permalink: /publications/
-author_profile: true
+author_profile: false
 ---
 
 {% if author.googlescholar %}
@@ -12,6 +12,12 @@ author_profile: true
 {% include base_path %}
 
 {% assign pubs = site.publications | sort: 'date' | reverse %}
+{% assign current_year = '' %}
 {% for post in pubs %}
-  {% include archive-single.html %}
+{% assign post_year = post.date | date: '%Y' %}
+{% if post_year != current_year %}
+{% assign current_year = post_year %}
+<h2 class="pub-year">{{ post_year }}</h2>
+{% endif %}
+{% include archive-single.html %}
 {% endfor %}
