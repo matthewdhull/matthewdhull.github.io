@@ -14,7 +14,11 @@ const field = createField(document.getElementById("xw-field"));
 // than silently flipping to the favourable reciprocal.
 function derive(st) {
   const raw = Math.abs(angleDelta(st.windDir, st.runwayHeading)); // 0..180 off the nose
-  return { ...st, off: Math.min(raw, 90), rawOff: raw, tailwind: raw > 90 };
+  const tailwind = raw > 90;
+  // the chart is always read at the ACUTE angle between wind and runway; a
+  // tailwind simply reflects past 90° and relabels the vertical axis.
+  const off = tailwind ? 180 - raw : raw;
+  return { ...st, off, rawOff: raw, tailwind };
 }
 
 const elHeading = document.getElementById("ctl-heading");
@@ -43,11 +47,15 @@ subscribe((st) => {
 
   const hw = d.windSpeed * Math.cos((d.rawOff * Math.PI) / 180);  // signed: <0 = tailwind
   const xw = d.windSpeed * Math.sin((d.rawOff * Math.PI) / 180);
-  const along = hw >= 0
-    ? `<span class="hw">Headwind ${hw.toFixed(0)} kt</span>`
-    : `<b>Tailwind ${(-hw).toFixed(0)} kt</b>`;
+  // headwinds are expressed off the nose, tailwinds off the tail (180 - off-nose)
+  const angTxt = d.tailwind
+    ? `<b>${180 - d.rawOff}°</b> off the tail`
+    : `<b>${d.rawOff}°</b> off the nose`;
+  const along = d.tailwind
+    ? `<b>Tailwind ${(-hw).toFixed(0)} kt</b>`
+    : `<span class="hw">Headwind ${hw.toFixed(0)} kt</span>`;
   readout.innerHTML =
-    `<b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind <b>${d.rawOff}°</b> off the nose<br>` +
+    `<b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind ${angTxt}<br>` +
     `${along} &middot; <b>Crosswind ${xw.toFixed(0)} kt</b>`;
 });
 

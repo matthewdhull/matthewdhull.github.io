@@ -171,9 +171,13 @@ export function createChart(svg) {
 
   function updateHighlight(st) {
     const V = st.windSpeed;
-    const off = st.off ?? 0;        // 0..90 chart angle, set by main
+    const off = st.off ?? 0;        // 0..90 chart angle (acute), set by main
     const show = V > 0;
     gHilite.style.display = show ? "" : "none";
+    // relabel the vertical axis: same arcs/rays, just headwind vs tailwind
+    const tail = show && st.tailwind;
+    ht.textContent = tail ? "Tailwind component" : "Headwind component";
+    ht.setAttribute("fill", tail ? "#e03131" : "#1d6fb8");
     if (!show) return;
 
     const r = V * S;
@@ -200,7 +204,7 @@ export function createChart(svg) {
     hwDot.setAttribute("cx", O.x); hwDot.setAttribute("cy", hwY);
     xwDot.setAttribute("cx", xwX); xwDot.setAttribute("cy", O.y);
 
-    setTag(hwTag, O.x + 10, hwY - 2, `HW ${hw.toFixed(0)}`);
+    setTag(hwTag, O.x + 10, hwY - 2, `${tail ? "TW" : "HW"} ${hw.toFixed(0)}`);
     setTag(xwTag, xwX, O.y - 14, `XW ${xw.toFixed(0)}`);
   }
 
