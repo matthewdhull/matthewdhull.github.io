@@ -83,6 +83,8 @@ html, body {
 
 .xw-chart-card { padding: 8px; }
 #xw-chart { display: block; width: 100%; height: auto; }
+#xw-chart .angle-chip { cursor: pointer; }
+#xw-chart .angle-chip:hover rect { stroke: #ffffff; stroke-width: 1.5px; }
 
 /* Right scene — "grass field" green graph paper so the light wind arrows read */
 .xw-runway-card {

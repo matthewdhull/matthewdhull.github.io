@@ -61,8 +61,9 @@ function fadeIn(node, dur, delay) {
   );
 }
 
-export function createChart(svg) {
+export function createChart(svg, handlers = {}) {
   svg.innerHTML = "";
+  let cur = null;   // latest state, for the drag handlers
 
   // group order = paint order (back to front)
   const gArcsMinor = el("g", { class: "g-arcs-minor" });
@@ -71,6 +72,7 @@ export function createChart(svg) {
   const gArcs = el("g", { class: "g-arcs" });
   const gAxes = el("g", { class: "g-axes" });
   const gHilite = el("g", { class: "g-hilite" });
+  gHilite.style.pointerEvents = "none";   // only the component handles re-enable this
   const gLabels = el("g", { class: "g-labels" });
   svg.append(gArcsMinor, gRaysMinor, gRaysMajor, gArcs, gAxes, gHilite, gLabels);
 
@@ -146,6 +148,9 @@ export function createChart(svg) {
     const w = 13 + label.length * 8;
     g.append(el("rect", { x: c.x - w / 2, y: c.y - 11, width: w, height: 20, rx: 5, fill: "#2d3748" }));
     g.append(txt(c.x, c.y + 4, label, { "text-anchor": "middle", "font-size": 12.5, fill: "#fff", "font-weight": 600 }));
+    // click a label to set the wind that many degrees off the current runway
+    g.classList.add("angle-chip");
+    g.addEventListener("pointerdown", (e) => { e.preventDefault(); handlers.onSetAngle?.(th); });
     gLabels.append(g); chips.push(g);
   }
 
@@ -164,8 +169,8 @@ export function createChart(svg) {
   const compH = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
   const compV = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
   const dot = el("circle", { r: 5.5, fill: "var(--hi-angle)", stroke: "#fff", "stroke-width": 1.5 });
-  const hwDot = el("circle", { r: 4.5, fill: "var(--hi-comp)" });
-  const xwDot = el("circle", { r: 4.5, fill: "var(--hi-comp)" });
+  const hwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
+  const xwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
   const hwTag = mkTag("var(--hi-comp)");
   const xwTag = mkTag("var(--hi-comp)");
   gHilite.append(wedge, ray, compH, compV, dot, hwDot, xwDot, hwTag.g, xwTag.g);
@@ -178,6 +183,7 @@ export function createChart(svg) {
   gHilite.append(angTag);
 
   function updateHighlight(st) {
+    cur = st;
     const V = st.windSpeed;
     const off = st.off ?? 0;        // 0..90 chart angle (acute), set by main
     const show = V > 0;
@@ -284,6 +290,46 @@ export function createChart(svg) {
 
     return fh.finished.catch(() => {});
   }
+
+  // --- drag the component handles: at the FIXED wind angle, dragging a leg
+  //     scales the wind speed so the other leg + magnitude follow (the triangle).
+  function svgPoint(evt) {
+    const m = svg.getScreenCTM().inverse();
+    const p = svg.createSVGPoint();
+    p.x = evt.clientX; p.y = evt.clientY;
+    return p.matrixTransform(m);
+  }
+  function attachComponentDrag(dotEl, kind) {
+    dotEl.style.cursor = kind === "x" ? "ew-resize" : "ns-resize";
+    dotEl.style.pointerEvents = "all";
+    dotEl.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const move = (ev) => {
+        if (!cur) return;
+        const sp = svgPoint(ev);
+        const th = ((cur.off ?? 0) * Math.PI) / 180;
+        let V;
+        if (kind === "x") {
+          const s = Math.sin(th);
+          if (s < 0.09) return;       // ~pure headwind: crosswind can't drive speed
+          V = Math.max(0, Math.min(MAX_KT, (sp.x - O.x) / S)) / s;
+        } else {
+          const c = Math.cos(th);
+          if (c < 0.09) return;       // ~pure crosswind
+          V = Math.max(0, Math.min(MAX_KT, (O.y - sp.y) / S)) / c;
+        }
+        handlers.onSetSpeed?.(Math.max(0, Math.min(40, Math.round(V))));
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+  }
+  attachComponentDrag(xwDot, "x");
+  attachComponentDrag(hwDot, "y");
 
   return { updateHighlight, play, geom: { O, S, R_MAX, MAX_KT } };
 }

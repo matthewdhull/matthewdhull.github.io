@@ -5,7 +5,12 @@ import { createField } from "./field.js";
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const chart = createChart(document.getElementById("xw-chart"));
+const chart = createChart(document.getElementById("xw-chart"), {
+  // click an angle label -> set the wind that many degrees off the runway heading
+  onSetAngle: (a) => setState({ windDir: (((state.runwayHeading + a) % 360) + 360) % 360 }),
+  // drag a component handle -> set the wind speed (angle held fixed)
+  onSetSpeed: (v) => setState({ windSpeed: Math.max(0, Math.min(40, v)) }),
+});
 const runway = createRunway(document.getElementById("xw-runway"));
 const field = createField(document.getElementById("xw-field"));
 
