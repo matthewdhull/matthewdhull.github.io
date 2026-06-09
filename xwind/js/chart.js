@@ -114,12 +114,13 @@ export function createChart(svg) {
 
   // ---- labels: ticks, titles, angle chips ----
   // speed ticks on both axes
+  const vTicks = [];   // vertical (headwind) tick labels — relabeled for tailwind
   for (const v of ARC_KT) {
     // headwind (vertical) ticks — left of axis
     const yp = O.y - v * S;
     gLabels.append(el("line", { x1: O.x - 5, y1: yp, x2: O.x, y2: yp, stroke: INK, "stroke-width": 1.4 }));
     const ty = txt(O.x - 10, yp + 4, String(v), { "text-anchor": "end", "font-size": 15, fill: INK });
-    gLabels.append(ty);
+    gLabels.append(ty); vTicks.push({ el: ty, v });
     // crosswind (horizontal) ticks — below axis
     const xp = O.x + v * S;
     gLabels.append(el("line", { x1: xp, y1: O.y, x2: xp, y2: O.y + 5, stroke: INK, "stroke-width": 1.4 }));
@@ -185,6 +186,11 @@ export function createChart(svg) {
     const tail = show && st.tailwind;
     ht.textContent = tail ? "Tailwind component" : "Headwind component";
     ht.setAttribute("fill", tail ? "#e03131" : "#1d6fb8");
+    // vertical ticks go negative + red in a tailwind (loss of headwind component)
+    vTicks.forEach(({ el: t, v }) => {
+      t.textContent = tail ? `-${v}` : `${v}`;
+      t.setAttribute("fill", tail ? "#e03131" : INK);
+    });
 
     // angle labels: highlight the matching 10° chip, or pop up the exact angle
     const onTen = off % 10 === 0;

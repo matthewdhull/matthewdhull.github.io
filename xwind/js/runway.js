@@ -131,12 +131,12 @@ function mkPlane() {
   const g = el("g");
   const FILL = "#d3eef9", LINE = "#5b9bc9";
   const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.9, "stroke-linejoin": "round", ...a }));
-  // main wing — long span, slight sweep, rounded tips
-  add("path", { d: "M -3 -1 L -16.5 3 Q -19 3.8 -18 6 L -3 7.2 L 3 7.2 L 18 6 Q 19 3.8 16.5 3 L 3 -1 Z" });
-  // horizontal stabilizer (tail), smaller with rounded tips
-  add("path", { d: "M -2 9.5 L -8.5 11.6 Q -10 12.2 -9 13.2 L -2 14 L 2 14 L 9 13.2 Q 10 12.2 8.5 11.6 L 2 9.5 Z" });
-  // fuselage — rounded nose, cockpit, tapered tail
-  add("path", { d: "M 0 -15.5 C 2.6 -14.5 3.1 -10 3 -6 C 2.9 0 2.4 9 2 12.5 C 1.8 14.8 1 16 0 16.3 C -1 16 -1.8 14.8 -2 12.5 C -2.4 9 -2.9 0 -3 -6 C -3.1 -10 -2.6 -14.5 0 -15.5 Z" });
+  // main wing — straight constant-chord 'Hershey bar', set forward, rounded tips
+  add("rect", { x: -19, y: -5, width: 38, height: 7, rx: 2.2 });
+  // horizontal stabilizer — also a straight rectangular bar, rounded tips
+  add("rect", { x: -9, y: 10.5, width: 18, height: 4.2, rx: 1.8 });
+  // fuselage — rounded nose/cowl, tapered tail
+  add("path", { d: "M 0 -15.5 C 2.7 -14.5 3.2 -10 3.1 -6 C 3 -1 2.6 9 2.1 12.5 C 1.9 14.8 1 16 0 16.3 C -1 16 -1.9 14.8 -2.1 12.5 C -2.6 9 -3 -1 -3.1 -6 C -3.2 -10 -2.7 -14.5 0 -15.5 Z" });
   // vertical fin at the tail
   add("path", { d: "M 0 9 L 1.5 14.5 L 0 16.5 L -1.5 14.5 Z" });
   // propeller + spinner at the nose
