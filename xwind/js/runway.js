@@ -124,22 +124,24 @@ export function createRunway(svg) {
   return { update };
 }
 
-// Top-down high-wing GA silhouette (Cessna-172-ish), nose toward -y. Coloured
-// (not white) so it stands out from the white runway markings.
+// Top-down single-engine GA silhouette, nose toward -y. Light blue with a blue
+// outline (per reference) — reads against the dark pavement; the outline keeps
+// it distinct from the white runway markings.
 function mkPlane() {
   const g = el("g");
-  const FILL = "#f4c63d", LINE = "#243018";
-  const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.7, "stroke-linejoin": "round", ...a }));
-  // main wing — long, gently tapered, set slightly forward
-  add("path", { d: "M -18 -3.2 L 18 -3.2 L 17 1.6 L -17 1.6 Z" });
-  // horizontal stabilizer
-  add("path", { d: "M -8.5 8.4 L 8.5 8.4 L 7.5 11.6 L -7.5 11.6 Z" });
-  // fuselage with pointed nose and tapered tail
-  add("path", { d: "M 0 -14.5 Q 2.8 -11 2.8 -6 L 2.4 9 Q 2 13.5 0 14.5 Q -2 13.5 -2.4 9 L -2.8 -6 Q -2.8 -11 0 -14.5 Z" });
+  const FILL = "#d3eef9", LINE = "#5b9bc9";
+  const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.9, "stroke-linejoin": "round", ...a }));
+  // main wing — long span, slight sweep, rounded tips
+  add("path", { d: "M -3 -1 L -16.5 3 Q -19 3.8 -18 6 L -3 7.2 L 3 7.2 L 18 6 Q 19 3.8 16.5 3 L 3 -1 Z" });
+  // horizontal stabilizer (tail), smaller with rounded tips
+  add("path", { d: "M -2 9.5 L -8.5 11.6 Q -10 12.2 -9 13.2 L -2 14 L 2 14 L 9 13.2 Q 10 12.2 8.5 11.6 L 2 9.5 Z" });
+  // fuselage — rounded nose, cockpit, tapered tail
+  add("path", { d: "M 0 -15.5 C 2.6 -14.5 3.1 -10 3 -6 C 2.9 0 2.4 9 2 12.5 C 1.8 14.8 1 16 0 16.3 C -1 16 -1.8 14.8 -2 12.5 C -2.4 9 -2.9 0 -3 -6 C -3.1 -10 -2.6 -14.5 0 -15.5 Z" });
   // vertical fin at the tail
-  add("path", { d: "M 0 7.5 L -1.8 14.5 L 1.8 14.5 Z" });
-  // prop disc
-  add("line", { x1: -5, y1: -13, x2: 5, y2: -13, stroke: LINE, "stroke-width": 1.3 });
+  add("path", { d: "M 0 9 L 1.5 14.5 L 0 16.5 L -1.5 14.5 Z" });
+  // propeller + spinner at the nose
+  add("rect", { x: -6.5, y: -16.6, width: 13, height: 1.8, rx: 0.9 });
+  add("circle", { cx: 0, cy: -15.2, r: 1.7 });
   return { g };
 }
 

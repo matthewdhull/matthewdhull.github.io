@@ -169,6 +169,13 @@ export function createChart(svg) {
   const xwTag = mkTag("var(--hi-comp)");
   gHilite.append(wedge, ray, compH, compV, dot, hwDot, xwDot, hwTag.g, xwTag.g);
 
+  // floating exact-angle chip for in-between (non-10°) wind angles
+  const angTag = el("g");
+  const angRect = el("rect", { rx: 5, height: 20, fill: "#e8590c" });
+  const angText = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12.5, fill: "#fff", "font-weight": 700 });
+  angTag.append(angRect, angText);
+  gHilite.append(angTag);
+
   function updateHighlight(st) {
     const V = st.windSpeed;
     const off = st.off ?? 0;        // 0..90 chart angle (acute), set by main
@@ -178,6 +185,24 @@ export function createChart(svg) {
     const tail = show && st.tailwind;
     ht.textContent = tail ? "Tailwind component" : "Headwind component";
     ht.setAttribute("fill", tail ? "#e03131" : "#1d6fb8");
+
+    // angle labels: highlight the matching 10° chip, or pop up the exact angle
+    const onTen = off % 10 === 0;
+    chips.forEach((c, i) => {
+      c.firstChild.setAttribute("fill", show && i * 10 === off ? "#e8590c" : "#2d3748");
+    });
+    if (show && !onTen) {
+      const cc = pt(off, R_MAX + 16);
+      const label = `${off}°`;
+      const w = 13 + label.length * 8;
+      angText.textContent = label;
+      angText.setAttribute("x", cc.x); angText.setAttribute("y", cc.y + 4);
+      angRect.setAttribute("x", cc.x - w / 2); angRect.setAttribute("y", cc.y - 11); angRect.setAttribute("width", w);
+      angTag.style.display = "";
+    } else {
+      angTag.style.display = "none";
+    }
+
     if (!show) return;
 
     const r = V * S;
