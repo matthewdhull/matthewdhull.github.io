@@ -168,7 +168,7 @@ export function createChart(svg, handlers = {}) {
   const ray = el("line", { stroke: "var(--hi-angle)", "stroke-width": 3, "stroke-linecap": "round" });
   const compH = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
   const compV = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
-  const dot = el("circle", { r: 5.5, fill: "var(--hi-angle)", stroke: "#fff", "stroke-width": 1.5 });
+  const dot = el("circle", { r: 6.5, fill: "var(--hi-angle)", stroke: "#fff", "stroke-width": 1.5 });
   const hwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
   const xwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
   const hwTag = mkTag("var(--hi-comp)");
@@ -330,6 +330,33 @@ export function createChart(svg, handlers = {}) {
   }
   attachComponentDrag(xwDot, "x");
   attachComponentDrag(hwDot, "y");
+
+  // free-drag the intersection point: sets angle, headwind and crosswind all at
+  // once (i.e. both wind direction and wind speed from one gesture).
+  function attachPointDrag(dotEl) {
+    dotEl.style.cursor = "grab";
+    dotEl.style.pointerEvents = "all";
+    dotEl.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      dotEl.style.cursor = "grabbing";
+      const move = (ev) => {
+        const sp = svgPoint(ev);
+        const dx = Math.max(0, (sp.x - O.x) / S);   // crosswind kt
+        const dy = Math.max(0, (O.y - sp.y) / S);   // headwind kt
+        const V = Math.min(40, Math.sqrt(dx * dx + dy * dy));
+        const ang = Math.max(0, Math.min(90, (Math.atan2(dx, dy) * 180) / Math.PI));
+        handlers.onSetVector?.(Math.round(ang / 5) * 5, Math.round(V));
+      };
+      const up = () => {
+        dotEl.style.cursor = "grab";
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+  }
+  attachPointDrag(dot);
 
   return { updateHighlight, play, geom: { O, S, R_MAX, MAX_KT } };
 }

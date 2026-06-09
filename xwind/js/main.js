@@ -10,6 +10,11 @@ const chart = createChart(document.getElementById("xw-chart"), {
   onSetAngle: (a) => setState({ windDir: (((state.runwayHeading + a) % 360) + 360) % 360 }),
   // drag a component handle -> set the wind speed (angle held fixed)
   onSetSpeed: (v) => setState({ windSpeed: Math.max(0, Math.min(40, v)) }),
+  // free-drag the intersection dot -> set angle (wind dir) and speed at once
+  onSetVector: (angle, speed) => setState({
+    windDir: (((state.runwayHeading + angle) % 360) + 360) % 360,
+    windSpeed: Math.max(0, Math.min(40, speed)),
+  }),
 });
 const runway = createRunway(document.getElementById("xw-runway"));
 const field = createField(document.getElementById("xw-field"));
