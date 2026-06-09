@@ -48,6 +48,11 @@ subscribe((st) => {
   vWindDir.textContent = fmt3(st.windDir) + "°";
   vWindSpd.textContent = st.windSpeed + " kt";
 
+  // keep the slider thumbs in sync when state changes from chart interactions
+  if (+elHeading.value !== st.runwayHeading) elHeading.value = st.runwayHeading;
+  if (+elWindDir.value !== st.windDir) elWindDir.value = st.windDir;
+  if (+elWindSpd.value !== st.windSpeed) elWindSpd.value = st.windSpeed;
+
   caption.innerHTML = `RWY ${runwayPair(st.runwayHeading)} &middot; wind ${fmt3(st.windDir)}/${String(st.windSpeed).padStart(2, "0")}`;
 
   const hw = d.windSpeed * Math.cos((d.rawOff * Math.PI) / 180);  // signed: <0 = tailwind
