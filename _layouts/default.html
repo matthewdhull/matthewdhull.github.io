@@ -4,8 +4,17 @@ layout: compress
 
 {% include base_path %}
 
+{%- comment -%} Per-section background palette key (read by bg-palette-grid.module.js) {%- endcomment -%}
+{%- assign bgsec = 'default' -%}
+{%- if page.layout == 'home-modern' or page.url == '/' -%}{%- assign bgsec = 'home' -%}
+{%- elsif page.collection == 'publications' or page.url contains '/publications' -%}{%- assign bgsec = 'publications' -%}
+{%- elsif page.collection == 'projects' or page.url contains '/projects' -%}{%- assign bgsec = 'projects' -%}
+{%- elsif page.collection == 'posts' or page.url contains '/year-archive' -%}{%- assign bgsec = 'posts' -%}
+{%- elsif page.url contains '/news' -%}{%- assign bgsec = 'news' -%}
+{%- endif -%}
+
 <!doctype html>
-<html lang="{{ site.locale | slice: 0,2 }}" class="no-js">
+<html lang="{{ site.locale | slice: 0,2 }}" class="no-js" data-bg="{{ bgsec }}">
   <head>
     {% include head.html %}
     {% include head/custom.html %}

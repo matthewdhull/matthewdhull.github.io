@@ -57,6 +57,24 @@
     try {
       var saved = localStorage.getItem('theme') || 'mhull';
       document.documentElement.setAttribute('data-theme', saved);
+      /* FONT TESTING: apply saved font choice early to avoid a flash */
+      var savedFont = localStorage.getItem('font') || 'inter';
+      document.documentElement.setAttribute('data-font', savedFont);
+      /* Cross-section nav: if the bg palette is about to morph (we arrived from a
+         differently-themed section), hide the chrome+content before first paint so
+         out-of-theme nav/text never lands over the half-shifted field. The bg
+         module clears .bg-pending once the field settles; the timeout is a safety
+         net so content can never stay hidden if the module fails to load. */
+      var curBg = document.documentElement.getAttribute('data-bg');
+      var prevBg = sessionStorage.getItem('bgPrevKey');
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (curBg && prevBg && curBg !== prevBg && !reduce) {
+        document.documentElement.classList.add('bg-pending');
+        setTimeout(function(){
+          var cl = document.documentElement.classList;
+          if (cl.contains('bg-pending')) { cl.remove('bg-pending'); cl.add('bg-revealing'); }
+        }, 2200);
+      }
     } catch(e) {}
   })();
   // Expose base path for module scripts (handles baseurl in dev/prod)
@@ -65,5 +83,19 @@
   window.tailwind = window.tailwind || {};
   window.tailwind.config = { darkMode: ['class', '[data-theme="mhull"]'] };
 </script>
+
+<!-- Cross-document view transitions: hold the outgoing page until the incoming
+     one paints, so navigation crossfades instead of flashing white. The bg canvas
+     starts on the previous section's palette, so this fade is seamless and the
+     radiating color morph then plays on the live page. Progressive enhancement —
+     ignored by browsers without support. -->
+<style>
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: 320ms; animation-timing-function: ease; }
+  @media (prefers-reduced-motion: reduce) {
+    @view-transition { navigation: none; }
+  }
+</style>
 
 <!-- end custom head snippets -->

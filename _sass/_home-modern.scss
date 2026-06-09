@@ -5,6 +5,68 @@
   font-feature-settings: 'liga' 1, 'calt' 1;
 }
 
+/* =========================================================================
+   FONT TESTING — temporary switcher (remove this block + the #font-switcher
+   control + the switcher JS once a pairing is chosen, then bake the winner
+   into $sans-serif/$header-font-family in _variables.scss).
+   ========================================================================= */
+:root {
+  --font-head: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+html[data-font='grotesk']   { --font-head: "Space Grotesk", sans-serif; --font-body: "Hanken Grotesk", sans-serif; }
+html[data-font='plex']      { --font-head: "IBM Plex Serif", Georgia, serif; --font-body: "IBM Plex Sans", sans-serif; }
+html[data-font='geist']     { --font-head: "Geist", sans-serif; --font-body: "Geist", sans-serif; }
+html[data-font='bricolage'] { --font-head: "Bricolage Grotesque", sans-serif; --font-body: "Inter", sans-serif; }
+html[data-font='sora']      { --font-head: "Sora", sans-serif; --font-body: "IBM Plex Sans", sans-serif; }
+html[data-font='clash']     { --font-head: "Clash Display", sans-serif; --font-body: "Satoshi", sans-serif; }
+
+body,
+p, li, dl,
+.hm-subtitle,
+.page__content,
+.archive, .archive__item-excerpt,
+.hm-tile__excerpt,
+.news-body,
+.pub-authors {
+  font-family: var(--font-body);
+}
+h1, h2, h3, h4, h5, h6,
+.hm-title, .hm-heading, .page__title, .pub-year,
+.archive__item-title, .archive__item-title a,
+.hm-tile__header,
+.masthead__menu-item a, .greedy-nav a {
+  font-family: var(--font-head);
+}
+
+/* Font switcher control (sits left of the theme toggle) */
+.font-switcher {
+  position: absolute;
+  right: 5.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  height: 2rem;
+  padding: 0 1.6rem 0 0.6rem;
+  background: rgba(16, 36, 48, 0.5);
+  color: var(--mh-text);
+  border: 1px solid var(--mh-border);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--mh-muted) 50%), linear-gradient(135deg, var(--mh-muted) 50%, transparent 50%);
+  background-position: calc(100% - 0.7rem) center, calc(100% - 0.45rem) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.font-switcher:hover { border-color: var(--mh-accent); color: var(--mh-accent); }
+.font-switcher option { color: #1f2a34; }
+@media (max-width: 700px) { .font-switcher { display: none; } }
+
 :root[data-theme='mhull'] {
   --mh-bg: rgba(29, 36, 51,1);
   // --mh-bg: #0e1c24;        /* deep blue-black */
@@ -22,6 +84,7 @@
   --mh-glass-border: rgba(255,255,255,0.09);
   --mh-tile-cool: rgb(92, 207, 230);
   --mh-tile-cooler: rgb(92, 207, 230,0.6);
+  --mh-link-hover: #ef6b73;   /* link/nav hover; overridden per section */
 }
 
 /* Light theme variant */
@@ -37,6 +100,7 @@
   --mh-shadow: 0 3px 14px rgba(0,0,0,0.08);
   --mh-glass: rgba(255, 255, 255, 0.7);
   --mh-glass-border: rgba(20,28,36,0.12);
+  --mh-link-hover: #c25a61;
 }
 
 .home-modern {
@@ -234,7 +298,7 @@
 .masthead { background: var(--mh-glass); border-bottom: 1px solid var(--mh-glass-border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .greedy-nav { background: transparent; }
 .greedy-nav a { color: var(--mh-tile-cool); }
-.greedy-nav a:hover { color: #ef6b73; }
+.greedy-nav a:hover { color: var(--mh-link-hover); }
 .greedy-nav .hidden-links { background: var(--mh-panel); border: 1px solid var(--mh-border); }
 .greedy-nav .hidden-links:after { border-color: var(--mh-panel) transparent; }
 .greedy-nav .hidden-links:before { border-color: var(--mh-border) trdigansparent; }
@@ -251,6 +315,26 @@
 .page__footer { background: var(--mh-glass); border-top: 1px solid var(--mh-glass-border); color: var(--mh-muted); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .page__footer .fas, .page__footer .fab, .page__footer .far, .page__footer .fal { color: var(--mh-muted); }
 .page__footer a:hover { color: var(--mh-accent); }
+
+/* Cross-section navigation reveal: while the background palette morphs, hold the
+   chrome + content hidden (everything except the bg canvas) so themed nav/text
+   never appears over a half-transitioned field. The theme's `intro` keyframe fades
+   these elements in on load, and CSS animations override even !important opacity —
+   so we suppress `intro` for the whole transition lifecycle and drive the reveal
+   ourselves with a plain opacity transition (predictable timing; animation restarts
+   are not). .bg-pending = hidden; the bg module swaps to .bg-revealing once the
+   field has mostly settled, fading the page up over the still-moving field. */
+html.bg-pending body > *:not(#bg-site),
+html.bg-revealing body > *:not(#bg-site) {
+  -webkit-animation: none !important;
+          animation: none !important;
+  transition: opacity 450ms ease;
+}
+html.bg-pending body > *:not(#bg-site) { opacity: 0; }
+html.bg-revealing body > *:not(#bg-site) { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  html.bg-pending body > *:not(#bg-site) { opacity: 1; }
+}
 
 /* News include clean-up */
 section#news { background: transparent; color: var(--mh-text); }
@@ -272,14 +356,15 @@ section#news .news-date { color: var(--mh-muted); }
 /* Titles and headings */
 .page__title { color: var(--mh-accent); }
 .archive__subtitle { color: var(--mh-muted); border-color: var(--mh-border); }
+.page__date, .page__date time, .archive .page__meta, .archive .page__meta time { color: var(--mh-muted); }
 
 /* Archive lists */
 .archive { color: var(--mh-text); }
 .archive a { color: var(--mh-tile-cool); text-decoration: none; }
-.archive a:hover { color: #ef6b73; text-decoration: underline; }
+.archive a:hover { color: var(--mh-link-hover); text-decoration: underline; }
 .archive__item-title { color: var(--mh-text); font-size: 1.1rem; }
 .archive__item-title a { color: var(--mh-tile-cool); }
-.archive__item-title a:hover { color: #ef6b73; }
+.archive__item-title a:hover { color: var(--mh-link-hover); }
 .archive__item-excerpt { color: var(--mh-tile-cooler); font-size: 0.85rem; font-weight: 300; }
 .archive__item-excerpt p { color: var(--mh-tile-cooler); font-size: 0.85rem; font-weight: 300; }
 
@@ -317,12 +402,12 @@ section#news .news-date { color: var(--mh-muted); }
 .hm-share { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
 .hm-share__title { color: var(--mh-muted); font-size: .9rem; margin-right: .25rem; }
 .hm-chip { display:inline-flex; align-items:center; justify-content:center; gap:.35rem; padding:.25rem .6rem; border:1px solid var(--mh-border); border-radius:999px; color: var(--mh-tile-cool); text-decoration:none; background: rgba(16,36,48,.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); flex: 0 0 112px; }
-.hm-chip:hover { color:#ef6b73; border-color:#ef6b73; }
+.hm-chip:hover { color:var(--mh-link-hover); border-color:var(--mh-link-hover); }
 
 /* Pagination (previous/next) — make subtle with arrows */
 .pagination { display:flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--mh-border); padding-top: .75rem; }
-.pagination--pager { color: var(--mh-tile-cool); border:1px solid var(--mh-border); background: rgba(16,36,48,.35); border-radius: 999px; font-size: .92rem; padding: .35rem .8rem; }
-.pagination--pager:hover { color:#ef6b73; border-color:#ef6b73; }
+.pagination--pager { color: var(--mh-tile-cool); border:1px solid var(--mh-glass-border); background: var(--mh-glass); box-shadow: var(--mh-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 999px; font-size: .92rem; padding: .45rem 1rem; }
+.pagination--pager:hover { color:var(--mh-link-hover); border-color:var(--mh-link-hover); background: var(--mh-panel); }
 .pagination--pager.disabled { opacity:.45; pointer-events:none; }
 
 /* Related posts cards: ensure cyan-muted text */
@@ -333,3 +418,211 @@ section#news .news-date { color: var(--mh-muted); }
 .page__related .page__date,
 .page__related time { color: var(--mh-tile-cooler) !important; }
 .page__related-title { color: var(--mh-muted); }
+
+/* Active nav indicator */
+.greedy-nav a.is-active {
+  color: var(--mh-accent);
+  border-bottom: 2px solid var(--mh-accent);
+  padding-bottom: 2px;
+}
+.greedy-nav a.is-active:hover { color: var(--mh-accent-strong); }
+
+/* Standalone /news/ page (default layout has no #main padding, so this
+   container provides the measure, spacing, and glass card itself). */
+.hm-news-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+.hm-news-page .hm-heading { margin-bottom: 1rem; }
+.hm-news-page .news-container {
+  background: var(--mh-glass);
+  border: 1px solid var(--mh-glass-border);
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  box-shadow: var(--mh-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.hm-news-page .news-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  padding: 0.7rem 0;
+  line-height: 1.45;
+}
+.hm-news-page .news-item + .news-item { border-top: 1px solid var(--mh-glass-border); }
+.hm-news-page .news-date {
+  flex: 0 0 5rem;
+  color: var(--mh-muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.hm-news-page .news-body { color: var(--mh-text); }
+.hm-news-page a { color: var(--mh-accent); text-decoration: none; }
+.hm-news-page a:hover { color: var(--mh-accent-strong); text-decoration: underline; }
+
+/* Publications: year section headings */
+.pub-year {
+  color: var(--mh-accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin: 2.25rem 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--mh-glass-border);
+}
+.pub-year:first-of-type { margin-top: 0.75rem; }
+
+/* Inner-page canvases render at full opacity, like the homepage. A dimmed canvas
+   lets the flat themed body color bleed through, and blending the varied field
+   toward any single flat color flattens its banding — washing out the outer color
+   bands and the sense of depth. Full opacity keeps the bands (and depth) intact. */
+body:not(:has(.home-modern)) .site-bg { opacity: 1; }
+
+/* Inner pages no longer render the author sidebar — reclaim the column and
+   constrain measure for readability, left-aligned to match the home hero. */
+@media (min-width: 1200px) {
+  .archive,
+  .page {
+    float: none;
+    width: 100%;
+    max-width: 880px;
+    margin-left: 0;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* =========================================================================
+   PUBLICATIONS — muted dark-olive / chartreuse mode (matches new_green_palette.jpg).
+   The canvas is no longer inverted: a dark olive field with soft chartreuse blooms.
+   So this is now a DARK scheme — light cream-green text over the field, chartreuse
+   accents — rather than the old forced-light chartreuse sheet. Text still sits
+   directly on the field (no per-item card), masthead/footer still dissolved.
+   ========================================================================= */
+:root[data-bg='publications'] {
+  --mh-bg: #29331d;                 /* dark olive — matches the field's dominant tone */
+  --mh-bg-alt: #323d24;
+  --mh-panel: rgba(40, 50, 28, 0.5);
+  --mh-border: rgba(184, 209, 130, 0.18);
+  --mh-text: #e9f1d8;               /* soft cream-green body text over the dark field */
+  --mh-muted: #aec18d;              /* muted sage for dates/secondary */
+  --mh-accent: #cbe78d;             /* bright chartreuse for headings/titles/years */
+  --mh-accent-strong: #e2f4ab;
+  --mh-3d: #88a052;
+  --mh-shadow: 0 6px 22px rgba(0, 0, 0, 0.30);
+  --mh-glass: rgba(40, 52, 28, 0.34);     /* dark frost — lets the olive field + banding bleed through */
+  --mh-glass-border: rgba(184, 209, 130, 0.20);
+  --mh-tile-cool: #bcd584;          /* links — soft chartreuse */
+  --mh-tile-cooler: #aec18d;        /* secondary text / excerpts — sage */
+  --mh-link-hover: #ecf9bf;
+}
+
+/* Per-item frosted-glass cards for the Posts list. Each listing sits on its own
+   color-matched, blurred card BY DEFAULT (not just on hover) for readability over
+   the banded field — mirroring the news card. Publications deliberately has NO
+   card: its dark text sits directly on the chartreuse field (cleaner, less busy). */
+html[data-bg='posts'] .archive__item {
+  background: var(--mh-glass);
+  border: 1px solid var(--mh-glass-border);
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
+  margin: 0 0 0.9rem;
+  box-shadow: var(--mh-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+html[data-bg='posts'] .archive__item:hover {
+  background: var(--mh-glass);     /* keep the card; don't flip to the default navy */
+  border-color: var(--mh-accent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20);
+}
+/* Tighten the Posts cards: kill the default block margins on the title / date /
+   excerpt (which stacked into large empty gaps) so each card hugs its content. */
+html[data-bg='posts'] .archive__item { padding: 0.6rem 1rem; margin: 0 0 0.55rem; }
+html[data-bg='posts'] .archive__item-title { margin: 0 0 0.2rem; line-height: 1.25; }
+html[data-bg='posts'] .page__date { margin: 0 0 0.2rem; font-size: 0.82rem; }
+html[data-bg='posts'] .archive__item-excerpt,
+html[data-bg='posts'] .archive__item-excerpt p { margin: 0; line-height: 1.4; }
+/* Publications: no card — only a faint frame on hover so the field shows through. */
+html[data-bg='publications'] .archive__item:hover {
+  background: rgba(184, 209, 130, 0.08);
+  border-color: var(--mh-glass-border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* Re-tone hardcoded dark/red bits for the dark olive scheme */
+html[data-bg='publications'] .greedy-nav a:hover,
+html[data-bg='publications'] .archive a:hover,
+html[data-bg='publications'] .archive__item-title a:hover { color: var(--mh-accent-strong); }
+html[data-bg='publications'] .hm-chip { background: rgba(40, 52, 28, 0.45); color: var(--mh-tile-cool); }
+html[data-bg='publications'] .hm-chip:hover { color: var(--mh-accent-strong); border-color: var(--mh-accent-strong); }
+html[data-bg='publications'] .pagination--pager:hover { color: var(--mh-accent-strong); border-color: var(--mh-accent-strong); }
+html[data-bg='publications'] .theme-toggle,
+html[data-bg='publications'] .font-switcher { background: rgba(40, 52, 28, 0.5); color: var(--mh-text); }
+html[data-bg='publications'] .font-switcher option { color: #15261a; }
+
+/* Dissolve the masthead + footer into the field — no frosted bar, no border,
+   no blur. Just the dark links/text floating over the organic dotted bg. */
+html[data-bg='publications'] .masthead {
+  background: transparent;
+  border-bottom: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-bg='publications'] .page__footer {
+  background: transparent;
+  border-top: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* =========================================================================
+   POSTS — dark amber/gold scheme to match the field. Dark base like the
+   homepage, but every accent/link/glass tone shifts warm so the nav, titles,
+   dates, excerpts and chrome read as one amber system instead of the default
+   cyan/navy. Set as CSS vars so existing var-driven rules just inherit them.
+   ========================================================================= */
+:root[data-bg='posts'] {
+  --mh-bg: #1a0c00;                 /* dark brown — matches the field base */
+  --mh-bg-alt: #241405;
+  --mh-panel: #2a1808;
+  --mh-border: rgba(255, 190, 110, 0.16);
+  --mh-text: #ffe9c7;               /* warm off-white body text */
+  --mh-muted: #c9a26a;              /* muted amber — dates/secondary */
+  --mh-accent: #ffbe3d;             /* gold — headings/active nav */
+  --mh-accent-strong: #ffd86b;
+  --mh-3d: #e07e00;
+  --mh-shadow: 0 6px 24px rgba(20, 10, 0, 0.40);
+  --mh-glass: rgba(40, 21, 4, 0.55);          /* dark amber frosted glass */
+  --mh-glass-border: rgba(255, 190, 110, 0.16);
+  --mh-tile-cool: #ffc24d;          /* links / nav text */
+  --mh-tile-cooler: rgba(255, 194, 77, 0.66); /* excerpts */
+  --mh-link-hover: #ff9e1f;         /* brighter orange on hover */
+}
+
+/* =========================================================================
+   PROJECTS — dark violet/magenta scheme to match the field. Same idea as
+   posts: dark base, accents and glass shifted into the violet family.
+   ========================================================================= */
+:root[data-bg='projects'] {
+  --mh-bg: #180325;                 /* deep violet — matches the field base */
+  --mh-bg-alt: #220a35;
+  --mh-panel: #2a0c40;
+  --mh-border: rgba(210, 150, 255, 0.16);
+  --mh-text: #f3e4ff;               /* light lavender-white body text */
+  --mh-muted: #c19cdc;              /* muted violet — dates/secondary */
+  --mh-accent: #d98cff;             /* violet — headings/active nav */
+  --mh-accent-strong: #ec9bff;
+  --mh-3d: #b012c8;
+  --mh-shadow: 0 6px 24px rgba(20, 4, 30, 0.45);
+  --mh-glass: rgba(38, 9, 54, 0.55);          /* dark violet frosted glass */
+  --mh-glass-border: rgba(210, 150, 255, 0.16);
+  --mh-tile-cool: #cf8cff;          /* links / nav text (violet) */
+  --mh-tile-cooler: rgba(207, 140, 255, 0.66);
+  --mh-link-hover: #ff7ad6;         /* pink on hover */
+}

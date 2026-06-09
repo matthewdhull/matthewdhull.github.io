@@ -1,17 +1,15 @@
 <script src="{{ '/assets/js/main.min.js' | relative_url }}"></script>
-{% if page.layout == 'home-modern' %}
-  <script type="module">
-    const p = new URLSearchParams(window.location.search);
-    const bg = (p.get('bg')||'').toLowerCase();
-    const exp = p.get('experiment');
-    if (bg === 'depth' || exp === '1') {
-      import('{{ '/assets/js/bg-depth-bands.module.js' | relative_url }}');
-    } else {
-      import('{{ '/assets/js/bg-palette-grid.module.js' | relative_url }}');
-    }
-  </script>
-  <!-- <script type="module" src="{{ '/assets/js/hero-obj.module.js' | relative_url }}"></script> -->
-{% endif %}
+{% comment %} Palette-grid background runs site-wide (targets #bg-site in default.html); the depth variant stays an opt-in experiment. {% endcomment %}
+<script type="module">
+  const p = new URLSearchParams(window.location.search);
+  const bg = (p.get('bg')||'').toLowerCase();
+  const exp = p.get('experiment');
+  if (bg === 'depth' || exp === '1') {
+    import('{{ '/assets/js/bg-depth-bands.module.js' | relative_url }}');
+  } else {
+    import('{{ '/assets/js/bg-palette-grid.module.js' | relative_url }}');
+  }
+</script>
 
 {% include analytics.html %}
 {% include /comments-providers/scripts.html %}
@@ -35,6 +33,41 @@
         try { localStorage.setItem('theme', next); } catch(e) {}
         applyLabel(btn, next);
       });
+    }
+  })();
+  </script>
+
+  <!-- FONT TESTING: lazy-loads each pairing's webfonts only when selected; remove with its CSS + the #font-switcher control once a pairing is chosen -->
+  <script>
+  (function(){
+    var FONTS = {
+      inter: null,
+      grotesk: 'https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap',
+      plex: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap',
+      geist: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap',
+      bricolage: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap',
+      sora: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Sora:wght@400;500;600;700&display=swap',
+      clash: 'https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap'
+    };
+    function load(key){
+      var href = FONTS[key];
+      if(!href || document.getElementById('font-css-'+key)) return;
+      var l = document.createElement('link');
+      l.rel = 'stylesheet'; l.id = 'font-css-'+key; l.href = href;
+      document.head.appendChild(l);
+    }
+    function apply(key){
+      if(!(key in FONTS)) key = 'inter';
+      load(key);
+      document.documentElement.setAttribute('data-font', key);
+      try { localStorage.setItem('font', key); } catch(e){}
+    }
+    var saved = (function(){ try { return localStorage.getItem('font'); } catch(e){ return null; } })() || 'inter';
+    apply(saved);
+    var sel = document.getElementById('font-switcher');
+    if(sel){
+      sel.value = saved;
+      sel.addEventListener('change', function(){ apply(sel.value); });
     }
   })();
   </script>

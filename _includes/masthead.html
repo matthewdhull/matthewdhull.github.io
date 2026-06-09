@@ -13,9 +13,21 @@
               {% else %}
               {% assign domain = base_path %}
             {% endif %}
-            <li class="masthead__menu-item"><a href="{{ domain }}{{ link.url }}">{{ link.title }}</a></li>
+            {% assign link_active = false %}
+            {% if link.url != '/' and page.url contains link.url %}{% assign link_active = true %}{% endif %}
+            <li class="masthead__menu-item"><a href="{{ domain }}{{ link.url }}"{% if link_active %} class="is-active" aria-current="page"{% endif %}>{{ link.title }}</a></li>
           {% endfor %}
         </ul>
+        <!-- FONT TESTING: temporary switcher; remove with its CSS + JS once a pairing is chosen -->
+        <select id="font-switcher" class="font-switcher" title="Test heading/body fonts" aria-label="Test fonts">
+          <option value="inter">Aa Inter (current)</option>
+          <option value="grotesk">Aa Space Grotesk</option>
+          <option value="plex">Aa IBM Plex</option>
+          <option value="geist">Aa Geist + Mono</option>
+          <option value="bricolage">Aa Bricolage Grotesque</option>
+          <option value="sora">Aa Sora + Plex Sans</option>
+          <option value="clash">Aa Clash Display + Satoshi</option>
+        </select>
         <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☾</button>
         <ul class="hidden-links hidden"></ul>
       </nav>
