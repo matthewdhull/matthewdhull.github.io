@@ -3,3 +3,8 @@ _site/
 Gemfile.lock
 node_modules/
 node/
+
+# Local symlink to an external gsplat checkout (machine-specific path)
+gsplat
+# Unused/orphan asset, kept locally only
+images/gt_icon_2.png
