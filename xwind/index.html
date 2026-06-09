@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crosswind Component Explainer</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="xw-header">
+    <h1>Crosswind Component Explainer</h1>
+    <p class="xw-sub">Read headwind &amp; crosswind components off the chart, or watch the runway respond to the wind.</p>
+  </header>
+
+  <main class="xw-main">
+    <!-- LEFT: the classic crosswind component chart (self-drawing on load) -->
+    <section class="xw-card xw-chart-card" aria-label="Crosswind component chart">
+      <svg id="xw-chart" viewBox="0 0 600 600" role="img" aria-label="Crosswind component chart"></svg>
+    </section>
+
+    <!-- RIGHT: runway scene (2D placeholder in phase 1, three.js in phase 3) -->
+    <section class="xw-card xw-runway-card" aria-label="Runway scene">
+      <div class="xw-runway-stage">
+        <canvas id="xw-field" class="xw-field"></canvas>
+        <svg id="xw-runway" viewBox="-200 -200 400 400" class="xw-runway"></svg>
+      </div>
+      <p class="xw-runway-caption" id="xw-runway-caption">RWY 02/20 &middot; wind 040/15</p>
+    </section>
+  </main>
+
+  <!-- CONTROLS -->
+  <section class="xw-controls" aria-label="Controls">
+    <div class="xw-control">
+      <label for="ctl-heading">Runway heading <span class="xw-val" id="val-heading">020&deg;</span></label>
+      <input type="range" id="ctl-heading" min="0" max="350" step="10" value="20" />
+    </div>
+    <div class="xw-control">
+      <label for="ctl-winddir">Wind direction <span class="xw-val" id="val-winddir">040&deg;</span></label>
+      <input type="range" id="ctl-winddir" min="0" max="350" step="10" value="40" />
+    </div>
+    <div class="xw-control">
+      <label for="ctl-windspd">Wind speed <span class="xw-val" id="val-windspd">15 kt</span></label>
+      <input type="range" id="ctl-windspd" min="0" max="40" step="1" value="15" />
+    </div>
+    <div class="xw-readout" id="xw-readout" aria-live="polite"></div>
+  </section>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

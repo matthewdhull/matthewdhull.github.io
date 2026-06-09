@@ -1,0 +1,167 @@
+/* Crosswind Component Explainer — engineering / blueprint aesthetic.
+   Light blue graph-paper ground, dark structural ink, technical type. */
+
+:root {
+  --paper:        #eef5fc;   /* card paper */
+  --grid-minor:   #d3e6f7;   /* fine graph lines */
+  --grid-major:   #b9d6ef;   /* heavy graph lines */
+  --ink:          #15293a;   /* chart structural lines */
+  --ink-soft:     #5b7186;
+  --blue:         #1d6fb8;   /* axis titles / accents */
+  --chip-bg:      #2d3748;   /* angle label chips */
+  --chip-fg:      #ffffff;
+  --hi-wedge:     rgba(255, 145, 30, 0.16);  /* magnitude wedge fill */
+  --hi-wedge-edge:rgba(230, 120, 10, 0.55);
+  --hi-angle:     #e8590c;   /* wind/runway angle ray */
+  --hi-comp:      #e03131;   /* component drop-lines (red, like the worked example) */
+  --sock-orange:  #ff6a13;
+  --frame:        #9ec3e6;
+  --bg:           #f4f8fc;
+  --text:         #243443;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Helvetica Neue", Arial, "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.xw-header {
+  padding: 1.4rem 1.6rem 0.4rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.xw-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.01em;
+  font-weight: 700;
+  color: #16314a;
+}
+.xw-sub {
+  margin: 0.25rem 0 0;
+  color: #5a7186;
+  font-size: 0.95rem;
+}
+
+.xw-main {
+  max-width: 1180px;
+  margin: 0.8rem auto 0;
+  padding: 0 1.6rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 1.2rem;
+  align-items: stretch;
+}
+@media (max-width: 880px) {
+  .xw-main { grid-template-columns: 1fr; }
+}
+
+/* Cards: blueprint paper with a fine graph-paper grid drawn in CSS */
+.xw-card {
+  position: relative;
+  border: 1.5px solid var(--frame);
+  border-radius: 3px;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  background-size:
+    14px 14px, 14px 14px,
+    70px 70px, 70px 70px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+  box-shadow: 0 6px 22px rgba(20, 60, 100, 0.08);
+  overflow: hidden;
+}
+
+.xw-chart-card { padding: 8px; }
+#xw-chart { display: block; width: 100%; height: auto; }
+
+/* Right scene — "grass field" green graph paper so the light wind arrows read */
+.xw-runway-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  --paper:      #ecf6e8;
+  --grid-minor: #d2e9c9;
+  --grid-major: #bbddae;
+  --frame:      #a7cd97;
+}
+.xw-runway-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 540px;
+}
+.xw-field, .xw-runway {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.xw-runway { z-index: 1; }
+.xw-field { z-index: 2; pointer-events: none; }  /* arrows overlay the pavement */
+.xw-runway-caption {
+  margin: 0.4rem 0 0.2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #2c485f;
+  letter-spacing: 0.03em;
+}
+
+/* Controls */
+.xw-controls {
+  max-width: 1180px;
+  margin: 1.1rem auto 2.4rem;
+  padding: 0 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr);
+  gap: 1.1rem;
+  align-items: end;
+}
+@media (max-width: 880px) {
+  .xw-controls { grid-template-columns: 1fr 1fr; }
+}
+.xw-control label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3a5468;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.xw-val {
+  float: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--blue);
+  font-weight: 700;
+}
+.xw-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--blue);
+}
+.xw-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #2c485f;
+  background: #ffffffaa;
+  border: 1px solid #9ec3e6;
+  border-radius: 4px;
+  padding: 0.5rem 0.7rem;
+}
+.xw-readout b { color: var(--hi-comp); }
+.xw-readout .hw { color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; }
+}
