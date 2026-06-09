@@ -1,4 +1,4 @@
-import { state, setState, subscribe, activeRunway, runwayPair } from "./state.js";
+import { state, setState, subscribe, angleDelta, runwayPair } from "./state.js";
 import { createChart } from "./chart.js";
 import { createRunway } from "./runway.js";
 import { createField } from "./field.js";
@@ -9,10 +9,12 @@ const chart = createChart(document.getElementById("xw-chart"));
 const runway = createRunway(document.getElementById("xw-runway"));
 const field = createField(document.getElementById("xw-field"));
 
-// derive the chart angle + active end and push to subscribers
+// The INTENDED runway is the slider heading (shown by the airplane). Everything
+// is computed relative to it — so a wind behind you reads as a tailwind rather
+// than silently flipping to the favourable reciprocal.
 function derive(st) {
-  const act = activeRunway(st.runwayHeading, st.windDir);
-  return { ...st, off: act.off, activeHeading: act.heading, tailwind: act.tailwind };
+  const raw = Math.abs(angleDelta(st.windDir, st.runwayHeading)); // 0..180 off the nose
+  return { ...st, off: Math.min(raw, 90), rawOff: raw, tailwind: raw > 90 };
 }
 
 const elHeading = document.getElementById("ctl-heading");
@@ -39,12 +41,14 @@ subscribe((st) => {
 
   caption.innerHTML = `RWY ${runwayPair(st.runwayHeading)} &middot; wind ${fmt3(st.windDir)}/${String(st.windSpeed).padStart(2, "0")}`;
 
-  const hw = d.windSpeed * Math.cos((d.off * Math.PI) / 180);
-  const xw = d.windSpeed * Math.sin((d.off * Math.PI) / 180);
+  const hw = d.windSpeed * Math.cos((d.rawOff * Math.PI) / 180);  // signed: <0 = tailwind
+  const xw = d.windSpeed * Math.sin((d.rawOff * Math.PI) / 180);
+  const along = hw >= 0
+    ? `<span class="hw">Headwind ${hw.toFixed(0)} kt</span>`
+    : `<b>Tailwind ${(-hw).toFixed(0)} kt</b>`;
   readout.innerHTML =
-    `Active <b>RWY ${runwayNum(d.activeHeading)}</b> &middot; wind <b>${d.off}°</b> off the nose<br>` +
-    `<span class="hw">Headwind ${hw.toFixed(0)} kt</span> &middot; <b>Crosswind ${xw.toFixed(0)} kt</b>` +
-    (d.tailwind ? ` &middot; <em>tailwind!</em>` : "");
+    `Intended <b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind <b>${d.rawOff}°</b> off the nose<br>` +
+    `${along} &middot; <b>Crosswind ${xw.toFixed(0)} kt</b>`;
 });
 
 function runwayNum(h) {

@@ -60,6 +60,10 @@ export function createRunway(svg) {
   numTop.setAttribute("transform", "rotate(180 0 " + (-HALF_LEN + 44) + ")");
   g.append(numTop, numBot);
 
+  // airplane silhouette (marks the intended runway); above pavement
+  const plane = mkPlane();
+  svg.append(plane.g);
+
   // windsocks (world frame, not rotated with runway) — one per end
   const socks = [mkSock(), mkSock()];
   socks.forEach((s) => svg.append(s.g));
@@ -80,17 +84,23 @@ export function createRunway(svg) {
     numTop.textContent = runwayNumber((h + 180) % 360);
     numBot.textContent = runwayNumber(h);
 
-    // sock positions: at each runway end, offset to the side
-    const ends = [h, (h + 180) % 360];
-    ends.forEach((endBearing, i) => {
-      const along = bvec(endBearing);
-      const side = { x: -along.y, y: along.x };
+    // one sock per runway direction, placed abeam that runway's numbers on its
+    // RIGHT side (right relative to that landing direction).
+    const dirs = [h, (h + 180) % 360];
+    dirs.forEach((B, i) => {
+      const num = bvec((B + 180) % 360);          // the number sits on the -B threshold
+      const right = bvec((B + 90) % 360);         // right wing of a pilot landing toward B
       const base = {
-        x: along.x * (HALF_LEN + 6) + side.x * 30,
-        y: along.y * (HALF_LEN + 6) + side.y * 30,
+        x: num.x * (HALF_LEN - 48) + right.x * (HALF_W + 14),
+        y: num.y * (HALF_LEN - 48) + right.y * (HALF_W + 14),
       };
       updateSock(socks[i], base, st);
     });
+
+    // airplane silhouette on the INTENDED runway (slider heading), just past its
+    // numbers, nose pointed down the runway — communicates which runway is in use.
+    const pp = bvec((h + 180) % 360);
+    plane.g.setAttribute("transform", `translate(${pp.x * (HALF_LEN - 84)} ${pp.y * (HALF_LEN - 84)}) rotate(${h})`);
 
     // wind arrow from upwind edge toward center (hidden when calm)
     windArrow.style.display = st.windSpeed > 0 ? "" : "none";
@@ -110,6 +120,23 @@ export function createRunway(svg) {
   }
 
   return { update };
+}
+
+// Top-down high-wing GA silhouette (Cessna-172-ish), nose toward -y.
+function mkPlane() {
+  const g = el("g");
+  const FILL = "#f4f7f3", LINE = "#27331f";
+  const add = (name, a) => g.append(el(name, { fill: FILL, stroke: LINE, "stroke-width": 0.6, "stroke-linejoin": "round", ...a }));
+  // main wing (high, set slightly forward)
+  add("rect", { x: -17, y: -5.4, width: 34, height: 4.6, rx: 2.3 });
+  // horizontal stabilizer
+  add("rect", { x: -8, y: 8, width: 16, height: 3.6, rx: 1.8 });
+  // fuselage + pointed nose + vertical fin
+  add("path", { d: "M 0 -14 L 2.7 -8 L 2.7 11 Q 2.7 13.5 0 14 Q -2.7 13.5 -2.7 11 L -2.7 -8 Z" });
+  add("path", { d: "M 0 8 L -1.7 14 L 1.7 14 Z" });
+  // prop disc hint
+  add("line", { x1: -5.5, y1: -12.5, x2: 5.5, y2: -12.5, stroke: LINE, "stroke-width": 1.2 });
+  return { g };
 }
 
 function mkSock() {

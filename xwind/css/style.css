@@ -90,11 +90,12 @@ html, body {
   flex-direction: column;
   align-items: center;
   padding: 8px;
-  --paper:      #ecf6e8;
-  --grid-minor: #d2e9c9;
-  --grid-major: #bbddae;
-  --frame:      #a7cd97;
+  --paper:      #75906f;   /* darker grass green ground */
+  --grid-minor: #85a07e;   /* lighter grid lines on top */
+  --grid-major: #94ad8d;
+  --frame:      #5f7a59;
 }
+.xw-runway-card .xw-runway-caption { color: #20331c; }
 .xw-runway-stage {
   position: relative;
   width: 100%;

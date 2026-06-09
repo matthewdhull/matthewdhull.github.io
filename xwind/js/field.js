@@ -51,26 +51,24 @@ export function createField(canvas) {
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     ctx.clip();
 
-    // soft dark halo so the light arrows read on the light grass AND dark pavement
-    ctx.shadowColor = "rgba(30, 45, 30, 0.55)";
-    ctx.shadowBlur = 2.5;
+    // faint halo so arrows stay crisp over both the grass and the dark pavement
+    ctx.shadowColor = "rgba(25, 40, 25, 0.35)";
+    ctx.shadowBlur = 1.5;
 
     for (const p of particles) {
       p.x += flow.x * v * dt;
       p.y += flow.y * v * dt;
-      p.life -= dt * 0.25;
-      // recycle when out of circle or life ended
       const dx = p.x - cx, dy = p.y - cy;
-      if (p.life <= 0 || dx * dx + dy * dy > R * R) {
-        Object.assign(p, reentry());
-      }
-      // fade near the circular edge
-      const edge = 1 - Math.sqrt(dx * dx + dy * dy) / R;
-      const alpha = Math.max(0, Math.min(1, p.life)) * Math.min(1, edge * 3) * 0.95;
+      const rr = Math.sqrt(dx * dx + dy * dy);
+      // recycle ONLY at the circular crop — no premature mid-field death
+      if (rr > R) { Object.assign(p, reentry()); continue; }
+      // fade only within a thin margin of the crop edge; full strength across the disc
+      const edge = 1 - rr / R;
+      const alpha = Math.min(1, edge * 5) * 0.92;
       if (alpha <= 0.02) continue;
 
       ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.lineWidth = 1.4;
+      ctx.lineWidth = 1.6;
       if (arrow) {
         const len = 7 + speed * 0.25;
         const tx = p.x + flow.x * len, ty = p.y + flow.y * len;
@@ -94,8 +92,9 @@ export function createField(canvas) {
     const a = (Math.random() - 0.5) * Math.PI;       // spread across upwind arc
     const perpAng = Math.atan2(flow.y, flow.x) + Math.PI; // upwind direction
     const ang = perpAng + a;
-    const r = R * (0.6 + Math.random() * 0.4);
-    return { x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, life: 0.6 + Math.random() * 0.6 };
+    // spawn near the upwind crop edge so arrows fade IN and drift fully across
+    const r = R * (0.8 + Math.random() * 0.2);
+    return { x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r };
   }
 
   function start() { if (!raf) raf = requestAnimationFrame(frame); }
