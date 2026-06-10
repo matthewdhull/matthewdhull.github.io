@@ -154,6 +154,43 @@ const tour = createTour([
     },
     exit() { chart.tour.components(false); },
   },
+  {
+    title: "Crosswind limits",
+    body:
+      `<p>Your airplane has a <span class="em-xw">maximum demonstrated crosswind</span> — about ` +
+      `<b>15 kt</b> for a typical trainer.</p>` +
+      `<p>It's the <span class="em-xw">crosswind component</span> that matters, not the total wind. ` +
+      `Stay left of the limit line — this wind puts you <b>over</b> it (≈19 kt).</p>`,
+    enter() { setState({ runwayHeading: 20, windDir: 80, windSpeed: 22 }); chart.tour.limit(15); },
+    exit() { chart.tour.limit(0); },
+  },
+  {
+    title: "Picking the best runway",
+    body:
+      `<p>For a given wind, the runway most <span class="em">aligned</span> with it gives the most ` +
+      `<span class="em-hw">headwind</span> and least <span class="em-xw">crosswind</span>.</p>` +
+      `<p>Wind <span class="em">040/15</span>: <span class="em">RWY 02</span> → ~14 kt headwind, ~5 kt ` +
+      `crosswind. The reciprocal <span class="em">RWY 20</span> would be a 14 kt <b>tailwind</b>. ` +
+      `Spin the runway to compare.</p>`,
+    enter(ctx) { setState(TOUR); ctx.pointAt(elHeading, "down"); },
+  },
+  {
+    title: "Tailwinds count too",
+    body:
+      `<p>When the wind is <span class="em-xw">behind you</span> (more than 90° off the nose), the chart ` +
+      `reads at the <span class="em-shade">acute angle</span> and the vertical axis flips to ` +
+      `<span class="em-xw">tailwind</span> — note the red, negative scale.</p>` +
+      `<p>Here the wind is 40° <b>off the tail</b>: about a 12 kt tailwind and 10 kt crosswind.</p>`,
+    enter(ctx) { setState({ runwayHeading: 20, windDir: 160, windSpeed: 15 }); ctx.pointAt(chart.els.axisTitle, "left"); },
+  },
+  {
+    title: "The clock rule of thumb",
+    body:
+      `<p>Estimate crosswind without the chart — it's a fraction of the wind by angle off the nose:</p>` +
+      `<p style="text-align:center"><b>15°≈¼ &nbsp;·&nbsp; 30°≈½ &nbsp;·&nbsp; 45°≈¾ &nbsp;·&nbsp; 60°≈⅞ &nbsp;·&nbsp; 90°=all</b></p>` +
+      `<p>At <span class="em-shade">30° off</span>, crosswind ≈ <b>½ × 20 = 10 kt</b> — matches the chart.</p>`,
+    enter() { setState({ runwayHeading: 0, windDir: 30, windSpeed: 20 }); },
+  },
 ]);
 document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open());
 

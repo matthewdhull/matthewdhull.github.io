@@ -182,6 +182,18 @@ export function createChart(svg, handlers = {}) {
   angTag.append(angRect, angText);
   gHilite.append(angTag);
 
+  // crosswind-limit marker (tour): vertical line + over-limit band + label
+  const limBand = el("rect", { fill: "rgba(214,51,108,0.12)" });
+  const limLine = el("line", { stroke: "#d6336c", "stroke-width": 2.4, "stroke-dasharray": "7 4" });
+  const limLbl = el("g");
+  const limRect = el("rect", { rx: 5, height: 20, fill: "#d6336c" });
+  const limTxt = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12, fill: "#fff", "font-weight": 700 });
+  limLbl.append(limRect, limTxt);
+  const gLimit = el("g");
+  gLimit.style.display = "none";
+  gLimit.append(limBand, limLine, limLbl);
+  svg.append(gLimit);
+
   function updateHighlight(st) {
     cur = st;
     const V = st.windSpeed;
@@ -384,11 +396,25 @@ export function createChart(svg, handlers = {}) {
   function tourComponents(on) {
     [compH, compV].forEach((l) => { l.setAttribute("stroke-width", on ? 4 : 2.4); l.classList.toggle("xw-pulse", on); });
   }
+  function tourLimit(kt) {
+    if (!kt) { gLimit.style.display = "none"; return; }
+    gLimit.style.display = "";
+    const x = O.x + kt * S, top = O.y - R_MAX;
+    limLine.setAttribute("x1", x); limLine.setAttribute("y1", O.y);
+    limLine.setAttribute("x2", x); limLine.setAttribute("y2", top);
+    limBand.setAttribute("x", x); limBand.setAttribute("y", top);
+    limBand.setAttribute("width", O.x + R_MAX - x); limBand.setAttribute("height", R_MAX);
+    const label = `max XW ${kt}`;
+    const w = 16 + label.length * 7;
+    limTxt.textContent = label;
+    limTxt.setAttribute("x", x); limTxt.setAttribute("y", top - 8);
+    limRect.setAttribute("x", x - w / 2); limRect.setAttribute("y", top - 22); limRect.setAttribute("width", w);
+  }
 
   return {
     updateHighlight, play, geom: { O, S, R_MAX, MAX_KT },
-    els: { chips, arcs, wedge, compH, compV, ray, dot, hwDot, xwDot },
-    tour: { flashArcs: tourFlashArcs, stopArcs: tourStopArcs, wedge: tourWedge, components: tourComponents },
+    els: { chips, arcs, wedge, compH, compV, ray, dot, hwDot, xwDot, axisTitle: ht },
+    tour: { flashArcs: tourFlashArcs, stopArcs: tourStopArcs, wedge: tourWedge, components: tourComponents, limit: tourLimit },
   };
 }
 
