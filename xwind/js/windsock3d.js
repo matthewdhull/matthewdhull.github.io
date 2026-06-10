@@ -39,7 +39,8 @@ export function createWindsocks(canvas) {
   dl.position.set(-90, 280, -70);
   scene.add(dl);
 
-  const socks = [makeSock(scene), makeSock(scene)];
+  const stripeTex = makeStripeTexture();
+  const socks = [makeSock(scene, stripeTex), makeSock(scene, stripeTex)];
   let st = { runwayHeading: 20, windDir: 40, windSpeed: 15 };
   let t = 0, last = 0, raf = 0;
 
@@ -71,7 +72,23 @@ export function createWindsocks(canvas) {
   return { setState: (s) => { st = s; }, resize };
 }
 
-function makeSock(scene) {
+// hard orange/white stripes along the tube length (sharp, not interpolated)
+function makeStripeTexture() {
+  const w = 250, h = 6, bands = 5;   // odd count -> orange at both mouth and tip
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const c = cv.getContext("2d");
+  for (let i = 0; i < bands; i++) {
+    c.fillStyle = i % 2 === 0 ? "#ff6a13" : "#fdfdfd";
+    c.fillRect(Math.round((i * w) / bands), 0, Math.ceil(w / bands) + 1, h);
+  }
+  const tex = new THREE.CanvasTexture(cv);
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function makeSock(scene, tex) {
   const pole = new THREE.Mesh(
     new THREE.CylinderGeometry(1.1, 1.5, POLEH, 8),
     new THREE.MeshStandardMaterial({ color: 0x5b6b7a, roughness: 0.85 })
@@ -87,13 +104,11 @@ function makeSock(scene) {
   const vCount = (M + 1) * K;
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vCount * 3), 3));
-  const col = new Float32Array(vCount * 3);
-  const orange = new THREE.Color(0xff6a13), white = new THREE.Color(0xfdfdfd);
-  for (let i = 0; i <= M; i++) {
-    const c = Math.floor(i / 2) % 2 === 0 ? orange : white;
-    for (let k = 0; k < K; k++) { const o = (i * K + k) * 3; col[o] = c.r; col[o + 1] = c.g; col[o + 2] = c.b; }
+  const uv = new Float32Array(vCount * 2);
+  for (let i = 0; i <= M; i++) for (let k = 0; k < K; k++) {
+    const o = (i * K + k) * 2; uv[o] = i / M; uv[o + 1] = k / K;   // u runs along the length
   }
-  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
   const idx = [];
   for (let i = 0; i < M; i++) for (let k = 0; k < K; k++) {
     const a = i * K + k, b = i * K + ((k + 1) % K), c = (i + 1) * K + k, d = (i + 1) * K + ((k + 1) % K);
@@ -101,7 +116,7 @@ function makeSock(scene) {
   }
   geo.setIndex(idx);
   const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-    vertexColors: true, roughness: 0.85, metalness: 0, side: THREE.DoubleSide,
+    map: tex, roughness: 0.85, metalness: 0, side: THREE.DoubleSide,
   }));
   mesh.frustumCulled = false;   // geometry is rewritten each frame; don't cull on a stale bounds
   scene.add(mesh);
@@ -125,17 +140,22 @@ function updateSock(sock, bx, bz, flow, speed, t) {
   // pin the mouth at the pole top
   pts[0].set(bx, POLEH, bz); prev[0].copy(pts[0]);
 
-  const g = 16;                                 // gravity accel
-  const windAcc = Math.min(speed, 40) * 1.5;    // wind accel (ratio sets the lift angle)
+  // Wind "inflates" a length of the sock and holds it horizontal; the rest droops
+  // under gravity. The inflated reach grows with speed (band-by-band), reaching the
+  // tip — fully blown out — at 15 kt, like a real windsock.
+  const g = 70;                                 // gravity (strong: un-inflated tail hangs straight down)
+  const liftAcc = 400;                          // strong lift to hold inflated segments horizontal
+  const reach = (Math.min(speed, 15) / 15) * M; // inflated length in segments (full at 15 kt)
   const dwx = flow.x, dwz = flow.y;             // downwind (horizontal)
 
   for (let i = 1; i <= M; i++) {
     const p = pts[i], pr = prev[i];
     const vx = clamp(p.x - pr.x, -2, 2), vy = clamp(p.y - pr.y, -2, 2), vz = clamp(p.z - pr.z, -2, 2);
     pr.copy(p);
-    p.x += vx * 0.97 + dwx * windAcc * DT2;
+    const w = liftAcc * clamp(reach - (i - 1), 0, 1);   // lift falls off past the inflated reach
+    p.x += vx * 0.97 + dwx * w * DT2;
     p.y += vy * 0.97 - g * DT2;
-    p.z += vz * 0.97 + dwz * windAcc * DT2;
+    p.z += vz * 0.97 + dwz * w * DT2;
     if (p.y < 0.6) p.y = 0.6;
   }
   // distance constraints (mouth pinned)
@@ -154,9 +174,9 @@ function updateSock(sock, bx, bz, flow, speed, t) {
     }
   }
 
-  // build the tube around the centerline, adding a procedural flutter wave
+  // build the tube around the centerline, adding a gentle procedural flutter wave
   const px = -flow.y, pz = flow.x;              // horizontal perpendicular
-  const amp = Math.min(speed, 40) * 0.14;
+  const amp = Math.min(speed, 40) * 0.045;      // dampened (was too wavy)
   const pos = sock.geo.attributes.position.array;
   for (let i = 0; i <= M; i++) {
     const a = pts[Math.max(0, i - 1)], b = pts[Math.min(M, i + 1)];
@@ -166,9 +186,9 @@ function updateSock(sock, bx, bz, flow, speed, t) {
     _v.crossVectors(_t, _u).normalize();
     const r = MOUTHR + (TIPR - MOUTHR) * (i / M);
     const f = i / M;
-    const wave = Math.sin(t * 8 + i * 0.9) * amp * f;
+    const wave = Math.sin(t * 4.5 + i * 0.7) * amp * f;
     const cx = pts[i].x + px * wave;
-    const cy = pts[i].y + Math.sin(t * 6 + i * 0.7) * amp * 0.5 * f;
+    const cy = pts[i].y + Math.sin(t * 3.5 + i * 0.6) * amp * 0.35 * f;
     const cz = pts[i].z + pz * wave;
     for (let k = 0; k < K; k++) {
       const ang = (k / K) * TWO_PI, ca = Math.cos(ang), sa = Math.sin(ang);
