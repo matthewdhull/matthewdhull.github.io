@@ -177,10 +177,11 @@ const tour = createTour([
   {
     title: "Tailwinds count too",
     body:
-      `<p>When the wind is <span class="em-xw">behind you</span> (more than 90° off the nose), the chart ` +
-      `reads at the <span class="em-shade">acute angle</span> and the vertical axis flips to ` +
-      `<span class="em-xw">tailwind</span> — note the red, negative scale.</p>` +
-      `<p>Here the wind is 40° <b>off the tail</b>: about a 12 kt tailwind and 10 kt crosswind.</p>`,
+      `<p>A paper chart only covers headwinds — it doesn't actually flip. When the wind is ` +
+      `<span class="em-xw">behind you</span> (more than 90° off the nose), you read it at the ` +
+      `<span class="em-shade">acute angle</span> and treat that result as a <span class="em-xw">tailwind</span>.</p>` +
+      `<p>We relabel the axis red and negative here just to make that reading obvious — same chart, ` +
+      `read differently. This wind is 40° <b>off the tail</b>: about a 12 kt tailwind, 10 kt crosswind.</p>`,
     enter(ctx) { setState({ runwayHeading: 20, windDir: 160, windSpeed: 15 }); ctx.pointAt(chart.els.axisTitle, "left"); },
   },
   {
@@ -190,6 +191,35 @@ const tour = createTour([
       `<p style="text-align:center"><b>15°≈¼ &nbsp;·&nbsp; 30°≈½ &nbsp;·&nbsp; 45°≈¾ &nbsp;·&nbsp; 60°≈⅞ &nbsp;·&nbsp; 90°=all</b></p>` +
       `<p>At <span class="em-shade">30° off</span>, crosswind ≈ <b>½ × 20 = 10 kt</b> — matches the chart.</p>`,
     enter() { setState({ runwayHeading: 0, windDir: 30, windSpeed: 20 }); },
+  },
+  {
+    title: "Do I even need a chart?",
+    body:
+      `<p>Runway 36, winds <span class="em">045/20</span> — dead diagonal. Tempting to call it ` +
+      `<b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
+      `<p>It's about <span class="em-hw">14</span> and <span class="em-xw">14</span>. The wind is the ` +
+      `<b>hypotenuse</b> of a right triangle: √(HW²&nbsp;+&nbsp;XW²)&nbsp;=&nbsp;V. Two 10s only make a ` +
+      `14 kt wind (√200 ≈ 14) — to total 20 at 45°, each leg must be ~14. ` +
+      `That's <span class="em-shade">Pythagoras</span>, and exactly what the chart bakes in.</p>`,
+    enter(ctx) { setState({ runwayHeading: 0, windDir: 45, windSpeed: 20 }); chart.tour.components(true); ctx.pointAt(chart.els.dot, "right"); },
+    exit() { chart.tour.components(false); },
+  },
+  {
+    title: "Headwind = V·cos θ, Crosswind = V·sin θ",
+    body:
+      `<p>Each leg comes straight from trig on that triangle:</p>` +
+      `<p style="text-align:center"><span class="em-hw">Headwind = V·cos θ</span><br>` +
+      `<span class="em-xw">Crosswind = V·sin θ</span></p>` +
+      `<p>Runway 36, <span class="em">050/20</span> (θ&nbsp;=&nbsp;50°): ` +
+      `<span class="em-hw">20·cos50 ≈ 13&nbsp;kt</span>, <span class="em-xw">20·sin50 ≈ 15&nbsp;kt</span>. ` +
+      `The chart just reads these off for you.</p>`,
+    enter(ctx) {
+      setState({ runwayHeading: 0, windDir: 50, windSpeed: 20 });
+      chart.tour.components(true);
+      ctx.pointAt(chart.els.hwDot, "left");
+      ctx.pointAt(chart.els.xwDot, "down");
+    },
+    exit() { chart.tour.components(false); },
   },
 ]);
 document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open());
