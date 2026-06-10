@@ -193,7 +193,7 @@ const tour = createTour([
     enter() { setState({ runwayHeading: 0, windDir: 30, windSpeed: 20 }); },
   },
   {
-    title: "Do I even need a chart?",
+    title: "Pythagoras explains how wind components split",
     body:
       `<p>Let's use runway 36, with winds <span class="em">045/20</span>, perfectly diagonal to the runway. ` +
       `It's tempting to call it <b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
