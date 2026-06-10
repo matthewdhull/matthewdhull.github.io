@@ -78,30 +78,54 @@ export function createTour(steps, opts = {}) {
     clearPointers() { hands.forEach((h) => (h.style.display = "none")); handCount = 0; },
   };
 
-  function render() {
-    const s = steps[idx];
-    titleEl.textContent = s.title;
-    bodyEl.innerHTML = s.body;
-    if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([bodyEl]).catch(() => {});
+  let lastD = null, lastBodyHtml = "", isOpen = false;
+
+  function renderChrome() {
+    titleEl.textContent = steps[idx].title;
     badge.textContent = `${idx + 1} / ${steps.length}`;
     prog.value = idx + 1;
     prevB.disabled = idx === 0;
     nextB.disabled = idx === steps.length - 1;
     menu.hidden = true;
   }
+  // body may be a string or a function of the live derived state (so the copy
+  // updates as the user drags the sliders). Re-typeset only when the text changes.
+  function renderBody() {
+    const s = steps[idx];
+    const html = typeof s.body === "function" ? s.body(lastD || {}) : s.body;
+    if (html === lastBodyHtml) return;
+    lastBodyHtml = html;
+    bodyEl.innerHTML = html;
+    if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([bodyEl]).catch(() => {});
+  }
+  function positionPointers() {
+    ctx.clearPointers();
+    if (steps[idx].point) steps[idx].point(ctx, lastD || {});
+  }
 
   function goto(i) {
     i = Math.max(0, Math.min(steps.length - 1, i));
     if (curStep && curStep.exit) curStep.exit(ctx);
-    ctx.clearPointers();
     idx = i;
-    render();
     curStep = steps[idx];
-    if (curStep.enter) curStep.enter(ctx);
+    lastBodyHtml = "";
+    renderChrome();
+    if (curStep.enter) curStep.enter(ctx, lastD || {});   // may setState -> onState refreshes body/pointers
+    renderBody();
+    positionPointers();
   }
 
-  function open() { overlay.style.display = ""; goto(0); }
+  // called by the app whenever state changes; refreshes the open panel
+  function onState(d) {
+    lastD = d;
+    if (!isOpen) return;
+    renderBody();
+    positionPointers();
+  }
+
+  function open() { isOpen = true; overlay.style.display = ""; goto(0); }
   function close() {
+    isOpen = false;
     if (curStep && curStep.exit) curStep.exit(ctx);
     ctx.clearPointers();
     curStep = null;
@@ -116,7 +140,7 @@ export function createTour(steps, opts = {}) {
   badge.addEventListener("click", () => { menu.hidden = !menu.hidden; });
 
   enableDrag(panel, titleEl);
-  return { open, close, goto };
+  return { open, close, goto, onState };
 }
 
 // drag the panel by its title bar

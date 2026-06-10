@@ -220,7 +220,7 @@ html, body {
   left: 50%;
   bottom: 18px;
   transform: translateX(-50%);
-  width: 370px;
+  width: 460px;
   max-width: calc(100vw - 24px);
   background: #fff;
   border: 1px solid #c5d8ea;
@@ -237,7 +237,7 @@ html, body {
 }
 .xw-tour-x:hover { background: #e9f1f8; }
 .xw-tour-title { margin: 0 30px 8px 0; font-size: 1.05rem; color: #16314a; cursor: grab; }
-.xw-tour-body { font-size: 0.93rem; line-height: 1.5; color: #2c3e50; min-height: 86px; }
+.xw-tour-body { font-size: 0.93rem; line-height: 1.5; color: #2c3e50; min-height: 64px; }
 .xw-tour-body p { margin: 0 0 0.6rem; }
 .xw-tour-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .xw-tour-prev, .xw-tour-next {
