@@ -43,8 +43,11 @@ export function createField(canvas) {
     const dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
     ctx.clearRect(0, 0, W, H);
 
-    const v = (8 + speed * 4.2);                    // px/s drift
-    const arrow = speed > 0.5;
+    // calm: nothing flowing (no 'snow') — the cleared canvas is the whole frame
+    if (speed < 0.5) return;
+
+    const v = speed * 5;                            // px/s drift, purely wind-driven
+    const arrow = true;
 
     ctx.save();
     ctx.beginPath();

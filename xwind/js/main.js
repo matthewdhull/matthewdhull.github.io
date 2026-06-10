@@ -79,6 +79,32 @@ function runwayNum(h) {
   return String(n).padStart(2, "0");
 }
 
+// tick strips under each slider (minor marks + labelled majors)
+function makeTicks(input, { max, minorStep, majors }) {
+  const wrap = document.createElement("div");
+  wrap.className = "xw-ticks";
+  for (let v = 0; v <= max; v += minorStep) {
+    const major = majors.includes(v);
+    const t = document.createElement("div");
+    t.className = "xw-tick" + (major ? " major" : "");
+    t.style.left = (v / max) * 100 + "%";
+    const mark = document.createElement("div");
+    mark.className = "xw-mark";
+    t.appendChild(mark);
+    if (major) {
+      const lbl = document.createElement("div");
+      lbl.className = "xw-lbl";
+      lbl.textContent = v;
+      t.appendChild(lbl);
+    }
+    wrap.appendChild(t);
+  }
+  input.insertAdjacentElement("afterend", wrap);
+}
+makeTicks(elHeading, { max: 360, minorStep: 30, majors: [0, 90, 180, 270, 360] });
+makeTicks(elWindDir, { max: 360, minorStep: 30, majors: [0, 90, 180, 270, 360] });
+makeTicks(elWindSpd, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
+
 elHeading.addEventListener("input", (e) => setState({ runwayHeading: +e.target.value }));
 elWindDir.addEventListener("input", (e) => setState({ windDir: +e.target.value }));
 elWindSpd.addEventListener("input", (e) => setState({ windSpeed: +e.target.value }));
