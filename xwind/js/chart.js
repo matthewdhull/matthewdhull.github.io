@@ -194,6 +194,7 @@ export function createChart(svg, handlers = {}) {
   limLbl.append(limRect, limTxt);
   const gLimit = el("g");
   gLimit.style.display = "none";
+  gLimit.style.pointerEvents = "none";   // purely visual — don't block the HW/XW handles
   gLimit.append(limBand, limLine, limLbl);
   svg.append(gLimit);
 

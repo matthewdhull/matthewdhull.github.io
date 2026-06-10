@@ -77,7 +77,7 @@ const tour = createTour([
         `so the wind is <span class="em-shade">${offTxt}</span> — the angle marked on the graph.</p>`;
     },
     enter() { setState(TOUR); },
-    point(ctx) { ctx.pointAt(caption, "up"); ctx.pointAt(chart.els.ray, "down"); },
+    point(ctx) { ctx.pointAt(caption, "up"); ctx.pointAt(chart.els.dot, "left"); },
   },
   {
     title: "Wind velocity",
@@ -166,16 +166,15 @@ const tour = createTour([
   },
   {
     title: "Pythagoras explains how wind components split",
-    body: (d) => {
-      const c = comps(d);
-      const sum = Math.round(Math.sqrt(c.hwR * c.hwR + c.xwR * c.xwR));
-      return `<p>It's tempting to think a wind splits evenly between its headwind and crosswind — but it ` +
-        `doesn't, because the wind is the <span class="em-hyp">hypotenuse</span> of a right triangle.</p>` +
-        `<p>Winds <span class="em">${fmt3(d.windDir)}/${pad2(d.windSpeed)}</span> → ` +
-        `<span class="em-hw">headwind ${c.hwR}</span>, <span class="em-xw">crosswind ${c.xwR}</span>. ` +
-        `Check: \\(\\sqrt{${c.hwR}^2+${c.xwR}^2}=${sum}\\) ≈ the wind speed \\(V\\). Each leg is bigger than half.</p>` +
-        `<p>Straightforward application of Pythagorean, directly from the chart.</p>`;
-    },
+    // tied to the exactly-diagonal example, so kept static
+    body:
+      `<p>Let's use runway 36, with winds <span class="em">045/20</span>, perfectly diagonal to the runway. ` +
+      `It's tempting to call it <b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
+      `<p>It's about <span class="em-hw">14</span> and <span class="em-xw">14</span>. The wind speed \\(V\\) is the ` +
+      `<span class="em-hyp">hypotenuse</span> of a right triangle: \\(V=\\sqrt{\\text{HW}^2+\\text{XW}^2}\\). ` +
+      `Two 10s only make a 14 kt wind (\\(\\sqrt{10^2+10^2}\\approx14\\)) — to total 20 at 45°, each leg must be ~14 ` +
+      `(\\(\\sqrt{14^2+14^2}\\approx20\\)).</p>` +
+      `<p>Straightforward application of Pythagorean, directly from the chart.</p>`,
     enter() {
       setState({ runwayHeading: 0, windDir: 45, windSpeed: 20 });
       chart.tour.components(true);
@@ -194,7 +193,8 @@ const tour = createTour([
         `<p>Runway ${runwayNum(d.runwayHeading)}, <span class="em">${fmt3(d.windDir)}/${pad2(d.windSpeed)}</span> ` +
         `(\\(\\theta=${d.off}^\\circ\\)): ` +
         `<span class="em-hw">\\(${d.windSpeed}\\cos ${d.off}^\\circ\\approx${c.hwR}\\text{ kt}\\)</span>, ` +
-        `<span class="em-xw">\\(${d.windSpeed}\\sin ${d.off}^\\circ\\approx${c.xwR}\\text{ kt}\\)</span>.</p>`;
+        `<span class="em-xw">\\(${d.windSpeed}\\sin ${d.off}^\\circ\\approx${c.xwR}\\text{ kt}\\)</span>. ` +
+        `The chart just reads these off for you.</p>`;
     },
     enter() {
       setState({ runwayHeading: 0, windDir: 50, windSpeed: 20 });
