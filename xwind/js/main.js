@@ -2,6 +2,7 @@ import { state, setState, subscribe, angleDelta, runwayPair } from "./state.js";
 import { createChart } from "./chart.js";
 import { createRunway } from "./runway.js";
 import { createField } from "./field.js";
+import { createTour } from "./tour.js";
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -108,6 +109,53 @@ makeTicks(elWindSpd, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
 elHeading.addEventListener("input", (e) => setState({ runwayHeading: +e.target.value }));
 elWindDir.addEventListener("input", (e) => setState({ windDir: +e.target.value }));
 elWindSpd.addEventListener("input", (e) => setState({ windSpeed: +e.target.value }));
+
+// ---------------- Guided tour (explainer panels) ----------------
+const TOUR = { runwayHeading: 20, windDir: 40, windSpeed: 15 };  // canonical scenario
+const tour = createTour([
+  {
+    title: "What is a crosswind component graph?",
+    body:
+      `<p>This graph splits a wind into the part acting <span class="em-hw">down the runway</span> ` +
+      `(the headwind) and the part pushing you <span class="em-xw">sideways</span> (the crosswind).</p>` +
+      `<p>Pick a runway and a wind, then read both components straight off the chart.</p>`,
+    enter() { setState(TOUR); },
+  },
+  {
+    title: "Wind direction & runway heading",
+    body:
+      `<p>Right now the wind is <span class="em">040/15</span> — from 040° at 15&nbsp;knots ` +
+      `(see the readout below the runway).</p>` +
+      `<p>The runway is <span class="em">02</span> (020°), so the wind is ` +
+      `<span class="em-shade">20° off the nose</span> — the angle marked on the graph.</p>`,
+    enter(ctx) { setState(TOUR); ctx.pointAt(caption, "up"); ctx.pointAt(chart.els.chips[2], "down"); },
+  },
+  {
+    title: "Wind velocity",
+    body:
+      `<p>The curved <span class="em-shade">arcs</span> are lines of constant wind speed — ` +
+      `10, 20, 30, 40&nbsp;knots.</p>` +
+      `<p>The <span class="em-shade">shaded wedge</span> marks the <b>current</b> speed (15&nbsp;kt).</p>`,
+    enter() { setState(TOUR); chart.tour.flashArcs(); chart.tour.wedge(true); },
+    exit() { chart.tour.stopArcs(); chart.tour.wedge(false); },
+  },
+  {
+    title: "Crosswind & headwind components",
+    body:
+      `<p>Trace straight <span class="em-xw">down</span> to the crosswind axis and straight ` +
+      `<span class="em-hw">across</span> to the headwind axis.</p>` +
+      `<p>Those two readings are your <span class="em-xw">crosswind</span> and ` +
+      `<span class="em-hw">headwind</span> components.</p>`,
+    enter(ctx) {
+      setState(TOUR);
+      chart.tour.components(true);
+      ctx.pointAt(chart.els.xwDot, "down");
+      ctx.pointAt(chart.els.hwDot, "left");
+    },
+    exit() { chart.tour.components(false); },
+  },
+]);
+document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open());
 
 // kick off the chart's self-drawing intro
 chart.play({ reduced });

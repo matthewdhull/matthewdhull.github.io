@@ -358,7 +358,38 @@ export function createChart(svg, handlers = {}) {
   }
   attachPointDrag(dot);
 
-  return { updateHighlight, play, geom: { O, S, R_MAX, MAX_KT } };
+  // ---- guided-tour hooks ----
+  let arcTimer = 0;
+  function tourFlashArcs() {
+    clearInterval(arcTimer);
+    let i = 0;
+    const step = () => {
+      arcs.forEach((a, k) => {
+        a.setAttribute("stroke", k === i ? "#e8590c" : "#15293a");
+        a.setAttribute("stroke-width", k === i ? 3.4 : 1.6);
+      });
+      i = (i + 1) % arcs.length;
+    };
+    step();
+    arcTimer = setInterval(step, 650);
+  }
+  function tourStopArcs() {
+    clearInterval(arcTimer); arcTimer = 0;
+    arcs.forEach((a) => { a.setAttribute("stroke", "#15293a"); a.setAttribute("stroke-width", 1.6); });
+  }
+  function tourWedge(on) {
+    wedge.setAttribute("fill", on ? "rgba(255,150,35,0.42)" : "var(--hi-wedge)");
+    wedge.setAttribute("stroke-width", on ? 2.6 : 1.2);
+  }
+  function tourComponents(on) {
+    [compH, compV].forEach((l) => { l.setAttribute("stroke-width", on ? 4 : 2.4); l.classList.toggle("xw-pulse", on); });
+  }
+
+  return {
+    updateHighlight, play, geom: { O, S, R_MAX, MAX_KT },
+    els: { chips, arcs, wedge, compH, compV, ray, dot, hwDot, xwDot },
+    tour: { flashArcs: tourFlashArcs, stopArcs: tourStopArcs, wedge: tourWedge, components: tourComponents },
+  };
 }
 
 // ---- small helpers ----

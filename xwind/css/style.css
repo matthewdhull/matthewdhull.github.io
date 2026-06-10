@@ -199,6 +199,83 @@ html, body {
 .xw-readout b { color: var(--hi-comp); }
 .xw-readout .hw { color: var(--blue); }
 
+/* ---------------- Guided tour ---------------- */
+.xw-tour-btn {
+  margin-top: 0.7rem;
+  border: 1px solid var(--blue);
+  background: var(--blue);
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 13px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.xw-tour-btn:hover { background: #195f9e; }
+
+.xw-tour-overlay { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.xw-tour {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: 370px;
+  max-width: calc(100vw - 24px);
+  background: #fff;
+  border: 1px solid #c5d8ea;
+  border-radius: 10px;
+  box-shadow: 0 14px 44px rgba(20, 60, 100, 0.24);
+  padding: 15px 18px 12px;
+  pointer-events: auto;
+}
+.xw-tour-x {
+  position: absolute; top: 9px; right: 9px;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid #d3e0ec; background: #f4f8fc; color: #5a7186;
+  cursor: pointer; font-size: 16px; line-height: 1;
+}
+.xw-tour-x:hover { background: #e9f1f8; }
+.xw-tour-title { margin: 0 30px 8px 0; font-size: 1.05rem; color: #16314a; cursor: grab; }
+.xw-tour-body { font-size: 0.93rem; line-height: 1.5; color: #2c3e50; min-height: 86px; }
+.xw-tour-body p { margin: 0 0 0.6rem; }
+.xw-tour-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.xw-tour-prev, .xw-tour-next {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid #cdddec; background: #f4f8fc; color: #1d6fb8;
+  font-size: 17px; line-height: 1; cursor: pointer;
+}
+.xw-tour-prev:disabled, .xw-tour-next:disabled { opacity: 0.4; cursor: default; }
+.xw-tour-progress { flex: 1; accent-color: var(--blue); }
+.xw-tour-badge {
+  border: 1px solid #cdddec; background: #eaf2fa; color: #1d6fb8;
+  font-weight: 700; font-variant-numeric: tabular-nums;
+  border-radius: 6px; padding: 4px 9px; cursor: pointer; font-size: 0.82rem;
+}
+.xw-tour-menu {
+  position: absolute; right: 14px; bottom: 50px; width: 240px; max-height: 232px;
+  overflow-y: auto; background: #fff; border: 1px solid #cdddec; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(20, 60, 100, 0.22); padding: 4px;
+}
+.xw-tour-menu[hidden] { display: none; }
+.xw-tour-menu-item {
+  display: block; width: 100%; text-align: left; border: 0; background: none;
+  padding: 7px 9px; border-radius: 6px; font-size: 0.85rem; color: #2c3e50; cursor: pointer;
+}
+.xw-tour-menu-item:hover { background: #eef5fc; }
+
+.xw-tour-hand { position: fixed; z-index: 60; pointer-events: none; font-size: 25px; }
+.xw-hand-em { display: inline-block; animation: xwbob 0.9s ease-in-out infinite; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+@keyframes xwbob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+/* colored emphasis used in tour copy */
+.em    { color: #1d6fb8; font-weight: 700; }
+.em-hw { color: #1d6fb8; font-weight: 700; }
+.em-xw { color: #e03131; font-weight: 700; }
+.em-shade { color: #e8590c; font-weight: 700; }
+
+.xw-pulse { animation: xwsvgpulse 1s ease-in-out infinite; }
+@keyframes xwsvgpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; }
 }
