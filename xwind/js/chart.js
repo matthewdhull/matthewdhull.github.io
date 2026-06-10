@@ -173,7 +173,10 @@ export function createChart(svg, handlers = {}) {
   const xwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
   const hwTag = mkTag("var(--hi-comp)");
   const xwTag = mkTag("var(--hi-comp)");
-  gHilite.append(wedge, ray, compH, compV, dot, hwDot, xwDot, hwTag.g, xwTag.g);
+  // hypotenuse (origin -> wind point = the wind vector itself); tour-only
+  const hypLine = el("line", { stroke: "#6741d9", "stroke-width": 4, "stroke-linecap": "round" });
+  hypLine.style.display = "none";
+  gHilite.append(wedge, ray, compH, compV, hypLine, dot, hwDot, xwDot, hwTag.g, xwTag.g);
 
   // floating exact-angle chip for in-between (non-10°) wind angles
   const angTag = el("g");
@@ -241,6 +244,8 @@ export function createChart(svg, handlers = {}) {
     ray.setAttribute("x1", O.x); ray.setAttribute("y1", O.y);
     ray.setAttribute("x2", E.x); ray.setAttribute("y2", E.y);
     dot.setAttribute("cx", P.x); dot.setAttribute("cy", P.y);
+    hypLine.setAttribute("x1", O.x); hypLine.setAttribute("y1", O.y);
+    hypLine.setAttribute("x2", P.x); hypLine.setAttribute("y2", P.y);
 
     // component drop-lines
     const hw = V * Math.cos((off * Math.PI) / 180);   // headwind
@@ -396,6 +401,7 @@ export function createChart(svg, handlers = {}) {
   function tourComponents(on) {
     [compH, compV].forEach((l) => { l.setAttribute("stroke-width", on ? 4 : 2.4); l.classList.toggle("xw-pulse", on); });
   }
+  function tourHyp(on) { hypLine.style.display = on ? "" : "none"; }
   function tourLimit(kt) {
     if (!kt) { gLimit.style.display = "none"; return; }
     gLimit.style.display = "";
@@ -414,7 +420,7 @@ export function createChart(svg, handlers = {}) {
   return {
     updateHighlight, play, geom: { O, S, R_MAX, MAX_KT },
     els: { chips, arcs, wedge, compH, compV, ray, dot, hwDot, xwDot, axisTitle: ht },
-    tour: { flashArcs: tourFlashArcs, stopArcs: tourStopArcs, wedge: tourWedge, components: tourComponents, limit: tourLimit },
+    tour: { flashArcs: tourFlashArcs, stopArcs: tourStopArcs, wedge: tourWedge, components: tourComponents, limit: tourLimit, hypotenuse: tourHyp },
   };
 }
 

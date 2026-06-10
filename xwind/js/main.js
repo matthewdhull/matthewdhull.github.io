@@ -195,23 +195,30 @@ const tour = createTour([
   {
     title: "Do I even need a chart?",
     body:
-      `<p>Runway 36, winds <span class="em">045/20</span> — dead diagonal. Tempting to call it ` +
-      `<b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
-      `<p>It's about <span class="em-hw">14</span> and <span class="em-xw">14</span>. The wind is the ` +
-      `<b>hypotenuse</b> of a right triangle: √(HW²&nbsp;+&nbsp;XW²)&nbsp;=&nbsp;V. Two 10s only make a ` +
-      `14 kt wind (√200 ≈ 14) — to total 20 at 45°, each leg must be ~14. ` +
-      `That's <span class="em-shade">Pythagoras</span>, and exactly what the chart bakes in.</p>`,
-    enter(ctx) { setState({ runwayHeading: 0, windDir: 45, windSpeed: 20 }); chart.tour.components(true); ctx.pointAt(chart.els.dot, "right"); },
-    exit() { chart.tour.components(false); },
+      `<p>Let's use runway 36, with winds <span class="em">045/20</span>, perfectly diagonal to the runway. ` +
+      `It's tempting to call it <b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
+      `<p>It's about <span class="em-hw">14</span> and <span class="em-xw">14</span>. The wind speed \\(V\\) is the ` +
+      `<span class="em-hyp">hypotenuse</span> of a right triangle: \\(V=\\sqrt{\\text{HW}^2+\\text{XW}^2}\\). ` +
+      `Two 10s only make a 14 kt wind (\\(\\sqrt{10^2+10^2}\\approx14\\)) — to total 20 at 45°, each leg must be ~14 ` +
+      `(\\(\\sqrt{14^2+14^2}\\approx20\\)).</p>` +
+      `<p>Straightforward application of Pythagorean, directly from the chart.</p>`,
+    enter(ctx) {
+      setState({ runwayHeading: 0, windDir: 45, windSpeed: 20 });
+      chart.tour.components(true);
+      chart.tour.hypotenuse(true);
+      ctx.pointAt(chart.els.dot, "right");
+    },
+    exit() { chart.tour.components(false); chart.tour.hypotenuse(false); },
   },
   {
-    title: "Headwind = V·cos θ, Crosswind = V·sin θ",
+    title: "Directly calculate the headwind & crosswind components",
     body:
       `<p>Each leg comes straight from trig on that triangle:</p>` +
-      `<p style="text-align:center"><span class="em-hw">Headwind = V·cos θ</span><br>` +
-      `<span class="em-xw">Crosswind = V·sin θ</span></p>` +
-      `<p>Runway 36, <span class="em">050/20</span> (θ&nbsp;=&nbsp;50°): ` +
-      `<span class="em-hw">20·cos50 ≈ 13&nbsp;kt</span>, <span class="em-xw">20·sin50 ≈ 15&nbsp;kt</span>. ` +
+      `<p style="text-align:center"><span class="em-hw">\\(\\text{Headwind}=V\\cos\\theta\\)</span><br>` +
+      `<span class="em-xw">\\(\\text{Crosswind}=V\\sin\\theta\\)</span></p>` +
+      `<p>Runway 36, <span class="em">050/20</span> (\\(\\theta=50^\\circ\\)): ` +
+      `<span class="em-hw">\\(20\\cos 50^\\circ\\approx13\\text{ kt}\\)</span>, ` +
+      `<span class="em-xw">\\(20\\sin 50^\\circ\\approx15\\text{ kt}\\)</span>. ` +
       `The chart just reads these off for you.</p>`,
     enter(ctx) {
       setState({ runwayHeading: 0, windDir: 50, windSpeed: 20 });

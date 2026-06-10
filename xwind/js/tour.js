@@ -82,6 +82,7 @@ export function createTour(steps, opts = {}) {
     const s = steps[idx];
     titleEl.textContent = s.title;
     bodyEl.innerHTML = s.body;
+    if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([bodyEl]).catch(() => {});
     badge.textContent = `${idx + 1} / ${steps.length}`;
     prog.value = idx + 1;
     prevB.disabled = idx === 0;

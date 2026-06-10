@@ -272,6 +272,7 @@ html, body {
 .em-hw { color: #1d6fb8; font-weight: 700; }
 .em-xw { color: #e03131; font-weight: 700; }
 .em-shade { color: #e8590c; font-weight: 700; }
+.em-hyp { color: #6741d9; font-weight: 700; }
 
 .xw-pulse { animation: xwsvgpulse 1s ease-in-out infinite; }
 @keyframes xwsvgpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
