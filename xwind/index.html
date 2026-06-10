@@ -12,6 +12,9 @@
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
 </head>
 <body>
   <header class="xw-header">
@@ -31,6 +34,7 @@
       <div class="xw-runway-stage">
         <canvas id="xw-field" class="xw-field"></canvas>
         <svg id="xw-runway" viewBox="-200 -200 400 400" class="xw-runway"></svg>
+        <canvas id="xw-socks3d" class="xw-socks3d"></canvas>
       </div>
       <p class="xw-runway-caption" id="xw-runway-caption">RWY 02/20 &middot; wind 040/15</p>
     </section>

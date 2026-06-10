@@ -2,6 +2,7 @@ import { state, setState, subscribe, angleDelta, runwayPair } from "./state.js";
 import { createChart } from "./chart.js";
 import { createRunway } from "./runway.js";
 import { createField } from "./field.js";
+import { createWindsocks } from "./windsock3d.js";
 import { createTour } from "./tour.js";
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -19,6 +20,7 @@ const chart = createChart(document.getElementById("xw-chart"), {
 });
 const runway = createRunway(document.getElementById("xw-runway"));
 const field = createField(document.getElementById("xw-field"));
+const socks3d = createWindsocks(document.getElementById("xw-socks3d"));
 
 // The INTENDED runway is the slider heading (shown by the airplane). Everything
 // is computed relative to it — so a wind behind you reads as a tailwind rather
@@ -49,6 +51,7 @@ subscribe((st) => {
   chart.updateHighlight(d);
   runway.update(d);
   field.setWind(d.windDir, d.windSpeed);
+  socks3d.setState({ runwayHeading: d.runwayHeading, windDir: d.windDir, windSpeed: d.windSpeed });
 
   vHeading.textContent = fmt3(st.runwayHeading) + "°";
   vWindDir.textContent = fmt3(st.windDir) + "°";

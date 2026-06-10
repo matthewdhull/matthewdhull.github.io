@@ -63,10 +63,7 @@ export function createRunway(svg) {
   // airplane silhouette (marks the intended runway); above pavement
   const plane = mkPlane();
   svg.append(plane.g);
-
-  // windsocks (world frame, not rotated with runway) — one per end
-  const socks = [mkSock(), mkSock()];
-  socks.forEach((s) => svg.append(s.g));
+  // windsocks are rendered by the three.js cloth layer (windsock3d.js)
 
   // wind origin arrow (upwind side, pointing downwind)
   const windArrow = el("g");
@@ -83,21 +80,6 @@ export function createRunway(svg) {
     // (a pilot lands toward B but touches down at, and reads, the far threshold)
     numTop.textContent = runwayNumber((h + 180) % 360);
     numBot.textContent = runwayNumber(h);
-
-    // one sock per runway direction, placed abeam that runway's numbers on its
-    // RIGHT side (right relative to that landing direction).
-    const dirs = [h, (h + 180) % 360];
-    dirs.forEach((B, i) => {
-      const num = bvec((B + 180) % 360);          // the number sits on the -B threshold
-      const right = bvec((B + 90) % 360);         // right wing of a pilot landing toward B
-      // set well off to the side (a real sock sits clear of the runway, never
-      // blowing over it) — fully extended it still won't reach the pavement
-      const base = {
-        x: num.x * (HALF_LEN - 40) + right.x * (HALF_W + 58),
-        y: num.y * (HALF_LEN - 40) + right.y * (HALF_W + 58),
-      };
-      updateSock(socks[i], base, st);
-    });
 
     // airplane silhouette on the INTENDED runway (slider heading), just past its
     // numbers, nose pointed down the runway — communicates which runway is in use.
@@ -145,52 +127,3 @@ function mkPlane() {
   return { g };
 }
 
-function mkSock() {
-  const g = el("g");
-  const bands = [];
-  const N = 5;
-  for (let i = 0; i < N; i++) {
-    const p = el("path", { fill: i % 2 ? "#ffffff" : "#ff6a13", stroke: "#c44e0a", "stroke-width": 0.6, "stroke-linejoin": "round" });
-    g.append(p); bands.push(p);
-  }
-  // mouth hoop (the rigid opening ring) — always visible, anchors the sock
-  const mouth = el("circle", { fill: "none", stroke: "#c44e0a", "stroke-width": 1.6 });
-  g.append(mouth);
-  // mast: a small dark dot (top-down view of the pole)
-  const mast = el("circle", { r: 2.4, fill: "#5b6b7a" });
-  g.insertBefore(mast, g.firstChild);
-  return { g, bands, mouth, mast };
-}
-
-// A windsock seen from above: it streams downwind, projecting longer as the wind
-// lifts it from limp (hanging straight down -> just the hoop) to fully extended
-// (~15 kt). Width is constant; only the projected LENGTH conveys speed, and it
-// saturates at 15 kt so 40 kt is not drawn oversized.
-function updateSock(sock, base, st) {
-  const { bands, mouth, mast } = sock;
-  const flow = bvec((st.windDir + 180) % 360);
-  const perp = { x: -flow.y, y: flow.x };
-
-  const t = Math.max(0, Math.min(1, st.windSpeed / 15)); // extension 0..1
-  const MOUTHR = 5.5, TIPR = 3.4, MAXLEN = 30;
-  const len = 3 + t * MAXLEN;                            // ~3 (hoop only) -> 33
-  const seg = len / bands.length;
-
-  bands.forEach((band, i) => {
-    const f0 = i / bands.length, f1 = (i + 1) / bands.length;
-    const r0 = MOUTHR + (TIPR - MOUTHR) * f0;
-    const r1 = MOUTHR + (TIPR - MOUTHR) * f1;
-    const c0 = { x: base.x + flow.x * seg * i, y: base.y + flow.y * seg * i };
-    const c1 = { x: base.x + flow.x * seg * (i + 1), y: base.y + flow.y * seg * (i + 1) };
-    const a = { x: c0.x + perp.x * r0, y: c0.y + perp.y * r0 };
-    const b = { x: c0.x - perp.x * r0, y: c0.y - perp.y * r0 };
-    const c = { x: c1.x - perp.x * r1, y: c1.y - perp.y * r1 };
-    const d = { x: c1.x + perp.x * r1, y: c1.y + perp.y * r1 };
-    band.setAttribute("d", `M ${a.x} ${a.y} L ${b.x} ${b.y} L ${c.x} ${c.y} L ${d.x} ${d.y} Z`);
-    // at calm, collapse the downwind bands so only the hoop reads
-    band.style.opacity = t < 0.08 && i > 0 ? 0 : 1;
-  });
-
-  mouth.setAttribute("cx", base.x); mouth.setAttribute("cy", base.y); mouth.setAttribute("r", MOUTHR);
-  mast.setAttribute("cx", base.x); mast.setAttribute("cy", base.y);
-}
