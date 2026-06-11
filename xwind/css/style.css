@@ -162,6 +162,15 @@ html, body {
 
 .xw-chart-card { padding: 8px; }
 #xw-chart { display: block; width: 100%; height: auto; }
+.xw-chart-hint {
+  margin: 0.1rem 0 0.2rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--text-dim);
+  opacity: 0.85;
+}
 #xw-chart .angle-chip { cursor: pointer; }
 #xw-chart .angle-chip:hover rect { stroke: #ffffff; stroke-width: 1.5px; }
 

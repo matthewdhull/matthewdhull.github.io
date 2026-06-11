@@ -15,6 +15,7 @@ const MOUTHR = 7.5, TIPR = 3.0;
 const POLEH = 32;
 
 const TWO_PI = Math.PI * 2;
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const bvec = (deg) => { const a = (deg * Math.PI) / 180; return { x: Math.sin(a), y: -Math.cos(a) }; };
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
@@ -57,7 +58,7 @@ export function createWindsocks(canvas) {
     const flow = bvec((st.windDir + 180) % 360);
     // gust: surge between steady and peak (same cycle as the particle field)
     const gust = Math.max(st.gust ?? st.windSpeed, st.windSpeed);
-    const pulse = Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
+    const pulse = REDUCED ? 0 : Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
     const eff = st.windSpeed + (gust - st.windSpeed) * pulse;
     socks.forEach((sock, i) => {
       const B = dirs[i];
@@ -180,7 +181,7 @@ function updateSock(sock, bx, bz, flow, speed, t) {
 
   // build the tube around the centerline, adding a gentle procedural flutter wave
   const px = -flow.y, pz = flow.x;              // horizontal perpendicular
-  const amp = Math.min(speed, 40) * 0.045;      // dampened (was too wavy)
+  const amp = REDUCED ? 0 : Math.min(speed, 40) * 0.045;   // dampened (was too wavy); flat under reduced-motion
   const pos = sock.geo.attributes.position.array;
   for (let i = 0; i <= M; i++) {
     const a = pts[Math.max(0, i - 1)], b = pts[Math.min(M, i + 1)];

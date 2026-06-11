@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Crosswind Component Explainer</title>
+  <meta name="description" content="An interactive explainer for reading the aviation crosswind component chart — wind relative to the runway, headwind &amp; crosswind components, gusts, tailwinds, and windsocks, with a guided tour." />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Crosswind Component Explainer" />
+  <meta property="og:description" content="Learn to read a crosswind component chart — interactive, with a live runway scene, windsocks, gusts, and a guided tour." />
+  <meta property="og:image" content="https://matthewdhull.github.io/images/xwind-teaser.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="./css/style.css" />
   <script>
     window.MathJax = {
@@ -28,6 +35,7 @@
     <!-- LEFT: the classic crosswind component chart (self-drawing on load) -->
     <section class="xw-card xw-chart-card" aria-label="Crosswind component chart">
       <svg id="xw-chart" viewBox="0 0 600 600" role="img" aria-label="Crosswind component chart"></svg>
+      <p class="xw-chart-hint">Interactive &mdash; click an angle, or drag the point and its handles.</p>
     </section>
 
     <!-- RIGHT: runway scene (2D placeholder in phase 1, three.js in phase 3) -->

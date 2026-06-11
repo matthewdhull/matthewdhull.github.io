@@ -148,6 +148,11 @@ const WS_STEPS = [
 ];
 function startWindsockPlayer() {
   stopWindsockPlayer();
+  // reduced-motion: don't auto-cycle; hold one clearly-extended frame instead
+  if (reduced) {
+    setState({ runwayHeading: 0, windDir: 270, windSpeed: 12, gust: 12, gustLock: true });
+    return;
+  }
   wsIdx = 0;
   const tick = () => {
     const s = WS_STEPS[wsIdx % WS_STEPS.length];

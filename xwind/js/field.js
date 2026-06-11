@@ -2,6 +2,8 @@
    circle around the runway. Flow speed scales with wind magnitude. (Phase 1 is
    2D canvas; phase 3 may move this to a WebGL particle system.) */
 
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function createField(canvas) {
   const ctx = canvas.getContext("2d");
   let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0;
@@ -46,13 +48,15 @@ export function createField(canvas) {
     ctx.clearRect(0, 0, W, H);
 
     // gust: surge between steady and peak on a slow, gust-shaped cycle
-    const pulse = Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
+    // (reduced-motion: hold steady, no surge)
+    const pulse = REDUCED ? 0 : Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
     const speed = steady + (gust - steady) * pulse;
 
     // calm: nothing flowing (no 'snow') — the cleared canvas is the whole frame
     if (speed < 0.5) return;
 
-    const v = speed * 5;                            // px/s drift, purely wind-driven
+    // reduced-motion: arrows hold position (still show direction) instead of drifting
+    const v = REDUCED ? 0 : speed * 5;              // px/s drift, purely wind-driven
     const arrow = true;
 
     ctx.save();

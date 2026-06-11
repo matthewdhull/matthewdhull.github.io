@@ -136,11 +136,16 @@ export function createRunway(svg) {
   }
   const reil = buildLights(g);
   // REIL: single synchronized flash at a constant ~2 Hz cadence (JS so it works
-  // immediately on entering dark mode, not just after a toggle cycle)
-  (function flicker() {
-    requestAnimationFrame(flicker);
-    reil.style.opacity = (performance.now() % 520) < 80 ? "1" : "0.1";
-  })();
+  // immediately on entering dark mode, not just after a toggle cycle).
+  // reduced-motion: hold the lights steady-on instead of strobing.
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    reil.style.opacity = "1";
+  } else {
+    (function flicker() {
+      requestAnimationFrame(flicker);
+      reil.style.opacity = (performance.now() % 520) < 80 ? "1" : "0.1";
+    })();
+  }
   // runway numbers (painted on, rotate with pavement)
   const numTop = el("text", { x: 0, y: -HALF_LEN + 50, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
   const numBot = el("text", { x: 0, y: HALF_LEN - 34, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });

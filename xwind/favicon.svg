@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#0f2336"/>
+  <!-- pole -->
+  <rect x="12.5" y="14" width="3.5" height="40" rx="1.5" fill="#9fb3c8"/>
+  <!-- windsock: tapered striped cone blowing right -->
+  <path d="M16 17 L29 19.05 L29 27.34 L16 27 Z" fill="#ff7a18"/>
+  <path d="M29 19.05 L42 21.1 L42 27.68 L29 27.34 Z" fill="#f4f6fb"/>
+  <path d="M42 21.1 L54 23 L54 28 L42 27.68 Z" fill="#ff7a18"/>
+  <!-- mouth hoop -->
+  <ellipse cx="16" cy="22" rx="2.2" ry="5.4" fill="none" stroke="#f4f6fb" stroke-width="2"/>
+</svg>
