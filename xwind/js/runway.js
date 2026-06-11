@@ -36,8 +36,8 @@ function radialGlow(id, color) {
 // they rotate with the pavement group. Small cores + soft blooms (blooms gated
 // by --glow so they're night-only). Semantic colours kept per convention.
 function buildLights(g) {
-  const gGlow = el("g"); gGlow.style.opacity = "var(--glow)";
-  const gCore = el("g");
+  const gGlow = el("g", { class: "xw-night" }); gGlow.style.opacity = "var(--glow)";
+  const gCore = el("g", { class: "xw-night" });
   const EW = HALF_W - 1, FAR = -HALF_LEN, APP = HALF_LEN, span = HALF_LEN * 2;
   const light = (x, y, gid, c, cr = 1.3, hr = 5) => {
     gGlow.append(el("circle", { cx: x, cy: y, r: hr, fill: `url(#${gid})` }));
@@ -66,7 +66,7 @@ function buildLights(g) {
   }
   g.append(gGlow, gCore);
   // REIL — two synchronized white flashers at the approach corners
-  const gReil = el("g"); gReil.style.opacity = "var(--glow)";
+  const gReil = el("g", { class: "xw-night" }); gReil.style.opacity = "var(--glow)";
   const flash = el("g"); flash.setAttribute("class", "xw-reil");
   for (const sx of [-1, 1]) {
     const x = sx * (HALF_W + 9), y = APP + 3;
@@ -99,8 +99,8 @@ export function createRunway(svg) {
     radialGlow("xw-gr", "#ff5a4d"), radialGlow("xw-gg", "#46e07a"));
   svg.append(defs);
 
-  // windsock floodlights (soft warm pools; night only via --glow), world frame
-  const gFlood = el("g"); gFlood.style.opacity = "var(--glow)";
+  // windsock floodlights (soft warm pools; night only), world frame
+  const gFlood = el("g", { class: "xw-night" }); gFlood.style.opacity = "var(--glow)";
   const floods = [el("circle", { r: 44, fill: "url(#xw-flood)" }), el("circle", { r: 44, fill: "url(#xw-flood)" })];
   floods.forEach((f) => gFlood.append(f));
   svg.append(gFlood);

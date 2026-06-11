@@ -384,6 +384,10 @@ html, body {
 .xw-pulse { animation: xwsvgpulse 1s ease-in-out infinite; }
 @keyframes xwsvgpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
+/* runway lighting is night-only — hidden entirely in daylight */
+.xw-night { display: none; }
+:root[data-theme="dark"] .xw-night { display: inline; }
+
 /* REIL: two synchronized white flashers (approach corners) */
 .xw-reil { animation: xw-reil 1.4s linear infinite; }
 @keyframes xw-reil {
