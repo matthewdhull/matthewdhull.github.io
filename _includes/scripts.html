@@ -62,12 +62,18 @@
       document.documentElement.setAttribute('data-font', key);
       try { localStorage.setItem('font', key); } catch(e){}
     }
-    var saved = (function(){ try { return localStorage.getItem('font'); } catch(e){ return null; } })() || 'inter';
+    var locked = window.__FONT_LOCKED__ || '';
+    var saved = locked || (function(){ try { return localStorage.getItem('font'); } catch(e){ return null; } })() || 'inter';
     apply(saved);
     var sel = document.getElementById('font-switcher');
     if(sel){
-      sel.value = saved;
-      sel.addEventListener('change', function(){ apply(sel.value); });
+      if(locked){
+        // Locked for the live site: hide the picker so visitors can't change it.
+        sel.hidden = true;
+      } else {
+        sel.value = saved;
+        sel.addEventListener('change', function(){ apply(sel.value); });
+      }
     }
   })();
   </script>
