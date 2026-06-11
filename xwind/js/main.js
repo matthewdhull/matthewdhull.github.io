@@ -82,6 +82,64 @@ function setScenario(o) {
   setState({ ...o, gustLock: !wantGust, gust: o.gust ?? o.windSpeed });
 }
 
+// side-on (profile) windsock illustration for the tour: a striped tube that lifts
+// toward horizontal as the wind builds (≈full by 15 kt); flutters when gusty.
+function windsockProfileSVG(speed, gust, withArrow) {
+  const Mx = 34, My = 42, L = 150, GROUND = 122, mouthR = 12, tipR = 4.5, N = 20;
+  const inflated = Math.max(0, Math.min(1, speed / 15));
+  const seg = L / N, pts = [];
+  let x = Mx, y = My;
+  for (let i = 0; i <= N; i++) {
+    pts.push([x, y]);
+    const t = (i + 0.5) / N;
+    const droop = t > inflated ? (t - inflated) / Math.max(0.05, 1 - inflated) : 0;
+    let ang = droop * droop * 1.45;                 // radians below horizontal
+    if (gust && t > 0.4) ang += Math.sin(t * 22) * 0.14;   // flutter the outer half
+    x += Math.cos(ang) * seg;
+    y = Math.min(GROUND - 2, y + Math.sin(ang) * seg);
+  }
+  let bands = "";
+  for (let i = 0; i < N; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+    let dx = x1 - x0, dy = y1 - y0; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+    const px = -dy, py = dx;
+    const r0 = mouthR + (tipR - mouthR) * (i / N), r1 = mouthR + (tipR - mouthR) * ((i + 1) / N);
+    const col = Math.floor(i / (N / 5)) % 2 === 0 ? "#ff6a13" : "#fdfdfd";
+    bands += `<path d="M ${x0 + px * r0} ${y0 + py * r0} L ${x1 + px * r1} ${y1 + py * r1} ` +
+      `L ${x1 - px * r1} ${y1 - py * r1} L ${x0 - px * r0} ${y0 - py * r0} Z" fill="${col}" stroke="#c44e0a" stroke-width="0.5"/>`;
+  }
+  const arrow = withArrow
+    ? `<g stroke="var(--text-dim)" stroke-width="2" fill="var(--text-dim)">` +
+      `<line x1="${Mx + 4}" y1="${My - 30}" x2="${Mx + 52}" y2="${My - 30}"/>` +
+      `<polygon points="${Mx + 52},${My - 30} ${Mx + 44},${My - 34} ${Mx + 44},${My - 26}"/></g>` +
+      `<text x="${Mx + 56}" y="${My - 26}" font-size="11" fill="var(--text-dim)">wind</text>`
+    : "";
+  return `<svg viewBox="0 0 232 132" width="100%" style="max-height:128px;display:block;margin:4px auto">` +
+    `<line x1="0" y1="${GROUND}" x2="232" y2="${GROUND}" stroke="var(--text-faint)" stroke-width="1" stroke-dasharray="2 3"/>` +
+    `<line x1="${Mx}" y1="${GROUND}" x2="${Mx}" y2="${My}" stroke="var(--text-dim)" stroke-width="3"/>` +
+    arrow + bands +
+    `<circle cx="${Mx}" cy="${My}" r="${mouthR}" fill="none" stroke="#c44e0a" stroke-width="1.6"/></svg>`;
+}
+
+// auto sub-player: ramps the wind through speeds (and a gust) so the socks respond
+let wsTimer = 0, wsIdx = 0;
+const WS_STEPS = [
+  { windSpeed: 3 }, { windSpeed: 6 }, { windSpeed: 9 }, { windSpeed: 12 }, { windSpeed: 15 },
+  { windSpeed: 13, gust: 24 },   // gusty -> flutter
+];
+function startWindsockPlayer() {
+  stopWindsockPlayer();
+  wsIdx = 0;
+  const tick = () => {
+    const s = WS_STEPS[wsIdx % WS_STEPS.length];
+    setState({ runwayHeading: 0, windDir: 270, windSpeed: s.windSpeed, gust: s.gust ?? s.windSpeed, gustLock: !(s.gust > s.windSpeed) });
+    wsIdx++;
+    wsTimer = setTimeout(tick, 1700);
+  };
+  tick();
+}
+function stopWindsockPlayer() { clearTimeout(wsTimer); wsTimer = 0; }
+
 // ---------------- Guided tour (explainer panels) ----------------
 // Each panel starts from a preset scenario (enter) but its copy is a function of
 // the live state, so it updates as the user drags the sliders.
@@ -272,6 +330,31 @@ const tour = createTour([
     },
     point(ctx) { ctx.pointAt(chart.els.hwDot, "left"); ctx.pointAt(chart.els.xwDot, "down"); },
     exit() { chart.tour.components(false); },
+  },
+  {
+    title: "Reading a windsock",
+    body: (d) =>
+      `<p>A windsock tells you three things at a glance:</p>` +
+      `<p><span class="em-hw">Direction</span> — the wide (mouth) end faces into the wind, where it's ` +
+      `coming <b>from</b>; the narrow end points where it's blowing <b>to</b>.<br>` +
+      `<span class="em-shade">Speed</span> — the more it lifts toward horizontal, the stronger the wind.<br>` +
+      `<span class="em-xw">Gustiness</span> — fluttering or sudden swings mean the wind is variable or gusty.</p>` +
+      windsockProfileSVG(d.windSpeed, d.hasGust, true),
+    enter() { setScenario({ runwayHeading: 0, windDir: 270, windSpeed: 3 }); },
+  },
+  {
+    title: "Extension shows the wind speed",
+    body: (d) => {
+      const note = d.hasGust
+        ? `Now <b>gusting</b> — watch it flutter and surge.`
+        : `Showing <b>${d.windSpeed} kt</b>.`;
+      return `<p>The further a windsock lifts toward horizontal, the stronger the wind — roughly ` +
+        `fully extended by about <b>15&nbsp;kt</b>.</p>` +
+        windsockProfileSVG(d.windSpeed, d.hasGust, false) +
+        `<p>${note} The socks on the runway respond the same way.</p>`;
+    },
+    enter() { setScenario({ runwayHeading: 0, windDir: 270, windSpeed: 3 }); startWindsockPlayer(); },
+    exit() { stopWindsockPlayer(); },
   },
 ]);
 document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open());
