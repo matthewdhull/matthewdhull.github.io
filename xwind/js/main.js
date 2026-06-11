@@ -246,8 +246,8 @@ const tour = createTour([
     title: "With a gust, every component is a range",
     body: (d) => {
       const c = comps(d);
-      return `<p>The wind lives in a band between steady and peak, so each component is a <b>range</b>, ` +
-        `not a single number.</p>` +
+      return `<p>The wind lives in a band between steady and peak, so each component becomes a <b>range</b> ` +
+        `instead of a single number.</p>` +
         `<p>Here: <span class="em-xw">crosswind ${c.xwR}–${c.gustXwR} kt</span>, ` +
         `<span class="em-hw">headwind ${c.hwR}–${c.gustHwR} kt</span>.</p>`;
     },
@@ -262,7 +262,7 @@ const tour = createTour([
       return `<p>For a given wind, the runway most <span class="em">aligned</span> with it gives the most ` +
         `<span class="em-hw">headwind</span> and least <span class="em-xw">crosswind</span>.</p>` +
         `<p>On <span class="em">RWY ${runwayNum(d.runwayHeading)}</span> you have ${along} and ` +
-        `<span class="em-xw">~${c.xwR} kt crosswind</span>. Spin the runway and watch them trade off.</p>`;
+        `<span class="em-xw">~${c.xwR} kt crosswind</span>. Adjust the runway heading slider to observe them trade off.</p>`;
     },
     enter() { setScenario(TOUR); },
     point(ctx) { ctx.pointAt(elHeading, "down"); },
@@ -341,8 +341,7 @@ const tour = createTour([
         `<p>Runway ${runwayNum(d.runwayHeading)}, <span class="em">${fmt3(d.windDir)}/${pad2(d.windSpeed)}</span> ` +
         `(\\(\\theta=${d.off}^\\circ\\)): ` +
         `<span class="em-hw">\\(${d.windSpeed}\\cos ${d.off}^\\circ\\approx${c.hwR}\\text{ kt}\\)</span>, ` +
-        `<span class="em-xw">\\(${d.windSpeed}\\sin ${d.off}^\\circ\\approx${c.xwR}\\text{ kt}\\)</span>. ` +
-        `The chart just reads these off for you.</p>`;
+        `<span class="em-xw">\\(${d.windSpeed}\\sin ${d.off}^\\circ\\approx${c.xwR}\\text{ kt}\\)</span>.</p>`;
     },
     enter() {
       setScenario({ runwayHeading: 0, windDir: 50, windSpeed: 20 });
