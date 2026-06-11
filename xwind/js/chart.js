@@ -76,12 +76,13 @@ export function createChart(svg, handlers = {}) {
   const gLabels = el("g", { class: "g-labels" });
   svg.append(gArcsMinor, gRaysMinor, gRaysMajor, gArcs, gAxes, gHilite, gLabels);
 
-  const INK = "#15293a";
+  const INK = "var(--ink)";
+  const LABEL = "var(--label)";
 
   // ---- minor speed arcs (5,15,25,35) ----
   const minorArcs = [];
   for (let v = 5; v < MAX_KT; v += 10) {
-    const p = el("path", { d: arcPath(v * S), fill: "none", stroke: "#9fb8cb", "stroke-width": 0.8 });
+    const p = el("path", { d: arcPath(v * S), fill: "none", stroke: "var(--minorline)", "stroke-width": 0.8 });
     gArcsMinor.append(p); minorArcs.push(p);
   }
 
@@ -96,7 +97,7 @@ export function createChart(svg, handlers = {}) {
   for (let th = 0; th <= 90; th += MINOR_STEP) {
     if (th % MAJOR_STEP === 0) continue;
     const e = pt(th, R_MAX);
-    const l = el("line", { x1: O.x, y1: O.y, x2: e.x, y2: e.y, stroke: "#9fb8cb", "stroke-width": 0.7 });
+    const l = el("line", { x1: O.x, y1: O.y, x2: e.x, y2: e.y, stroke: "var(--minorline)", "stroke-width": 0.7 });
     gRaysMinor.append(l); minorRays.push(l);
   }
 
@@ -121,23 +122,23 @@ export function createChart(svg, handlers = {}) {
     // headwind (vertical) ticks — left of axis
     const yp = O.y - v * S;
     gLabels.append(el("line", { x1: O.x - 5, y1: yp, x2: O.x, y2: yp, stroke: INK, "stroke-width": 1.4 }));
-    const ty = txt(O.x - 10, yp + 4, String(v), { "text-anchor": "end", "font-size": 15, fill: INK });
+    const ty = txt(O.x - 10, yp + 4, String(v), { "text-anchor": "end", "font-size": 15, fill: LABEL });
     gLabels.append(ty); vTicks.push({ el: ty, v });
     // crosswind (horizontal) ticks — below axis
     const xp = O.x + v * S;
     gLabels.append(el("line", { x1: xp, y1: O.y, x2: xp, y2: O.y + 5, stroke: INK, "stroke-width": 1.4 }));
-    gLabels.append(txt(xp, O.y + 22, String(v), { "text-anchor": "middle", "font-size": 15, fill: INK }));
+    gLabels.append(txt(xp, O.y + 22, String(v), { "text-anchor": "middle", "font-size": 15, fill: LABEL }));
   }
   // 0 label at origin
-  gLabels.append(txt(O.x - 10, O.y + 4, "0", { "text-anchor": "end", "font-size": 15, fill: INK }));
+  gLabels.append(txt(O.x - 10, O.y + 4, "0", { "text-anchor": "end", "font-size": 15, fill: LABEL }));
 
   // axis titles
   const ht = txt(26, (O.y + (O.y - R_MAX)) / 2, "Headwind component",
-    { "text-anchor": "middle", "font-size": 15, fill: "#1d6fb8", "font-weight": 700 });
+    { "text-anchor": "middle", "font-size": 15, fill: "var(--accent-headwind)", "font-weight": 700 });
   ht.setAttribute("transform", `rotate(-90 26 ${(O.y + (O.y - R_MAX)) / 2})`);
   gLabels.append(ht);
   gLabels.append(txt((O.x + hRight.x) / 2, 588, "Crosswind component",
-    { "text-anchor": "middle", "font-size": 15, fill: "#1d6fb8", "font-weight": 700 }));
+    { "text-anchor": "middle", "font-size": 15, fill: "var(--accent-headwind)", "font-weight": 700 }));
 
   // angle chips at the outer end of each major ray
   const chips = [];
@@ -146,8 +147,8 @@ export function createChart(svg, handlers = {}) {
     const g = el("g");
     const label = `${th}°`;
     const w = 13 + label.length * 8;
-    g.append(el("rect", { x: c.x - w / 2, y: c.y - 11, width: w, height: 20, rx: 5, fill: "#2d3748" }));
-    g.append(txt(c.x, c.y + 4, label, { "text-anchor": "middle", "font-size": 12.5, fill: "#fff", "font-weight": 600 }));
+    g.append(el("rect", { x: c.x - w / 2, y: c.y - 11, width: w, height: 20, rx: 5, fill: "var(--chip-bg)" }));
+    g.append(txt(c.x, c.y + 4, label, { "text-anchor": "middle", "font-size": 12.5, fill: "var(--chip-fg)", "font-weight": 600 }));
     // click a label to set the wind that many degrees off the current runway
     g.classList.add("angle-chip");
     g.addEventListener("pointerdown", (e) => { e.preventDefault(); handlers.onSetAngle?.(th); });
@@ -157,7 +158,7 @@ export function createChart(svg, handlers = {}) {
   // "Wind velocity" diagonal note, along ~33 deg
   const wv = pt(33, R_MAX * 0.62);
   const wvNote = txt(wv.x, wv.y, "Wind velocity",
-    { "text-anchor": "middle", "font-size": 14, fill: "#3a5468", "font-style": "italic", "font-weight": 600 });
+    { "text-anchor": "middle", "font-size": 14, fill: "var(--text-dim)", "font-style": "italic", "font-weight": 600 });
   wvNote.setAttribute("transform", `rotate(33 ${wv.x} ${wv.y})`);
   gLabels.append(wvNote);
 
@@ -168,29 +169,29 @@ export function createChart(svg, handlers = {}) {
   const ray = el("line", { stroke: "var(--hi-angle)", "stroke-width": 3, "stroke-linecap": "round" });
   const compH = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
   const compV = el("line", { stroke: "var(--hi-comp)", "stroke-width": 2.4, "stroke-dasharray": "6 4" });
-  const dot = el("circle", { r: 6.5, fill: "var(--hi-angle)", stroke: "#fff", "stroke-width": 1.5 });
-  const hwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
-  const xwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "#fff", "stroke-width": 1.5 });
+  const dot = el("circle", { r: 6.5, fill: "var(--hi-angle)", stroke: "var(--paint)", "stroke-width": 1.5 });
+  const hwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "var(--paint)", "stroke-width": 1.5 });
+  const xwDot = el("circle", { r: 6, fill: "var(--hi-comp)", stroke: "var(--paint)", "stroke-width": 1.5 });
   const hwTag = mkTag("var(--hi-comp)");
   const xwTag = mkTag("var(--hi-comp)");
   // hypotenuse (origin -> wind point = the wind vector itself); tour-only
-  const hypLine = el("line", { stroke: "#6741d9", "stroke-width": 4, "stroke-linecap": "round" });
+  const hypLine = el("line", { stroke: "var(--accent-resultant)", "stroke-width": 4, "stroke-linecap": "round" });
   hypLine.style.display = "none";
   gHilite.append(wedge, ray, compH, compV, hypLine, dot, hwDot, xwDot, hwTag.g, xwTag.g);
 
   // floating exact-angle chip for in-between (non-10°) wind angles
   const angTag = el("g");
-  const angRect = el("rect", { rx: 5, height: 20, fill: "#e8590c" });
-  const angText = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12.5, fill: "#fff", "font-weight": 700 });
+  const angRect = el("rect", { rx: 5, height: 20, fill: "var(--accent-wind)" });
+  const angText = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12.5, fill: "var(--chip-fg)", "font-weight": 700 });
   angTag.append(angRect, angText);
   gHilite.append(angTag);
 
   // gust overlay: darker outer band (steady -> gust), hollow gust point, and
   // amber range bars on each axis showing the component ranges
-  const gustBand = el("path", { fill: "rgba(216,118,12,0.26)", stroke: "rgba(190,95,6,0.5)", "stroke-width": 1 });
-  const xwRange = el("line", { stroke: "#e8590c", "stroke-width": 5, "stroke-linecap": "round" });
-  const hwRange = el("line", { stroke: "#e8590c", "stroke-width": 5, "stroke-linecap": "round" });
-  const gustDot = el("circle", { r: 5.5, fill: "#fff", stroke: "var(--hi-angle)", "stroke-width": 2.5 });
+  const gustBand = el("path", { fill: "var(--gust-band)", stroke: "var(--gust-edge)", "stroke-width": 1 });
+  const xwRange = el("line", { stroke: "var(--accent-wind)", "stroke-width": 5, "stroke-linecap": "round" });
+  const hwRange = el("line", { stroke: "var(--accent-wind)", "stroke-width": 5, "stroke-linecap": "round" });
+  const gustDot = el("circle", { r: 5.5, fill: "var(--chip-fg)", stroke: "var(--hi-angle)", "stroke-width": 2.5 });
   gHilite.insertBefore(gustBand, ray);     // above the steady wedge, below the lines/dots
   gHilite.insertBefore(xwRange, dot);
   gHilite.insertBefore(hwRange, dot);
@@ -202,7 +203,7 @@ export function createChart(svg, handlers = {}) {
   const limLine = el("line", { stroke: "#d6336c", "stroke-width": 2.4, "stroke-dasharray": "7 4" });
   const limLbl = el("g");
   const limRect = el("rect", { rx: 5, height: 20, fill: "#d6336c" });
-  const limTxt = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12, fill: "#fff", "font-weight": 700 });
+  const limTxt = txt(0, 0, "", { "text-anchor": "middle", "font-size": 12, fill: "var(--chip-fg)", "font-weight": 700 });
   limLbl.append(limRect, limTxt);
   const gLimit = el("g");
   gLimit.style.display = "none";
@@ -219,17 +220,17 @@ export function createChart(svg, handlers = {}) {
     // relabel the vertical axis: same arcs/rays, just headwind vs tailwind
     const tail = show && st.tailwind;
     ht.textContent = tail ? "Tailwind component" : "Headwind component";
-    ht.setAttribute("fill", tail ? "#e03131" : "#1d6fb8");
+    ht.setAttribute("fill", tail ? "var(--accent-crosswind)" : "var(--accent-headwind)");
     // vertical ticks go negative + red in a tailwind (loss of headwind component)
     vTicks.forEach(({ el: t, v }) => {
       t.textContent = tail ? `-${v}` : `${v}`;
-      t.setAttribute("fill", tail ? "#e03131" : INK);
+      t.setAttribute("fill", tail ? "var(--accent-crosswind)" : INK);
     });
 
     // angle labels: highlight the matching 10° chip, or pop up the exact angle
     const onTen = off % 10 === 0;
     chips.forEach((c, i) => {
-      c.firstChild.setAttribute("fill", show && i * 10 === off ? "#e8590c" : "#2d3748");
+      c.firstChild.setAttribute("fill", show && i * 10 === off ? "var(--accent-wind)" : "var(--chip-bg)");
     });
     if (show && !onTen) {
       const cc = pt(off, R_MAX + 16);
@@ -417,7 +418,7 @@ export function createChart(svg, handlers = {}) {
     let i = 0;
     const step = () => {
       arcs.forEach((a, k) => {
-        a.setAttribute("stroke", k === i ? "#e8590c" : "#15293a");
+        a.setAttribute("stroke", k === i ? "var(--accent-wind)" : "var(--ink)");
         a.setAttribute("stroke-width", k === i ? 3.4 : 1.6);
       });
       i = (i + 1) % arcs.length;
@@ -427,7 +428,7 @@ export function createChart(svg, handlers = {}) {
   }
   function tourStopArcs() {
     clearInterval(arcTimer); arcTimer = 0;
-    arcs.forEach((a) => { a.setAttribute("stroke", "#15293a"); a.setAttribute("stroke-width", 1.6); });
+    arcs.forEach((a) => { a.setAttribute("stroke", "var(--ink)"); a.setAttribute("stroke-width", 1.6); });
   }
   function tourWedge(on) {
     wedge.setAttribute("fill", on ? "rgba(255,150,35,0.42)" : "var(--hi-wedge)");
@@ -469,7 +470,7 @@ function txt(x, y, s, attrs = {}) {
 function mkTag(color) {
   const g = el("g");
   const rect = el("rect", { rx: 4, height: 18, fill: color });
-  const t = txt(0, 0, "", { "font-size": 12, fill: "#fff", "font-weight": 700, "text-anchor": "start" });
+  const t = txt(0, 0, "", { "font-size": 12, fill: "var(--chip-fg)", "font-weight": 700, "text-anchor": "start" });
   g.append(rect, t);
   return { g, rect, t };
 }

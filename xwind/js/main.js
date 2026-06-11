@@ -248,6 +248,14 @@ const tour = createTour([
 ]);
 document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open());
 
+// theme toggle (light <-> dark); no persistence
+const themeBtn = document.getElementById("xw-theme-toggle");
+themeBtn.addEventListener("click", () => {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  themeBtn.innerHTML = dark ? "&#9790;" : "&#9728;";   // moon offers dark, sun offers light
+});
+
 subscribe((st) => {
   const d = derive(st);
 

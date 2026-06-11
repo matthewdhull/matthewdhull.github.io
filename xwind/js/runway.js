@@ -21,40 +21,122 @@ function bvec(deg) {
   return { x: Math.sin(a), y: -Math.cos(a) };
 }
 
+// a soft radial bloom gradient for a runway light
+function radialGlow(id, color) {
+  const rg = el("radialGradient", { id });
+  rg.append(
+    el("stop", { offset: "0%", "stop-color": color, "stop-opacity": 0.85 }),
+    el("stop", { offset: "40%", "stop-color": color, "stop-opacity": 0.38 }),
+    el("stop", { offset: "100%", "stop-color": color, "stop-opacity": 0 })
+  );
+  return rg;
+}
+
+// Runway lights, built once in local coords (approach end = +y, far end = -y);
+// they rotate with the pavement group. Small cores + soft blooms (blooms gated
+// by --glow so they're night-only). Semantic colours kept per convention.
+function buildLights(g) {
+  const gGlow = el("g"); gGlow.style.opacity = "var(--glow)";
+  const gCore = el("g");
+  const EW = HALF_W - 1, FAR = -HALF_LEN, APP = HALF_LEN, span = HALF_LEN * 2;
+  const light = (x, y, gid, c, cr = 1.3, hr = 5) => {
+    gGlow.append(el("circle", { cx: x, cy: y, r: hr, fill: `url(#${gid})` }));
+    gCore.append(el("circle", { cx: x, cy: y, r: cr, fill: c }));
+  };
+  // edge lights — white, amber in the far (rollout caution) third
+  const cautionY = FAR + span * 0.32;
+  for (let y = APP - 8; y >= FAR + 8; y -= 21) {
+    const amber = y < cautionY;
+    const gid = amber ? "xw-ga" : "xw-gw", c = amber ? "#ffb02e" : "#fff6e0";
+    light(-EW, y, gid, c); light(EW, y, gid, c);
+  }
+  // centerline — white -> alternating white/red -> solid red toward the far end
+  let k = 0;
+  for (let y = APP - 16; y >= FAR + 16; y -= 21, k++) {
+    const f = (APP - y) / span;
+    let gid = "xw-gw", c = "#fff6e0";
+    if (f > 0.74) { gid = "xw-gr"; c = "#ff6a5a"; }
+    else if (f > 0.52 && k % 2 === 0) { gid = "xw-gr"; c = "#ff6a5a"; }
+    light(0, y, gid, c, 1.4, 5);
+  }
+  // green threshold (approach) + red runway-end (far)
+  for (let i = -3; i <= 3; i++) {
+    light(i * 7, APP - 3, "xw-gg", "#46e07a", 1.3, 4.5);
+    light(i * 7, FAR + 3, "xw-gr", "#ff6a5a", 1.3, 4.5);
+  }
+  g.append(gGlow, gCore);
+  // REIL — two synchronized white flashers at the approach corners
+  const gReil = el("g"); gReil.style.opacity = "var(--glow)";
+  const flash = el("g"); flash.setAttribute("class", "xw-reil");
+  for (const sx of [-1, 1]) {
+    const x = sx * (HALF_W + 9), y = APP + 3;
+    flash.append(el("circle", { cx: x, cy: y, r: 8, fill: "url(#xw-gw)" }));
+    flash.append(el("circle", { cx: x, cy: y, r: 1.8, fill: "#ffffff" }));
+  }
+  gReil.append(flash);
+  g.append(gReil);
+}
+
 export function createRunway(svg) {
   svg.innerHTML = "";
 
+  // defs: asphalt gradient (lighter along the centerline) + light-bloom gradients
+  const defs = el("defs");
+  const asph = el("linearGradient", { id: "xw-asphalt", x1: 0, y1: 0, x2: 1, y2: 0 });
+  asph.append(
+    el("stop", { offset: "0%", "stop-color": "var(--asphalt-lo)" }),
+    el("stop", { offset: "50%", "stop-color": "var(--asphalt-hi)" }),
+    el("stop", { offset: "100%", "stop-color": "var(--asphalt-lo)" })
+  );
+  const flood = el("radialGradient", { id: "xw-flood" });
+  flood.append(
+    el("stop", { offset: "0%", "stop-color": "#ffd27a", "stop-opacity": 0.42 }),
+    el("stop", { offset: "55%", "stop-color": "#ffc874", "stop-opacity": 0.14 }),
+    el("stop", { offset: "100%", "stop-color": "#ffc874", "stop-opacity": 0 })
+  );
+  defs.append(asph, flood,
+    radialGlow("xw-gw", "#fff6e0"), radialGlow("xw-ga", "#ffb02e"),
+    radialGlow("xw-gr", "#ff5a4d"), radialGlow("xw-gg", "#46e07a"));
+  svg.append(defs);
+
+  // windsock floodlights (soft warm pools; night only via --glow), world frame
+  const gFlood = el("g"); gFlood.style.opacity = "var(--glow)";
+  const floods = [el("circle", { r: 44, fill: "url(#xw-flood)" }), el("circle", { r: 44, fill: "url(#xw-flood)" })];
+  floods.forEach((f) => gFlood.append(f));
+  svg.append(gFlood);
+
   // compass ring
-  const ring = el("circle", { cx: 0, cy: 0, r: 188, fill: "none", stroke: "#a9cd9a", "stroke-width": 1.5 });
+  const ring = el("circle", { cx: 0, cy: 0, r: 188, fill: "none", stroke: "var(--compass)", "stroke-width": 1.5 });
   svg.append(ring);
   for (let b = 0; b < 360; b += 30) {
     const v = bvec(b);
     svg.append(el("line", {
       x1: v.x * 178, y1: v.y * 178, x2: v.x * 188, y2: v.y * 188,
-      stroke: "#93c283", "stroke-width": b % 90 === 0 ? 2 : 1,
+      stroke: "var(--compass-tick)", "stroke-width": b % 90 === 0 ? 2 : 1,
     }));
   }
   // N marker
-  const nt = el("text", { x: 0, y: -160, "text-anchor": "middle", "font-size": 14, fill: "#e9efe2", "font-weight": 700 });
+  const nt = el("text", { x: 0, y: -160, "text-anchor": "middle", "font-size": 14, fill: "var(--paint)", "font-weight": 700 });
   nt.textContent = "N"; svg.append(nt);
 
   // rotating runway group
   const g = el("g");
   svg.append(g);
 
-  // pavement
-  g.append(el("rect", { x: -HALF_W, y: -HALF_LEN, width: HALF_W * 2, height: HALF_LEN * 2, rx: 4, fill: "#3a4754" }));
+  // pavement (gradient: lighter centerline -> raised lit surface)
+  g.append(el("rect", { x: -HALF_W, y: -HALF_LEN, width: HALF_W * 2, height: HALF_LEN * 2, rx: 4, fill: "url(#xw-asphalt)", stroke: "var(--rwy-edge)", "stroke-width": 1 }));
   // centerline dashes — kept to the middle so they don't strike through the numbers
-  g.append(el("line", { x1: 0, y1: -HALF_LEN + 78, x2: 0, y2: HALF_LEN - 78, stroke: "#eef5fc", "stroke-width": 2.4, "stroke-dasharray": "14 12" }));
-  // threshold bars
+  g.append(el("line", { x1: 0, y1: -HALF_LEN + 78, x2: 0, y2: HALF_LEN - 78, stroke: "var(--paint)", "stroke-width": 2.4, "stroke-dasharray": "14 12", "stroke-opacity": 0.5 }));
+  // threshold bars (painted piano keys)
   for (const sgn of [-1, 1]) {
     for (let i = -3; i <= 3; i++) {
-      g.append(el("rect", { x: i * 6 - 2, y: sgn * (HALF_LEN - 18) - (sgn < 0 ? 12 : 0), width: 4, height: 12, fill: "#eef5fc" }));
+      g.append(el("rect", { x: i * 6 - 2, y: sgn * (HALF_LEN - 18) - (sgn < 0 ? 12 : 0), width: 4, height: 12, fill: "var(--paint)", "fill-opacity": 0.85 }));
     }
   }
+  buildLights(g);
   // runway numbers (painted on, rotate with pavement)
-  const numTop = el("text", { x: 0, y: -HALF_LEN + 50, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "#eef5fc", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
-  const numBot = el("text", { x: 0, y: HALF_LEN - 34, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "#eef5fc", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
+  const numTop = el("text", { x: 0, y: -HALF_LEN + 50, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
+  const numBot = el("text", { x: 0, y: HALF_LEN - 34, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
   // Each number reads "up the runway" toward the far end (direction of travel).
   // The top-end number therefore faces down-runway -> flip it 180 locally.
   numTop.setAttribute("transform", "rotate(180 0 " + (-HALF_LEN + 44) + ")");
@@ -67,9 +149,9 @@ export function createRunway(svg) {
 
   // wind origin arrow (upwind side, pointing downwind)
   const windArrow = el("g");
-  const waLine = el("line", { stroke: "#dee5d8", "stroke-width": 3 });
-  const waHead = el("polygon", { fill: "#dee5d8" });
-  const waLabel = el("text", { "font-size": 12.5, fill: "#e9efe2", "font-weight": 700, "text-anchor": "middle" });
+  const waLine = el("line", { stroke: "var(--wind-arrow)", "stroke-width": 3 });
+  const waHead = el("polygon", { fill: "var(--wind-arrow)" });
+  const waLabel = el("text", { "font-size": 12.5, fill: "var(--paint)", "font-weight": 700, "text-anchor": "middle" });
   windArrow.append(waLine, waHead, waLabel);
   svg.append(windArrow);
 
@@ -85,6 +167,13 @@ export function createRunway(svg) {
     // numbers, nose pointed down the runway — communicates which runway is in use.
     const pp = bvec((h + 180) % 360);
     plane.g.setAttribute("transform", `translate(${pp.x * (HALF_LEN - 84)} ${pp.y * (HALF_LEN - 84)}) rotate(${h})`);
+
+    // windsock floodlights at each sock base (abeam the numbers)
+    [h, (h + 180) % 360].forEach((B, i) => {
+      const num = bvec((B + 180) % 360), right = bvec((B + 90) % 360);
+      floods[i].setAttribute("cx", num.x * (HALF_LEN - 40) + right.x * (HALF_W + 58));
+      floods[i].setAttribute("cy", num.y * (HALF_LEN - 40) + right.y * (HALF_W + 58));
+    });
 
     // wind arrow from upwind edge toward center (hidden when calm)
     windArrow.style.display = st.windSpeed > 0 ? "" : "none";

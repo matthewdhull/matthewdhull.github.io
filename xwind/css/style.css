@@ -2,23 +2,102 @@
    Light blue graph-paper ground, dark structural ink, technical type. */
 
 :root {
-  --paper:        #eef5fc;   /* card paper */
+  /* surfaces / chrome */
+  --bg:           #f4f8fc;
+  --panel:        #eef5fc;   /* raised cards */
+  --border:       #9ec3e6;
+  --frame:        #9ec3e6;   /* alias */
+  --well:         #eef5fc;   /* chart card ground */
+  --text:         #243443;
+  --text-dim:     #5a7186;
+  --text-faint:   #6e7681;
+  --heading:      #16314a;
+  /* chart graph-paper + structure */
+  --paper:        #eef5fc;   /* alias of --well */
   --grid-minor:   #d3e6f7;   /* fine graph lines */
   --grid-major:   #b9d6ef;   /* heavy graph lines */
-  --ink:          #15293a;   /* chart structural lines */
-  --ink-soft:     #5b7186;
-  --blue:         #1d6fb8;   /* axis titles / accents */
+  --ink:          #15293a;   /* arcs, spokes, axes */
+  --grid-axis:    #15293a;
+  --minorline:    #9fb8cb;   /* minor arcs / rays */
+  --sector:       transparent;
+  --label:        #15293a;   /* tick numbers + chart notes */
   --chip-bg:      #2d3748;   /* angle label chips */
   --chip-fg:      #ffffff;
-  --hi-wedge:     rgba(255, 145, 30, 0.16);  /* magnitude wedge fill */
-  --hi-wedge-edge:rgba(230, 120, 10, 0.55);
-  --hi-angle:     #e8590c;   /* wind/runway angle ray */
-  --hi-comp:      #e03131;   /* component drop-lines (red, like the worked example) */
+  --blue:         #1d6fb8;   /* axis titles */
+  /* semantic accents (both themes) */
+  --accent-headwind:   #1d6fb8;
+  --accent-crosswind:  #e03131;
+  --accent-wind:       #e8590c;
+  --accent-resultant:  #6741d9;
+  --accent-valid:      #3fb950;
+  --hi-angle:     var(--accent-wind);      /* wind/runway angle ray */
+  --hi-comp:      var(--accent-crosswind); /* component drop-lines / pills */
+  --hi-wedge:     rgba(232, 89, 12, 0.16);
+  --hi-wedge-edge:rgba(232, 89, 12, 0.5);
+  --gust-band:    rgba(216, 118, 12, 0.26);
+  --gust-edge:    rgba(190, 95, 6, 0.5);
+  /* airfield */
+  --turf-near:    #82a17c;
+  --turf-far:     #6f8f6a;
+  --turf-grid:    #94ad8d;
+  --asphalt-hi:   #46535f;
+  --asphalt-lo:   #3a4754;
+  --rwy-edge:     #6b7785;
+  --paint:        #eef5fc;
+  --compass:      #a9cd9a;
+  --compass-tick: #93c283;
+  --wind-arrow:   #dee5d8;
+  --caption:      #20331c;
+  --flood:        rgba(255, 208, 130, 0.0);  /* windsock flood — off in daylight */
+  --glow:         0.0;                        /* runway-light bloom — off in daylight */
   --sock-orange:  #ff6a13;
-  --frame:        #9ec3e6;
-  --bg:           #f4f8fc;
-  --text:         #243443;
   font-synthesis: none;
+}
+
+/* ---------------- DARK: backlit instrument + night airfield ---------------- */
+:root[data-theme="dark"] {
+  --bg:           #0d1117;
+  --panel:        #161b22;
+  --border:       #30363d;
+  --frame:        #30363d;
+  --well:         #010409;   /* deeper than bg -> recessed glass */
+  --text:         #e6edf3;
+  --text-dim:     #8b949e;
+  --text-faint:   #6e7681;
+  --heading:      #e6edf3;
+  --paper:        #010409;
+  --grid-minor:   #1b2129;   /* faint self-lit graph paper */
+  --grid-major:   #232b34;
+  --ink:          #454d57;   /* arcs / spokes */
+  --grid-axis:    #8b949e;
+  --minorline:    #2b333c;
+  --sector:       #161b22;
+  --label:        #b8c2cc;
+  --chip-bg:      #21262d;
+  --chip-fg:      #e6edf3;
+  --blue:         #4493f8;
+  --accent-headwind:   #4493f8;
+  --accent-crosswind:  #f85149;
+  --accent-wind:       #fd853a;
+  --accent-resultant:  #bc8cff;
+  --accent-valid:      #3fb950;
+  --hi-wedge:     rgba(253, 133, 58, 0.15);
+  --hi-wedge-edge:rgba(253, 133, 58, 0.5);
+  --gust-band:    rgba(253, 133, 58, 0.20);
+  --gust-edge:    rgba(253, 133, 58, 0.5);
+  --turf-near:    #10341f;
+  --turf-far:     #0f2417;
+  --turf-grid:    #16331f;
+  --asphalt-hi:   #23272e;
+  --asphalt-lo:   #15181d;
+  --rwy-edge:     #2c333d;
+  --paint:        #e6edf3;
+  --compass:      #1c4a2c;
+  --compass-tick: #1c4a2c;
+  --wind-arrow:   #8b949e;
+  --caption:      #8b949e;
+  --flood:        rgba(255, 198, 110, 0.16); /* soft warm windsock pool */
+  --glow:         0.7;                        /* runway lights glow at night */
 }
 
 * { box-sizing: border-box; }
@@ -41,11 +120,11 @@ html, body {
   font-size: 1.5rem;
   letter-spacing: 0.01em;
   font-weight: 700;
-  color: #16314a;
+  color: var(--heading);
 }
 .xw-sub {
   margin: 0.25rem 0 0;
-  color: #5a7186;
+  color: var(--text-dim);
   font-size: 0.95rem;
 }
 
@@ -97,7 +176,34 @@ html, body {
   --grid-major: #94ad8d;
   --frame:      #5f7a59;
 }
-.xw-runway-card .xw-runway-caption { color: #20331c; }
+.xw-runway-card .xw-runway-caption { color: var(--caption); }
+/* night airfield: dark turf radial + a faint restored grid (felt, not read) */
+:root[data-theme="dark"] .xw-runway-card {
+  --frame: #1c4a2c;
+  background-color: var(--turf-far);
+  background-image:
+    radial-gradient(circle at 50% 46%, var(--turf-near), var(--turf-far) 72%),
+    linear-gradient(var(--turf-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--turf-grid) 1px, transparent 1px);
+  background-size: 100% 100%, 26px 26px, 26px 26px;
+  background-position: 0 0, -1px -1px, -1px -1px;
+}
+:root[data-theme="dark"] .xw-card { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45); }
+
+/* theme toggle (header) */
+.xw-theme-toggle {
+  margin: 0.7rem 0 0 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text-dim);
+  border-radius: 6px;
+  padding: 6px 11px;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: top;
+}
+.xw-theme-toggle:hover { color: var(--text); }
 .xw-runway-stage {
   position: relative;
   width: 100%;
@@ -117,7 +223,7 @@ html, body {
   margin: 0.4rem 0 0.2rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  color: #2c485f;
+  color: var(--text-dim);
   letter-spacing: 0.03em;
 }
 
@@ -138,7 +244,7 @@ html, body {
   display: block;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #3a5468;
+  color: var(--text-dim);
   margin-bottom: 0.35rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -172,27 +278,27 @@ html, body {
 .xw-mark {
   width: 1px;
   height: 4px;
-  background: #a9bccd;
+  background: var(--text-faint);
 }
 .xw-tick.major .xw-mark {
   width: 1.5px;
   height: 7px;
-  background: #5a7186;
+  background: var(--text-dim);
 }
 .xw-lbl {
   font-size: 9px;
   line-height: 1;
   margin-top: 2px;
-  color: #5a7186;
+  color: var(--text-dim);
   font-variant-numeric: tabular-nums;
 }
 .xw-readout {
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
   line-height: 1.4;
-  color: #2c485f;
+  color: var(--text-dim);
   background: #ffffffaa;
-  border: 1px solid #9ec3e6;
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.5rem 0.7rem;
   min-height: 3.4rem;   /* reserve space so head/tail-wind swaps don't jump layout */
@@ -222,8 +328,8 @@ html, body {
   transform: translateX(-50%);
   width: 460px;
   max-width: calc(100vw - 24px);
-  background: #fff;
-  border: 1px solid #c5d8ea;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 10px;
   box-shadow: 0 14px 44px rgba(20, 60, 100, 0.24);
   padding: 15px 18px 12px;
@@ -232,51 +338,60 @@ html, body {
 .xw-tour-x {
   position: absolute; top: 9px; right: 9px;
   width: 26px; height: 26px; border-radius: 50%;
-  border: 1px solid #d3e0ec; background: #f4f8fc; color: #5a7186;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text-dim);
   cursor: pointer; font-size: 16px; line-height: 1;
 }
-.xw-tour-x:hover { background: #e9f1f8; }
-.xw-tour-title { margin: 0 30px 8px 0; font-size: 1.05rem; color: #16314a; cursor: grab; }
-.xw-tour-body { font-size: 0.93rem; line-height: 1.5; color: #2c3e50; min-height: 64px; }
+.xw-tour-x:hover { background: var(--panel); }
+.xw-tour-title { margin: 0 30px 8px 0; font-size: 1.05rem; color: var(--heading); cursor: grab; }
+.xw-tour-body { font-size: 0.93rem; line-height: 1.5; color: var(--text); min-height: 64px; }
 .xw-tour-body p { margin: 0 0 0.6rem; }
 .xw-tour-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .xw-tour-prev, .xw-tour-next {
   width: 30px; height: 30px; border-radius: 50%;
-  border: 1px solid #cdddec; background: #f4f8fc; color: #1d6fb8;
+  border: 1px solid var(--border); background: var(--bg); color: var(--accent-headwind);
   font-size: 17px; line-height: 1; cursor: pointer;
 }
 .xw-tour-prev:disabled, .xw-tour-next:disabled { opacity: 0.4; cursor: default; }
 .xw-tour-progress { flex: 1; accent-color: var(--blue); }
 .xw-tour-badge {
-  border: 1px solid #cdddec; background: #eaf2fa; color: #1d6fb8;
+  border: 1px solid var(--border); background: var(--panel); color: var(--accent-headwind);
   font-weight: 700; font-variant-numeric: tabular-nums;
   border-radius: 6px; padding: 4px 9px; cursor: pointer; font-size: 0.82rem;
 }
 .xw-tour-menu {
   position: absolute; right: 14px; bottom: 50px; width: 240px; max-height: 232px;
-  overflow-y: auto; background: #fff; border: 1px solid #cdddec; border-radius: 8px;
+  overflow-y: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
   box-shadow: 0 10px 30px rgba(20, 60, 100, 0.22); padding: 4px;
 }
 .xw-tour-menu[hidden] { display: none; }
 .xw-tour-menu-item {
   display: block; width: 100%; text-align: left; border: 0; background: none;
-  padding: 7px 9px; border-radius: 6px; font-size: 0.85rem; color: #2c3e50; cursor: pointer;
+  padding: 7px 9px; border-radius: 6px; font-size: 0.85rem; color: var(--text); cursor: pointer;
 }
-.xw-tour-menu-item:hover { background: #eef5fc; }
+.xw-tour-menu-item:hover { background: var(--bg); }
 
 .xw-tour-hand { position: fixed; z-index: 60; pointer-events: none; font-size: 25px; }
 .xw-hand-em { display: inline-block; animation: xwbob 0.9s ease-in-out infinite; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
 @keyframes xwbob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 /* colored emphasis used in tour copy */
-.em    { color: #1d6fb8; font-weight: 700; }
-.em-hw { color: #1d6fb8; font-weight: 700; }
-.em-xw { color: #e03131; font-weight: 700; }
-.em-shade { color: #e8590c; font-weight: 700; }
-.em-hyp { color: #6741d9; font-weight: 700; }
+.em    { color: var(--accent-headwind); font-weight: 700; }
+.em-hw { color: var(--accent-headwind); font-weight: 700; }
+.em-xw { color: var(--accent-crosswind); font-weight: 700; }
+.em-shade { color: var(--accent-wind); font-weight: 700; }
+.em-hyp { color: var(--accent-resultant); font-weight: 700; }
 
 .xw-pulse { animation: xwsvgpulse 1s ease-in-out infinite; }
 @keyframes xwsvgpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* REIL: two synchronized white flashers (approach corners) */
+.xw-reil { animation: xw-reil 1.4s linear infinite; }
+@keyframes xw-reil {
+  0%, 5%   { opacity: 1; }
+  11%, 45% { opacity: 0.1; }
+  50%, 55% { opacity: 1; }
+  61%, 100%{ opacity: 0.1; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; }
