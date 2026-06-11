@@ -151,9 +151,10 @@ function startWindsockPlayer() {
   wsIdx = 0;
   const tick = () => {
     const s = WS_STEPS[wsIdx % WS_STEPS.length];
-    setState({ runwayHeading: 0, windDir: 270, windSpeed: s.windSpeed, gust: s.gust ?? s.windSpeed, gustLock: !(s.gust > s.windSpeed) });
+    const gusty = s.gust > s.windSpeed;
+    setState({ runwayHeading: 0, windDir: 270, windSpeed: s.windSpeed, gust: s.gust ?? s.windSpeed, gustLock: !gusty });
     wsIdx++;
-    wsTimer = setTimeout(tick, 2400);
+    wsTimer = setTimeout(tick, gusty ? 4600 : 2400);   // linger on the gust so the flutter reads
   };
   tick();
 }
