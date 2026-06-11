@@ -86,7 +86,7 @@ function setScenario(o) {
 // wind (≈full by 15 kt) and holds horizontal; the rest droops down, so a light
 // wind hangs and a strong wind streams straight out. Flutters when gusty.
 function windsockProfileSVG(speed, gust, withArrow) {
-  const VW = 240, VH = 170, Mx = 42, My = 40, GROUND = 158, L = 116, mouthR = 14, tipR = 3, N = 24, BANDS = 5;
+  const VW = 240, VH = 170, Mx = 42, My = 40, GROUND = 158, L = 116, mouthR = 14, tipR = 3, N = 30, BANDS = 5;
   const inflated = Math.max(0, Math.min(1, speed / 15));
   const seg = L / N, pts = [];
   let x = Mx, y = My;
@@ -96,7 +96,8 @@ function windsockProfileSVG(speed, gust, withArrow) {
     // piecewise: the inflated part is ~straight, then a CREASE, then the rest
     // hangs straight. Lighter wind -> steeper hang (3 kt folds past vertical).
     const hang = Math.min(1.62, (1 - inflated) * 2.0);  // hang angle past the crease (≤~vertical)
-    const cr = Math.min(1, Math.max(0, t - inflated) / 0.1);
+    // crease wide enough that the bend radius stays > tube radius (no inner-edge pinch)
+    const cr = Math.min(1, Math.max(0, t - inflated) / 0.24);
     let ang = hang * (cr * cr * (3 - 2 * cr));           // smoothstep crease, then hold
     if (gust && t > 0.35) ang += Math.sin(t * 26 + 1) * 0.17;               // flutter the outer half
     x += Math.cos(ang) * seg;
