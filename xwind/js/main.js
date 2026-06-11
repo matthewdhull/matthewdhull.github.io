@@ -171,8 +171,7 @@ const tour = createTour([
       return `<p>The wind lives in a band between steady and peak, so each component is a <b>range</b>, ` +
         `not a single number.</p>` +
         `<p>Here: <span class="em-xw">crosswind ${c.xwR}–${c.gustXwR} kt</span>, ` +
-        `<span class="em-hw">headwind ${c.hwR}–${c.gustHwR} kt</span>. ` +
-        `Watch the sock and the wind field <b>surge to the gust and settle back</b>.</p>`;
+        `<span class="em-hw">headwind ${c.hwR}–${c.gustHwR} kt</span>.</p>`;
     },
     enter() { setScenario({ runwayHeading: 20, windDir: 40, windSpeed: 15, gust: 25 }); },
     point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); },
@@ -195,12 +194,13 @@ const tour = createTour([
     body: (d) => {
       const c = comps(d);
       const lead =
-        `<p>A paper chart only covers headwinds — it doesn't actually flip. When the wind is ` +
-        `<span class="em-xw">behind you</span> (more than 90° off the nose), you read it at the ` +
-        `<span class="em-shade">acute angle</span> and treat that result as a <span class="em-xw">tailwind</span>.</p>`;
+        `<p>The chart works for tailwinds too. When the wind is <span class="em-xw">behind you</span> ` +
+        `(more than 90° off the nose), read it at the <span class="em-shade">acute angle</span> between ` +
+        `the wind and the runway — then flip the vertical reading: that headwind is now a ` +
+        `<span class="em-xw">tailwind</span> (shown here on the red, negative scale).</p>`;
       if (d.tailwind) {
         return lead + `<p>Right now the wind is ${180 - d.rawOff}° <b>off the tail</b>: about a ` +
-          `<b>${c.hwR} kt tailwind</b> and ${c.xwR} kt crosswind — note the red, negative axis.</p>`;
+          `<b>${c.hwR} kt tailwind</b> and ${c.xwR} kt crosswind.</p>`;
       }
       return lead + `<p>Right now the wind is ahead of you (a headwind). <b>Drag the wind direction ` +
         `past 90° off the nose</b> to send it behind you and watch the axis flip to red.</p>`;
@@ -212,13 +212,19 @@ const tour = createTour([
     title: "The clock rule of thumb",
     body: (d) => {
       const c = comps(d);
+      const intro = `<p>Estimate crosswind without the chart — it's a fraction of the wind by angle off the nose:</p>` +
+        `<p style="text-align:center"><b>15°≈¼ &nbsp;·&nbsp; 30°≈½ &nbsp;·&nbsp; 45°≈¾ &nbsp;·&nbsp; 60°≈⅞ &nbsp;·&nbsp; 90°=all</b></p>`;
+      // nearly down the runway -> essentially no crosswind (special case)
+      if (d.off < 8) {
+        return intro + `<p>At <span class="em-shade">${d.off}° off</span> the wind is almost straight ` +
+          `down the runway — <b>barely any crosswind</b> (the chart shows ${c.xwR} kt).</p>`;
+      }
       const rules = [[15, "¼", 0.25], [30, "½", 0.5], [45, "¾", 0.75], [60, "⅞", 0.875], [90, "all", 1]];
       let best = rules[0];
       for (const r of rules) if (Math.abs(d.off - r[0]) < Math.abs(d.off - best[0])) best = r;
       const est = Math.round(d.windSpeed * best[2]);
       const formula = best[1] === "all" ? `${d.windSpeed}` : `${best[1]} × ${d.windSpeed}`;
-      return `<p>Estimate crosswind without the chart — it's a fraction of the wind by angle off the nose:</p>` +
-        `<p style="text-align:center"><b>15°≈¼ &nbsp;·&nbsp; 30°≈½ &nbsp;·&nbsp; 45°≈¾ &nbsp;·&nbsp; 60°≈⅞ &nbsp;·&nbsp; 90°=all</b></p>` +
+      return intro +
         `<p>At <span class="em-shade">${d.off}° off</span> (≈${best[0]}°), crosswind ≈ <b>${formula} ≈ ${est} kt</b> ` +
         `— the chart shows ${c.xwR}.</p>`;
     },
@@ -352,5 +358,6 @@ elWindGust.addEventListener("input", (e) => {
   if (state.gustLock === false) setState({ gust: Math.max(+e.target.value, state.windSpeed) });
 });
 
-// kick off the chart's self-drawing intro
+// kick off the chart's self-drawing intro, then open the guided tour on load
 chart.play({ reduced });
+tour.open();
