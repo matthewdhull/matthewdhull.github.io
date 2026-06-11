@@ -65,6 +65,7 @@
     <div class="xw-readout" id="xw-readout" aria-live="polite"></div>
   </section>
 
-  <script type="module" src="./js/main.js"></script>
+  <!-- load with a cache-buster so edits to main.js always show on refresh -->
+  <script type="module">import("./js/main.js?v=" + Date.now());</script>
 </body>
 </html>
