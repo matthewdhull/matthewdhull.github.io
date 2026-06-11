@@ -232,9 +232,8 @@ const tour = createTour([
       `It's tempting to call it <b>10 kt headwind, 10 kt crosswind</b> — just split it in half, right? <b>No.</b></p>` +
       `<p>It's about <span class="em-hw">14</span> and <span class="em-xw">14</span>. The wind speed \\(V\\) is the ` +
       `<span class="em-hyp">hypotenuse</span> of a right triangle: \\(V=\\sqrt{\\text{HW}^2+\\text{XW}^2}\\). ` +
-      `Two 10s only make a 14 kt wind (\\(\\sqrt{10^2+10^2}\\approx14\\)) — to total 20 at 45°, each leg must be ~14 ` +
-      `(\\(\\sqrt{14^2+14^2}\\approx20\\)).</p>` +
-      `<p>Straightforward application of Pythagorean, directly from the chart.</p>`,
+      `To total 20 at 45°, each leg must be ~14 (\\(\\sqrt{14^2+14^2}\\approx20\\)).</p>` +
+      `<p>Recall that \\(a^2+b^2=c^2\\), so \\(c=\\sqrt{a^2+b^2}\\).</p>`,
     enter() {
       setScenario({ runwayHeading: 0, windDir: 45, windSpeed: 20 });
       chart.tour.components(true);
