@@ -214,7 +214,12 @@ const tour = createTour([
       const c = comps(d);
       const intro = `<p>Estimate crosswind without the chart — it's a fraction of the wind by angle off the nose:</p>` +
         `<p style="text-align:center"><b>15°≈¼ &nbsp;·&nbsp; 30°≈½ &nbsp;·&nbsp; 45°≈¾ &nbsp;·&nbsp; 60°≈⅞ &nbsp;·&nbsp; 90°=all</b></p>`;
-      // nearly down the runway -> essentially no crosswind (special case)
+      // straight down the runway -> no crosswind at all
+      if (d.off === 0) {
+        return intro + `<p>At <span class="em-shade">0° off</span> the wind is straight down the ` +
+          `runway — <b>no crosswind at all</b>; it's pure headwind.</p>`;
+      }
+      // nearly aligned -> barely any crosswind
       if (d.off < 8) {
         return intro + `<p>At <span class="em-shade">${d.off}° off</span> the wind is almost straight ` +
           `down the runway — <b>barely any crosswind</b> (the chart shows ${c.xwR} kt).</p>`;
