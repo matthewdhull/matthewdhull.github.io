@@ -115,6 +115,15 @@ html, body {
   max-width: 1180px;
   margin: 0 auto;
 }
+.xw-home {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+.xw-home:hover { color: var(--heading); text-decoration: underline; }
 .xw-header h1 {
   margin: 0;
   font-size: 1.5rem;
