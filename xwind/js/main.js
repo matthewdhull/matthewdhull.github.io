@@ -29,8 +29,11 @@ function derive(st) {
   const raw = Math.abs(angleDelta(st.windDir, st.runwayHeading)); // 0..180 off the nose
   const tailwind = raw > 90;
   const off = tailwind ? 180 - raw : raw;       // chart is always read at the acute angle
-  const gustSpeed = Math.max(st.gust ?? st.windSpeed, st.windSpeed);
-  const hasGust = gustSpeed > st.windSpeed + 0.5;
+  // locked gust always equals the steady wind (no stale gust factor can survive,
+  // regardless of which control changed the wind speed)
+  const locked = st.gustLock !== false;
+  const gustSpeed = locked ? st.windSpeed : Math.max(st.gust ?? st.windSpeed, st.windSpeed);
+  const hasGust = !locked && gustSpeed > st.windSpeed + 0.5;
   return { ...st, off, rawOff: raw, tailwind, gustSpeed, hasGust };
 }
 
@@ -64,27 +67,19 @@ function comps(d) {
   };
 }
 
-// ---- gust lock: gust is pinned to the steady wind unless explicitly unlocked,
-// so a panel/scenario can't leave a stale gust factor lurking over the limit ----
+// ---- gust lock (state.gustLock): the gust tracks the steady wind unless the
+// user unlocks it, so no stale gust factor can survive a wind-speed change ----
 const elGustLock = document.getElementById("xw-gust-lock");
-let gustUnlocked = false;
-function setGustLock(locked) {
-  gustUnlocked = !locked;
-  elWindGust.disabled = locked;
-  elGustLock.innerHTML = locked ? "&#128274;" : "&#128275;";   // 🔒 / 🔓
-  elGustLock.title = locked ? "Unlock to set a gust" : "Lock gust to the steady wind";
-  elWindGust.closest(".xw-control").classList.toggle("locked", locked);
-}
 elGustLock.addEventListener("click", () => {
-  const nowLock = gustUnlocked;        // currently unlocked -> lock it
-  setGustLock(nowLock);
-  if (nowLock) setState({ gust: state.windSpeed });   // drop the gust factor on lock
+  const locked = state.gustLock !== false;
+  // unlocking starts the gust at the steady wind (no jump); locking just re-pins
+  setState(locked ? { gustLock: false, gust: state.windSpeed } : { gustLock: true });
 });
 
 // apply a tour scenario; gust pinned to steady unless the scenario sets a real gust
 function setScenario(o) {
-  setGustLock(!(o.gust != null && o.gust > o.windSpeed));
-  setState({ gust: o.windSpeed, ...o });
+  const wantGust = o.gust != null && o.gust > o.windSpeed;
+  setState({ ...o, gustLock: !wantGust, gust: o.gust ?? o.windSpeed });
 }
 
 // ---------------- Guided tour (explainer panels) ----------------
@@ -166,7 +161,7 @@ const tour = createTour([
         `tap the <b>🔓</b> to set your own peak.</p>`;
     },
     enter() { setScenario({ runwayHeading: 20, windDir: 70, windSpeed: 12, gust: 22 }); chart.tour.limit(15); },
-    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); ctx.pointAt(elGustLock, "down"); },
+    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); },
     exit() { chart.tour.limit(0); },
   },
   {
@@ -298,7 +293,14 @@ subscribe((st) => {
   if (+elHeading.value !== st.runwayHeading) elHeading.value = st.runwayHeading;
   if (+elWindDir.value !== st.windDir) elWindDir.value = st.windDir;
   if (+elWindSpd.value !== st.windSpeed) elWindSpd.value = st.windSpeed;
-  if (+elWindGust.value !== (st.gust ?? st.windSpeed)) elWindGust.value = st.gust ?? st.windSpeed;
+  if (+elWindGust.value !== d.gustSpeed) elWindGust.value = d.gustSpeed;
+
+  // reflect the gust lock state in the control
+  const locked = st.gustLock !== false;
+  elWindGust.disabled = locked;
+  elGustLock.innerHTML = locked ? "&#128274;" : "&#128275;";   // 🔒 / 🔓
+  elGustLock.title = locked ? "Unlock to set a gust" : "Lock gust to the steady wind";
+  elWindGust.closest(".xw-control").classList.toggle("locked", locked);
 
   const gustTxt = d.hasGust ? `G${pad2(d.gustSpeed)}` : "";
   caption.innerHTML = `RWY ${runwayPair(st.runwayHeading)} &middot; wind ${fmt3(st.windDir)}/${pad2(st.windSpeed)}${gustTxt}`;
@@ -346,13 +348,9 @@ makeTicks(elWindGust, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
 
 elHeading.addEventListener("input", (e) => setState({ runwayHeading: +e.target.value }));
 elWindDir.addEventListener("input", (e) => setState({ windDir: +e.target.value }));
-elWindSpd.addEventListener("input", (e) => {
-  const v = +e.target.value;
-  // locked: gust tracks the steady wind; unlocked: keep gust >= steady
-  setState({ windSpeed: v, gust: gustUnlocked ? Math.max(state.gust, v) : v });
-});
+elWindSpd.addEventListener("input", (e) => setState({ windSpeed: +e.target.value }));
 elWindGust.addEventListener("input", (e) => {
-  if (gustUnlocked) setState({ gust: Math.max(+e.target.value, state.windSpeed) });
+  if (state.gustLock === false) setState({ gust: Math.max(+e.target.value, state.windSpeed) });
 });
 
 // kick off the chart's self-drawing intro

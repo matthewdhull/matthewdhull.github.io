@@ -6,6 +6,7 @@ export const state = {
   windDir: 40,        // direction wind is coming FROM, degrees
   windSpeed: 15,      // steady wind, knots
   gust: 15,           // peak gust, knots (== windSpeed means no gust)
+  gustLock: true,     // when true the gust tracks the steady wind (no gust factor)
 };
 
 const subs = new Set();
