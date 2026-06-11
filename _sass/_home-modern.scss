@@ -324,16 +324,29 @@ h1, h2, h3, h4, h5, h6,
    ourselves with a plain opacity transition (predictable timing; animation restarts
    are not). .bg-pending = hidden; the bg module swaps to .bg-revealing once the
    field has mostly settled, fading the page up over the still-moving field. */
-html.bg-pending body > *:not(#bg-site),
-html.bg-revealing body > *:not(#bg-site) {
+@-webkit-keyframes bgReveal { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bgReveal { from { opacity: 0; } to { opacity: 1; } }
+/* While pending, hold content hidden with NO animation (suppress `intro`). The
+   reveal is then driven by a real CSS *animation* (not an opacity transition):
+   a finished opacity transition can leave accent-colored headings laid out but
+   unpainted after a cross-document view transition — a stale compositing layer
+   that only a reload otherwise clears. A run-once animation repaints reliably. */
+html.bg-pending body > *:not(#bg-site) {
   -webkit-animation: none !important;
           animation: none !important;
-  transition: opacity 450ms ease;
+  opacity: 0;
 }
-html.bg-pending body > *:not(#bg-site) { opacity: 0; }
-html.bg-revealing body > *:not(#bg-site) { opacity: 1; }
+html.bg-revealing body > *:not(#bg-site) {
+  -webkit-animation: bgReveal 450ms ease both !important;
+          animation: bgReveal 450ms ease both !important;
+}
 @media (prefers-reduced-motion: reduce) {
   html.bg-pending body > *:not(#bg-site) { opacity: 1; }
+  html.bg-revealing body > *:not(#bg-site) {
+    -webkit-animation: none !important;
+            animation: none !important;
+    opacity: 1;
+  }
 }
 
 /* News include clean-up */
