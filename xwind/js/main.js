@@ -29,15 +29,19 @@ function derive(st) {
   const raw = Math.abs(angleDelta(st.windDir, st.runwayHeading)); // 0..180 off the nose
   const tailwind = raw > 90;
   const off = tailwind ? 180 - raw : raw;       // chart is always read at the acute angle
-  return { ...st, off, rawOff: raw, tailwind };
+  const gustSpeed = Math.max(st.gust ?? st.windSpeed, st.windSpeed);
+  const hasGust = gustSpeed > st.windSpeed + 0.5;
+  return { ...st, off, rawOff: raw, tailwind, gustSpeed, hasGust };
 }
 
 const elHeading = document.getElementById("ctl-heading");
 const elWindDir = document.getElementById("ctl-winddir");
 const elWindSpd = document.getElementById("ctl-windspd");
+const elWindGust = document.getElementById("ctl-windgust");
 const vHeading = document.getElementById("val-heading");
 const vWindDir = document.getElementById("val-winddir");
 const vWindSpd = document.getElementById("val-windspd");
+const vWindGust = document.getElementById("val-windgust");
 const caption = document.getElementById("xw-runway-caption");
 const readout = document.getElementById("xw-readout");
 
@@ -47,12 +51,21 @@ function runwayNum(h) {
   let n = Math.round(h / 10); if (n === 0) n = 36; if (n > 36) n -= 36;
   return String(n).padStart(2, "0");
 }
-// live headwind/crosswind components for the current derived state
+// live headwind/crosswind components (steady and gust) for the derived state
 function comps(d) {
-  const hwSigned = (d.windSpeed || 0) * Math.cos(((d.rawOff || 0) * Math.PI) / 180);
-  const xw = (d.windSpeed || 0) * Math.sin(((d.rawOff || 0) * Math.PI) / 180);
-  return { hwSigned, hw: Math.abs(hwSigned), xw, hwR: Math.round(Math.abs(hwSigned)), xwR: Math.round(xw) };
+  const rad = ((d.rawOff || 0) * Math.PI) / 180;
+  const hwSigned = (d.windSpeed || 0) * Math.cos(rad);
+  const xw = (d.windSpeed || 0) * Math.sin(rad);
+  const gs = d.gustSpeed ?? d.windSpeed ?? 0;
+  return {
+    hwSigned, hw: Math.abs(hwSigned), xw, hwR: Math.round(Math.abs(hwSigned)), xwR: Math.round(xw),
+    gustHwR: Math.round(Math.abs(gs * Math.cos(rad))), gustXwR: Math.round(gs * Math.sin(rad)),
+    hasGust: !!d.hasGust,
+  };
 }
+
+// apply a tour scenario; gust defaults to the steady speed (no gust) unless given
+function setScenario(o) { setState({ gust: o.windSpeed, ...o }); }
 
 // ---------------- Guided tour (explainer panels) ----------------
 // Each panel starts from a preset scenario (enter) but its copy is a function of
@@ -65,7 +78,7 @@ const tour = createTour([
       `<p>This graph splits a wind into the part acting <span class="em-hw">down the runway</span> ` +
       `(the headwind) and the part pushing you <span class="em-xw">sideways</span> (the crosswind).</p>` +
       `<p>Pick a runway and a wind, then read both components straight off the chart.</p>`,
-    enter() { setState(TOUR); },
+    enter() { setScenario(TOUR); },
   },
   {
     title: "Wind direction & runway heading",
@@ -76,7 +89,7 @@ const tour = createTour([
         `<p>The runway is <span class="em">${runwayNum(d.runwayHeading)}</span> (${fmt3(d.runwayHeading)}°), ` +
         `so the wind is <span class="em-shade">${offTxt}</span> — the angle marked on the graph.</p>`;
     },
-    enter() { setState(TOUR); },
+    enter() { setScenario(TOUR); },
     point(ctx) { ctx.pointAt(caption, "up"); ctx.pointAt(chart.els.dot, "left"); },
   },
   {
@@ -86,7 +99,7 @@ const tour = createTour([
       `10, 20, 30, 40&nbsp;knots.</p>` +
       `<p>The <span class="em-shade">shaded wedge</span> marks the <b>current</b> speed ` +
       `(<b>${d.windSpeed}&nbsp;kt</b>).</p>`,
-    enter() { setState(TOUR); chart.tour.flashArcs(); chart.tour.wedge(true); },
+    enter() { setScenario(TOUR); chart.tour.flashArcs(); chart.tour.wedge(true); },
     exit() { chart.tour.stopArcs(); chart.tour.wedge(false); },
   },
   {
@@ -99,7 +112,7 @@ const tour = createTour([
         `<p>Right now: <span class="em-xw">crosswind ${c.xwR} kt</span> and ` +
         `<span class="em-hw">${along}</span>.</p>`;
     },
-    enter() { setState(TOUR); chart.tour.components(true); },
+    enter() { setScenario(TOUR); chart.tour.components(true); },
     point(ctx) { ctx.pointAt(chart.els.xwDot, "down"); ctx.pointAt(chart.els.hwDot, "left"); },
     exit() { chart.tour.components(false); },
   },
@@ -114,8 +127,37 @@ const tour = createTour([
         `Right now your crosswind is <b>${c.xwR} kt</b> — ` +
         `${over ? `<b style="color:#d6336c">over the limit</b>` : `within limits`}.</p>`;
     },
-    enter() { setState({ runwayHeading: 20, windDir: 80, windSpeed: 22 }); chart.tour.limit(15); },
+    enter() { setScenario({ runwayHeading: 20, windDir: 80, windSpeed: 22 }); chart.tour.limit(15); },
     exit() { chart.tour.limit(0); },
+  },
+  {
+    title: "Gusts — mind the peak",
+    body: (d) => {
+      const c = comps(d);
+      const verdict = c.gustXwR > 15
+        ? `the gust hits <b>${c.gustXwR} kt</b> — <b style="color:#d6336c">over the 15 kt limit</b>, ` +
+          `even though the steady ${c.xwR} kt is ${c.xwR > 15 ? "also over" : "fine"}.`
+        : `both stay within the 15 kt limit (gust ${c.gustXwR} kt).`;
+      return `<p>A gust report like <span class="em">${fmt3(d.windDir)}/${pad2(d.windSpeed)}G${pad2(d.gustSpeed)}</span> ` +
+        `gives a <b>peak</b>. Check your <span class="em-xw">crosswind limit against the gust</span>, not the steady wind.</p>` +
+        `<p>Here, ${verdict}</p>`;
+    },
+    enter() { setScenario({ runwayHeading: 20, windDir: 70, windSpeed: 12, gust: 22 }); chart.tour.limit(15); },
+    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); },
+    exit() { chart.tour.limit(0); },
+  },
+  {
+    title: "With a gust, every component is a range",
+    body: (d) => {
+      const c = comps(d);
+      return `<p>The wind lives in a band between steady and peak, so each component is a <b>range</b>, ` +
+        `not a single number.</p>` +
+        `<p>Here: <span class="em-xw">crosswind ${c.xwR}–${c.gustXwR} kt</span>, ` +
+        `<span class="em-hw">headwind ${c.hwR}–${c.gustHwR} kt</span>. ` +
+        `Watch the sock and the wind field <b>surge to the gust and settle back</b>.</p>`;
+    },
+    enter() { setScenario({ runwayHeading: 20, windDir: 40, windSpeed: 15, gust: 25 }); },
+    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); },
   },
   {
     title: "Picking the best runway",
@@ -127,7 +169,7 @@ const tour = createTour([
         `<p>On <span class="em">RWY ${runwayNum(d.runwayHeading)}</span> you have ${along} and ` +
         `<span class="em-xw">~${c.xwR} kt crosswind</span>. Spin the runway and watch them trade off.</p>`;
     },
-    enter() { setState(TOUR); },
+    enter() { setScenario(TOUR); },
     point(ctx) { ctx.pointAt(elHeading, "down"); },
   },
   {
@@ -145,7 +187,7 @@ const tour = createTour([
       return lead + `<p>Right now the wind is ahead of you (a headwind). <b>Drag the wind direction ` +
         `past 90° off the nose</b> to send it behind you and watch the axis flip to red.</p>`;
     },
-    enter() { setState({ runwayHeading: 20, windDir: 160, windSpeed: 15 }); },
+    enter() { setScenario({ runwayHeading: 20, windDir: 160, windSpeed: 15 }); },
     point(ctx, d) { if (d.tailwind) ctx.pointAt(chart.els.axisTitle, "left"); },
   },
   {
@@ -162,7 +204,7 @@ const tour = createTour([
         `<p>At <span class="em-shade">${d.off}° off</span> (≈${best[0]}°), crosswind ≈ <b>${formula} ≈ ${est} kt</b> ` +
         `— the chart shows ${c.xwR}.</p>`;
     },
-    enter() { setState({ runwayHeading: 0, windDir: 30, windSpeed: 20 }); },
+    enter() { setScenario({ runwayHeading: 0, windDir: 30, windSpeed: 20 }); },
   },
   {
     title: "Pythagoras explains how wind components split",
@@ -176,7 +218,7 @@ const tour = createTour([
       `(\\(\\sqrt{14^2+14^2}\\approx20\\)).</p>` +
       `<p>Straightforward application of Pythagorean, directly from the chart.</p>`,
     enter() {
-      setState({ runwayHeading: 0, windDir: 45, windSpeed: 20 });
+      setScenario({ runwayHeading: 0, windDir: 45, windSpeed: 20 });
       chart.tour.components(true);
       chart.tour.hypotenuse(true);
     },
@@ -197,7 +239,7 @@ const tour = createTour([
         `The chart just reads these off for you.</p>`;
     },
     enter() {
-      setState({ runwayHeading: 0, windDir: 50, windSpeed: 20 });
+      setScenario({ runwayHeading: 0, windDir: 50, windSpeed: 20 });
       chart.tour.components(true);
     },
     point(ctx) { ctx.pointAt(chart.els.hwDot, "left"); ctx.pointAt(chart.els.xwDot, "down"); },
@@ -211,28 +253,33 @@ subscribe((st) => {
 
   chart.updateHighlight(d);
   runway.update(d);
-  field.setWind(d.windDir, d.windSpeed);
-  socks3d.setState({ runwayHeading: d.runwayHeading, windDir: d.windDir, windSpeed: d.windSpeed });
+  field.setWind(d.windDir, d.windSpeed, d.gustSpeed);
+  socks3d.setState({ runwayHeading: d.runwayHeading, windDir: d.windDir, windSpeed: d.windSpeed, gust: d.gustSpeed });
 
   vHeading.textContent = fmt3(st.runwayHeading) + "°";
   vWindDir.textContent = fmt3(st.windDir) + "°";
   vWindSpd.textContent = st.windSpeed + " kt";
+  vWindGust.textContent = d.hasGust ? d.gustSpeed + " kt" : "—";
 
   // keep the slider thumbs in sync when state changes from chart interactions
   if (+elHeading.value !== st.runwayHeading) elHeading.value = st.runwayHeading;
   if (+elWindDir.value !== st.windDir) elWindDir.value = st.windDir;
   if (+elWindSpd.value !== st.windSpeed) elWindSpd.value = st.windSpeed;
+  if (+elWindGust.value !== (st.gust ?? st.windSpeed)) elWindGust.value = st.gust ?? st.windSpeed;
 
-  caption.innerHTML = `RWY ${runwayPair(st.runwayHeading)} &middot; wind ${fmt3(st.windDir)}/${pad2(st.windSpeed)}`;
+  const gustTxt = d.hasGust ? `G${pad2(d.gustSpeed)}` : "";
+  caption.innerHTML = `RWY ${runwayPair(st.runwayHeading)} &middot; wind ${fmt3(st.windDir)}/${pad2(st.windSpeed)}${gustTxt}`;
 
   const c = comps(d);
   const angTxt = d.tailwind ? `<b>${180 - d.rawOff}°</b> off the tail` : `<b>${d.rawOff}°</b> off the nose`;
+  const hwTxt = c.hasGust ? `${c.hwR}–${c.gustHwR}` : `${c.hwR}`;
+  const xwTxt = c.hasGust ? `${c.xwR}–${c.gustXwR}` : `${c.xwR}`;
   const along = d.tailwind
-    ? `<b>Tailwind ${c.hwR} kt</b>`
-    : `<span class="hw">Headwind ${c.hwR} kt</span>`;
+    ? `<b>Tailwind ${hwTxt} kt</b>`
+    : `<span class="hw">Headwind ${hwTxt} kt</span>`;
   readout.innerHTML =
     `<b>RWY ${runwayNum(d.runwayHeading)}</b> &middot; wind ${angTxt}<br>` +
-    `${along} &middot; <b>Crosswind ${c.xwR} kt</b>`;
+    `${along} &middot; <b>Crosswind ${xwTxt} kt</b>`;
 
   tour.onState(d);   // refresh the open explainer panel with the live numbers
 });
@@ -262,10 +309,16 @@ function makeTicks(input, { max, minorStep, majors }) {
 makeTicks(elHeading, { max: 360, minorStep: 30, majors: [0, 90, 180, 270, 360] });
 makeTicks(elWindDir, { max: 360, minorStep: 30, majors: [0, 90, 180, 270, 360] });
 makeTicks(elWindSpd, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
+makeTicks(elWindGust, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
 
 elHeading.addEventListener("input", (e) => setState({ runwayHeading: +e.target.value }));
 elWindDir.addEventListener("input", (e) => setState({ windDir: +e.target.value }));
-elWindSpd.addEventListener("input", (e) => setState({ windSpeed: +e.target.value }));
+// keep gust >= steady as either slider moves
+elWindSpd.addEventListener("input", (e) => {
+  const v = +e.target.value;
+  setState({ windSpeed: v, gust: Math.max(state.gust, v) });
+});
+elWindGust.addEventListener("input", (e) => setState({ gust: Math.max(+e.target.value, state.windSpeed) }));
 
 // kick off the chart's self-drawing intro
 chart.play({ reduced });

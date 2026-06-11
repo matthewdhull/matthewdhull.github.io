@@ -7,7 +7,7 @@ export function createField(canvas) {
   let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0;
   let particles = [];
   let flow = { x: 0, y: 0 };
-  let speed = 0;      // knots
+  let steady = 0, gust = 0;   // knots (gust >= steady)
   let raf = 0, last = 0;
 
   function resize() {
@@ -32,16 +32,20 @@ export function createField(canvas) {
     return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, life: Math.random() };
   }
 
-  function setWind(windDir, windSpeed) {
+  function setWind(windDir, windSpeed, gustSpeed = windSpeed) {
     const a = ((windDir + 180) * Math.PI) / 180;   // blow-toward bearing
     flow = { x: Math.sin(a), y: -Math.cos(a) };
-    speed = windSpeed;
+    steady = windSpeed; gust = Math.max(gustSpeed, windSpeed);
   }
 
   function frame(ts) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
     ctx.clearRect(0, 0, W, H);
+
+    // gust: surge between steady and peak on a slow, gust-shaped cycle
+    const pulse = Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
+    const speed = steady + (gust - steady) * pulse;
 
     // calm: nothing flowing (no 'snow') — the cleared canvas is the whole frame
     if (speed < 0.5) return;

@@ -4,7 +4,8 @@
 export const state = {
   runwayHeading: 20,  // magnetic heading of the "low" runway end, degrees
   windDir: 40,        // direction wind is coming FROM, degrees
-  windSpeed: 15,      // knots
+  windSpeed: 15,      // steady wind, knots
+  gust: 15,           // peak gust, knots (== windSpeed means no gust)
 };
 
 const subs = new Set();

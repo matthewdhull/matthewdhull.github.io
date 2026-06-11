@@ -55,12 +55,16 @@ export function createWindsocks(canvas) {
     t += 1 / 60; last = ts;
     const dirs = [st.runwayHeading, (st.runwayHeading + 180) % 360];
     const flow = bvec((st.windDir + 180) % 360);
+    // gust: surge between steady and peak (same cycle as the particle field)
+    const gust = Math.max(st.gust ?? st.windSpeed, st.windSpeed);
+    const pulse = Math.pow(Math.sin((performance.now() / 1000) * 0.85) * 0.5 + 0.5, 3);
+    const eff = st.windSpeed + (gust - st.windSpeed) * pulse;
     socks.forEach((sock, i) => {
       const B = dirs[i];
       const num = bvec((B + 180) % 360), right = bvec((B + 90) % 360);
       const bx = num.x * (HALF_LEN - 40) + right.x * (HALF_W + 58);
       const bz = num.y * (HALF_LEN - 40) + right.y * (HALF_W + 58);
-      updateSock(sock, bx, bz, flow, st.windSpeed, t);
+      updateSock(sock, bx, bz, flow, eff, t);
     });
     renderer.render(scene, cam);
   }
