@@ -70,8 +70,8 @@ function buildLights(g) {
   const flash = el("g"); flash.setAttribute("class", "xw-reil");
   for (const sx of [-1, 1]) {
     const x = sx * (HALF_W + 9), y = APP + 3;
-    flash.append(el("circle", { cx: x, cy: y, r: 8, fill: "url(#xw-gw)" }));
-    flash.append(el("circle", { cx: x, cy: y, r: 1.8, fill: "#ffffff" }));
+    flash.append(el("circle", { cx: x, cy: y, r: 9.5, fill: "url(#xw-gw)" }));
+    flash.append(el("circle", { cx: x, cy: y, r: 2.2, fill: "#ffffff" }));
   }
   gReil.append(flash);
   g.append(gReil);

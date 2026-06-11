@@ -297,7 +297,7 @@ html, body {
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--text-dim);
-  background: #ffffffaa;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.5rem 0.7rem;
@@ -388,13 +388,14 @@ html, body {
 .xw-night { display: none; }
 :root[data-theme="dark"] .xw-night { display: inline; }
 
-/* REIL: two synchronized white flashers (approach corners) */
-.xw-reil { animation: xw-reil 1.4s linear infinite; }
+/* REIL: two synchronized white flashers (approach corners) — clear double-flash */
+.xw-reil { animation: xw-reil 1.3s steps(1, end) infinite; }
 @keyframes xw-reil {
-  0%, 5%   { opacity: 1; }
-  11%, 45% { opacity: 0.1; }
-  50%, 55% { opacity: 1; }
-  61%, 100%{ opacity: 0.1; }
+  0%   { opacity: 1; }
+  9%   { opacity: 0.12; }
+  18%  { opacity: 1; }
+  27%  { opacity: 0.12; }
+  100% { opacity: 0.12; }
 }
 
 @media (prefers-reduced-motion: reduce) {
