@@ -82,43 +82,58 @@ function setScenario(o) {
   setState({ ...o, gustLock: !wantGust, gust: o.gust ?? o.windSpeed });
 }
 
-// side-on (profile) windsock illustration for the tour: a striped tube that lifts
-// toward horizontal as the wind builds (≈full by 15 kt); flutters when gusty.
+// side-on (profile) windsock for the tour: the inflated length grows with the
+// wind (≈full by 15 kt) and holds horizontal; the rest droops down, so a light
+// wind hangs and a strong wind streams straight out. Flutters when gusty.
 function windsockProfileSVG(speed, gust, withArrow) {
-  const Mx = 34, My = 42, L = 150, GROUND = 122, mouthR = 12, tipR = 4.5, N = 20;
+  const VW = 240, VH = 170, Mx = 42, My = 40, GROUND = 158, L = 116, mouthR = 14, tipR = 3, N = 24, BANDS = 5;
   const inflated = Math.max(0, Math.min(1, speed / 15));
   const seg = L / N, pts = [];
   let x = Mx, y = My;
   for (let i = 0; i <= N; i++) {
     pts.push([x, y]);
     const t = (i + 0.5) / N;
-    const droop = t > inflated ? (t - inflated) / Math.max(0.05, 1 - inflated) : 0;
-    let ang = droop * droop * 1.45;                 // radians below horizontal
-    if (gust && t > 0.4) ang += Math.sin(t * 22) * 0.14;   // flutter the outer half
+    const past = Math.max(0, t - inflated) / Math.max(0.06, 1 - inflated);  // 0..1 beyond the reach
+    let ang = Math.pow(past, 1.5) * 1.6;                                     // up to ~90° below horizontal
+    if (gust && t > 0.35) ang += Math.sin(t * 26 + 1) * 0.17;               // flutter the outer half
     x += Math.cos(ang) * seg;
-    y = Math.min(GROUND - 2, y + Math.sin(ang) * seg);
+    y = Math.min(GROUND - 3, y + Math.sin(ang) * seg);
   }
+  // per-point normals + tapering radius
+  const nm = [], rad = [];
+  for (let i = 0; i <= N; i++) {
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(N, i + 1)];
+    let dx = b[0] - a[0], dy = b[1] - a[1]; const dl = Math.hypot(dx, dy) || 1;
+    nm.push([-dy / dl, dx / dl]);
+    rad.push(mouthR + (tipR - mouthR) * (i / N));
+  }
+  const top = (i) => `${pts[i][0] + nm[i][0] * rad[i]} ${pts[i][1] + nm[i][1] * rad[i]}`;
+  const bot = (i) => `${pts[i][0] - nm[i][0] * rad[i]} ${pts[i][1] - nm[i][1] * rad[i]}`;
+  // 5 smooth bands (one path each -> clean colour breaks, few visible joints)
   let bands = "";
-  for (let i = 0; i < N; i++) {
-    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
-    let dx = x1 - x0, dy = y1 - y0; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
-    const px = -dy, py = dx;
-    const r0 = mouthR + (tipR - mouthR) * (i / N), r1 = mouthR + (tipR - mouthR) * ((i + 1) / N);
-    const col = Math.floor(i / (N / 5)) % 2 === 0 ? "#ff6a13" : "#fdfdfd";
-    bands += `<path d="M ${x0 + px * r0} ${y0 + py * r0} L ${x1 + px * r1} ${y1 + py * r1} ` +
-      `L ${x1 - px * r1} ${y1 - py * r1} L ${x0 - px * r0} ${y0 - py * r0} Z" fill="${col}" stroke="#c44e0a" stroke-width="0.5"/>`;
+  for (let bd = 0; bd < BANDS; bd++) {
+    const i0 = Math.round((bd * N) / BANDS), i1 = Math.round(((bd + 1) * N) / BANDS);
+    let d = `M ${top(i0)}`;
+    for (let i = i0 + 1; i <= i1; i++) d += ` L ${top(i)}`;
+    for (let i = i1; i >= i0; i--) d += ` L ${bot(i)}`;
+    d += " Z";
+    bands += `<path d="${d}" fill="${bd % 2 ? "#fdfdfd" : "#ff6a13"}" stroke="#c44e0a" stroke-width="0.6" stroke-linejoin="round"/>`;
   }
+  // mouth hoop (open rim) + rigging lines to the pole
+  const hoop = `<ellipse cx="${Mx}" cy="${My}" rx="3.5" ry="${mouthR}" fill="none" stroke="#c44e0a" stroke-width="1.5"/>` +
+    `<g stroke="#c44e0a" stroke-width="0.8" opacity="0.85">` +
+    `<line x1="${Mx}" y1="${My}" x2="${pts[0][0] + nm[0][0] * mouthR}" y2="${pts[0][1] + nm[0][1] * mouthR}"/>` +
+    `<line x1="${Mx}" y1="${My}" x2="${pts[0][0] - nm[0][0] * mouthR}" y2="${pts[0][1] - nm[0][1] * mouthR}"/></g>`;
   const arrow = withArrow
     ? `<g stroke="var(--text-dim)" stroke-width="2" fill="var(--text-dim)">` +
-      `<line x1="${Mx + 4}" y1="${My - 30}" x2="${Mx + 52}" y2="${My - 30}"/>` +
-      `<polygon points="${Mx + 52},${My - 30} ${Mx + 44},${My - 34} ${Mx + 44},${My - 26}"/></g>` +
-      `<text x="${Mx + 56}" y="${My - 26}" font-size="11" fill="var(--text-dim)">wind</text>`
+      `<line x1="${Mx + 6}" y1="20" x2="${Mx + 54}" y2="20"/>` +
+      `<polygon points="${Mx + 54},20 ${Mx + 46},16 ${Mx + 46},24"/></g>` +
+      `<text x="${Mx + 58}" y="24" font-size="11" fill="var(--text-dim)">wind</text>`
     : "";
-  return `<svg viewBox="0 0 232 132" width="100%" style="max-height:128px;display:block;margin:4px auto">` +
-    `<line x1="0" y1="${GROUND}" x2="232" y2="${GROUND}" stroke="var(--text-faint)" stroke-width="1" stroke-dasharray="2 3"/>` +
-    `<line x1="${Mx}" y1="${GROUND}" x2="${Mx}" y2="${My}" stroke="var(--text-dim)" stroke-width="3"/>` +
-    arrow + bands +
-    `<circle cx="${Mx}" cy="${My}" r="${mouthR}" fill="none" stroke="#c44e0a" stroke-width="1.6"/></svg>`;
+  return `<svg viewBox="0 0 ${VW} ${VH}" style="display:block;width:100%;height:150px">` +
+    `<line x1="0" y1="${GROUND}" x2="${VW}" y2="${GROUND}" stroke="var(--text-faint)" stroke-width="1" stroke-dasharray="2 3"/>` +
+    `<line x1="${Mx}" y1="${GROUND}" x2="${Mx}" y2="${My - 4}" stroke="var(--text-dim)" stroke-width="3"/>` +
+    arrow + bands + hoop + `</svg>`;
 }
 
 // auto sub-player: ramps the wind through speeds (and a gust) so the socks respond
@@ -340,18 +355,16 @@ const tour = createTour([
       `<span class="em-shade">Speed</span> — the more it lifts toward horizontal, the stronger the wind.<br>` +
       `<span class="em-xw">Gustiness</span> — fluttering or sudden swings mean the wind is variable or gusty.</p>` +
       windsockProfileSVG(d.windSpeed, d.hasGust, true),
-    enter() { setScenario({ runwayHeading: 0, windDir: 270, windSpeed: 3 }); },
+    enter() { setScenario({ runwayHeading: 0, windDir: 270, windSpeed: 9 }); },
   },
   {
     title: "Extension shows the wind speed",
     body: (d) => {
-      const note = d.hasGust
-        ? `Now <b>gusting</b> — watch it flutter and surge.`
-        : `Showing <b>${d.windSpeed} kt</b>.`;
+      const note = d.hasGust ? `<b>Gusting</b> — watch it flutter and surge.` : `Wind <b>${d.windSpeed} kt</b>.`;
       return `<p>The further a windsock lifts toward horizontal, the stronger the wind — roughly ` +
         `fully extended by about <b>15&nbsp;kt</b>.</p>` +
         windsockProfileSVG(d.windSpeed, d.hasGust, false) +
-        `<p>${note} The socks on the runway respond the same way.</p>`;
+        `<p style="margin:0.4rem 0 0;min-height:1.3em">${note}</p>`;
     },
     enter() { setScenario({ runwayHeading: 0, windDir: 270, windSpeed: 3 }); startWindsockPlayer(); },
     exit() { stopWindsockPlayer(); },
