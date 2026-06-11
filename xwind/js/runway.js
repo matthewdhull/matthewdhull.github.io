@@ -65,9 +65,9 @@ function buildLights(g) {
     light(i * 7, FAR + 3, "xw-gr", "#ff6a5a", 1.3, 4.5);
   }
   g.append(gGlow, gCore);
-  // REIL — two synchronized white flashers at the approach corners
+  // REIL — two synchronized white flashers at the approach corners (JS-driven)
   const gReil = el("g", { class: "xw-night" }); gReil.style.opacity = "var(--glow)";
-  const flash = el("g"); flash.setAttribute("class", "xw-reil");
+  const flash = el("g");
   for (const sx of [-1, 1]) {
     const x = sx * (HALF_W + 9), y = APP + 3;
     flash.append(el("circle", { cx: x, cy: y, r: 9.5, fill: "url(#xw-gw)" }));
@@ -75,6 +75,7 @@ function buildLights(g) {
   }
   gReil.append(flash);
   g.append(gReil);
+  return flash;
 }
 
 export function createRunway(svg) {
@@ -133,7 +134,13 @@ export function createRunway(svg) {
       g.append(el("rect", { x: i * 6 - 2, y: sgn * (HALF_LEN - 18) - (sgn < 0 ? 12 : 0), width: 4, height: 12, fill: "var(--paint)", "fill-opacity": 0.85 }));
     }
   }
-  buildLights(g);
+  const reil = buildLights(g);
+  // REIL: single synchronized flash at a constant ~2 Hz cadence (JS so it works
+  // immediately on entering dark mode, not just after a toggle cycle)
+  (function flicker() {
+    requestAnimationFrame(flicker);
+    reil.style.opacity = (performance.now() % 520) < 80 ? "1" : "0.1";
+  })();
   // runway numbers (painted on, rotate with pavement)
   const numTop = el("text", { x: 0, y: -HALF_LEN + 50, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });
   const numBot = el("text", { x: 0, y: HALF_LEN - 34, "text-anchor": "middle", "font-size": 23, "letter-spacing": "1", fill: "var(--paint)", "font-weight": 800, "font-family": "Helvetica Neue, Arial, sans-serif" });

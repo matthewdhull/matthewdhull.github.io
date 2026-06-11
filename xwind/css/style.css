@@ -180,13 +180,14 @@ html, body {
 /* night airfield: dark turf radial + a faint restored grid (felt, not read) */
 :root[data-theme="dark"] .xw-runway-card {
   --frame: #1c4a2c;
+  --turf-grid: #1f4a2c;   /* faint but visible over the turf */
   background-color: var(--turf-far);
   background-image:
-    radial-gradient(circle at 50% 46%, var(--turf-near), var(--turf-far) 72%),
     linear-gradient(var(--turf-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--turf-grid) 1px, transparent 1px);
-  background-size: 100% 100%, 26px 26px, 26px 26px;
-  background-position: 0 0, -1px -1px, -1px -1px;
+    linear-gradient(90deg, var(--turf-grid) 1px, transparent 1px),
+    radial-gradient(circle at 50% 46%, var(--turf-near), var(--turf-far) 72%);
+  background-size: 26px 26px, 26px 26px, 100% 100%;
+  background-position: -1px -1px, -1px -1px, 0 0;
 }
 :root[data-theme="dark"] .xw-card { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45); }
 
@@ -387,16 +388,6 @@ html, body {
 /* runway lighting is night-only — hidden entirely in daylight */
 .xw-night { display: none; }
 :root[data-theme="dark"] .xw-night { display: inline; }
-
-/* REIL: two synchronized white flashers (approach corners) — clear double-flash */
-.xw-reil { animation: xw-reil 1.3s steps(1, end) infinite; }
-@keyframes xw-reil {
-  0%   { opacity: 1; }
-  9%   { opacity: 0.12; }
-  18%  { opacity: 1; }
-  27%  { opacity: 0.12; }
-  100% { opacity: 0.12; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; }

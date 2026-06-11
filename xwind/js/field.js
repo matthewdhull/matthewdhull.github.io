@@ -9,6 +9,8 @@ export function createField(canvas) {
   let flow = { x: 0, y: 0 };
   let steady = 0, gust = 0;   // knots (gust >= steady)
   let raf = 0, last = 0;
+  // arrows are subtler at night so they don't fight the lit runway
+  let arrowRGB = "255, 255, 255", arrowAlpha = 0.85;
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -71,11 +73,11 @@ export function createField(canvas) {
       if (rr > R) { Object.assign(p, reentry()); continue; }
       // fade only within a thin margin of the crop edge; full strength across the disc
       const edge = 1 - rr / R;
-      const alpha = Math.min(1, edge * 5) * 0.92;
+      const alpha = Math.min(1, edge * 5) * arrowAlpha;
       if (alpha <= 0.02) continue;
 
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = `rgba(${arrowRGB}, ${alpha})`;
+      ctx.lineWidth = 1.4;
       if (arrow) {
         const len = 7 + speed * 0.25;
         const tx = p.x + flow.x * len, ty = p.y + flow.y * len;
@@ -87,7 +89,7 @@ export function createField(canvas) {
         ctx.moveTo(tx, ty); ctx.lineTo(tx - flow.x * 4 - px * 2.4, ty - flow.y * 4 - py * 2.4);
         ctx.stroke();
       } else {
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(${arrowRGB}, ${alpha})`;
         ctx.beginPath(); ctx.arc(p.x, p.y, 1.3, 0, Math.PI * 2); ctx.fill();
       }
     }
@@ -107,9 +109,14 @@ export function createField(canvas) {
   function start() { if (!raf) raf = requestAnimationFrame(frame); }
   function stop() { cancelAnimationFrame(raf); raf = 0; }
 
+  function setTheme(dark) {
+    arrowRGB = dark ? "150, 168, 184" : "255, 255, 255";  // muted slate at night
+    arrowAlpha = dark ? 0.5 : 0.85;
+  }
+
   window.addEventListener("resize", resize);
   resize();
   start();
 
-  return { setWind, resize, start, stop };
+  return { setWind, resize, start, stop, setTheme };
 }

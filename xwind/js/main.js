@@ -252,8 +252,10 @@ document.getElementById("xw-tour-btn").addEventListener("click", () => tour.open
 const themeBtn = document.getElementById("xw-theme-toggle");
 themeBtn.addEventListener("click", () => {
   const dark = document.documentElement.getAttribute("data-theme") === "dark";
-  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  const next = dark ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
   themeBtn.innerHTML = dark ? "&#9790;" : "&#9728;";   // moon offers dark, sun offers light
+  field.setTheme(next === "dark");
 });
 
 subscribe((st) => {
