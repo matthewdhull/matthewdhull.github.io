@@ -93,10 +93,11 @@ function windsockProfileSVG(speed, gust, withArrow) {
   for (let i = 0; i <= N; i++) {
     pts.push([x, y]);
     const t = (i + 0.5) / N;
-    // the un-inflated part bends down hard and hangs; the less inflated (lighter
-    // wind), the faster it folds toward vertical -> a light wind really droops
-    const rate = 5.2 * (1 - inflated);
-    let ang = Math.min(1.95, Math.pow(Math.max(0, t - inflated), 1.25) * rate);
+    // piecewise: the inflated part is ~straight, then a CREASE, then the rest
+    // hangs straight. Lighter wind -> steeper hang (3 kt folds past vertical).
+    const hang = Math.min(1.62, (1 - inflated) * 2.0);  // hang angle past the crease (≤~vertical)
+    const cr = Math.min(1, Math.max(0, t - inflated) / 0.1);
+    let ang = hang * (cr * cr * (3 - 2 * cr));           // smoothstep crease, then hold
     if (gust && t > 0.35) ang += Math.sin(t * 26 + 1) * 0.17;               // flutter the outer half
     x += Math.cos(ang) * seg;
     y = Math.min(GROUND - 3, y + Math.sin(ang) * seg);
