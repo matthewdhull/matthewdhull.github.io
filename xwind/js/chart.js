@@ -189,14 +189,15 @@ export function createChart(svg, handlers = {}) {
   // gust overlay: darker outer band (steady -> gust), hollow gust point, and
   // amber range bars on each axis showing the component ranges
   const gustBand = el("path", { fill: "var(--gust-band)", stroke: "var(--gust-edge)", "stroke-width": 1 });
-  const xwRange = el("line", { stroke: "var(--accent-wind)", "stroke-width": 5, "stroke-linecap": "round" });
-  const hwRange = el("line", { stroke: "var(--accent-wind)", "stroke-width": 5, "stroke-linecap": "round" });
+  // faint dashed component drop-lines for the gust point (read like the steady ones, just quieter)
+  const compHg = el("line", { stroke: "var(--hi-comp)", "stroke-opacity": 0.4, "stroke-width": 1.6, "stroke-dasharray": "3 4" });
+  const compVg = el("line", { stroke: "var(--hi-comp)", "stroke-opacity": 0.4, "stroke-width": 1.6, "stroke-dasharray": "3 4" });
   const gustDot = el("circle", { r: 5.5, fill: "var(--chip-fg)", stroke: "var(--hi-angle)", "stroke-width": 2.5 });
   gHilite.insertBefore(gustBand, ray);     // above the steady wedge, below the lines/dots
-  gHilite.insertBefore(xwRange, dot);
-  gHilite.insertBefore(hwRange, dot);
+  gHilite.insertBefore(compHg, dot);
+  gHilite.insertBefore(compVg, dot);
   gHilite.append(gustDot);
-  const gustEls = [gustBand, xwRange, hwRange, gustDot];
+  const gustEls = [gustBand, compHg, compVg, gustDot];
 
   // crosswind-limit marker (tour): vertical line + over-limit band + label
   const limBand = el("rect", { fill: "rgba(214,51,108,0.12)" });
@@ -272,7 +273,11 @@ export function createChart(svg, handlers = {}) {
     hwDot.setAttribute("cx", O.x); hwDot.setAttribute("cy", hwY);
     xwDot.setAttribute("cx", xwX); xwDot.setAttribute("cy", O.y);
 
-    // gust: outer band + gust point + component range bars (same angle, higher speed)
+    // tags always show the STEADY components (the gust is read off the faint lines)
+    setTag(hwTag, O.x + 10, hwY - 2, `${tail ? "TW" : "HW"} ${hw.toFixed(0)}`);
+    setTag(xwTag, xwX, O.y - 14, `XW ${xw.toFixed(0)}`);
+
+    // gust: outer band + hollow gust point + faint dashed drop-lines (same angle, higher speed)
     const gustSpeed = st.gustSpeed ?? V;
     const hasGust = st.hasGust && gustSpeed > V + 0.5;
     gustEls.forEach((e) => (e.style.display = hasGust ? "" : "none"));
@@ -284,17 +289,11 @@ export function createChart(svg, handlers = {}) {
         `L ${sRight.x} ${sRight.y} A ${r} ${r} 0 0 0 ${sTop.x} ${sTop.y} Z`);
       const Pg = pt(off, rg);
       gustDot.setAttribute("cx", Pg.x); gustDot.setAttribute("cy", Pg.y);
-      const ghw = gustSpeed * Math.cos((off * Math.PI) / 180);
-      const gxw = gustSpeed * Math.sin((off * Math.PI) / 180);
-      xwRange.setAttribute("x1", xwX); xwRange.setAttribute("y1", O.y);
-      xwRange.setAttribute("x2", O.x + gxw * S); xwRange.setAttribute("y2", O.y);
-      hwRange.setAttribute("x1", O.x); hwRange.setAttribute("y1", hwY);
-      hwRange.setAttribute("x2", O.x); hwRange.setAttribute("y2", O.y - ghw * S);
-      setTag(hwTag, O.x + 10, (O.y - ghw * S) - 2, `${tail ? "TW" : "HW"} ${hw.toFixed(0)}–${ghw.toFixed(0)}`);
-      setTag(xwTag, O.x + gxw * S, O.y - 14, `XW ${xw.toFixed(0)}–${gxw.toFixed(0)}`);
-    } else {
-      setTag(hwTag, O.x + 10, hwY - 2, `${tail ? "TW" : "HW"} ${hw.toFixed(0)}`);
-      setTag(xwTag, xwX, O.y - 14, `XW ${xw.toFixed(0)}`);
+      // faint drop-lines from the gust point to each axis
+      compHg.setAttribute("x1", Pg.x); compHg.setAttribute("y1", Pg.y);
+      compHg.setAttribute("x2", O.x); compHg.setAttribute("y2", Pg.y);
+      compVg.setAttribute("x1", Pg.x); compVg.setAttribute("y1", Pg.y);
+      compVg.setAttribute("x2", Pg.x); compVg.setAttribute("y2", O.y);
     }
   }
 

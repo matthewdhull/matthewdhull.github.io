@@ -55,9 +55,12 @@
       <label for="ctl-windspd">Wind speed <span class="xw-val" id="val-windspd">15 kt</span></label>
       <input type="range" id="ctl-windspd" min="0" max="40" step="1" value="15" />
     </div>
-    <div class="xw-control">
-      <label for="ctl-windgust">Wind gust <span class="xw-val" id="val-windgust">&mdash;</span></label>
-      <input type="range" id="ctl-windgust" min="0" max="40" step="1" value="15" />
+    <div class="xw-control locked">
+      <label for="ctl-windgust">Wind gust
+        <button type="button" id="xw-gust-lock" class="xw-gust-lock" title="Unlock to set a gust" aria-label="Lock or unlock gust">&#128274;</button>
+        <span class="xw-val" id="val-windgust">&mdash;</span>
+      </label>
+      <input type="range" id="ctl-windgust" min="0" max="40" step="1" value="15" disabled />
     </div>
     <div class="xw-readout" id="xw-readout" aria-live="polite"></div>
   </section>

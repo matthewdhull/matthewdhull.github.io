@@ -180,14 +180,17 @@ html, body {
 /* night airfield: dark turf radial + a faint restored grid (felt, not read) */
 :root[data-theme="dark"] .xw-runway-card {
   --frame: #1c4a2c;
-  --turf-grid: #1f4a2c;   /* faint but visible over the turf */
+  --turf-grid: #173a20;        /* fine grid (faint) */
+  --turf-grid-maj: #214a2c;    /* major grid (a touch stronger) */
   background-color: var(--turf-far);
   background-image:
     linear-gradient(var(--turf-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--turf-grid) 1px, transparent 1px),
+    linear-gradient(var(--turf-grid-maj) 1px, transparent 1px),
+    linear-gradient(90deg, var(--turf-grid-maj) 1px, transparent 1px),
     radial-gradient(circle at 50% 46%, var(--turf-near), var(--turf-far) 72%);
-  background-size: 26px 26px, 26px 26px, 100% 100%;
-  background-position: -1px -1px, -1px -1px, 0 0;
+  background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px, 100% 100%;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
 }
 :root[data-theme="dark"] .xw-card { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45); }
 
@@ -261,6 +264,11 @@ html, body {
   accent-color: var(--blue);
   display: block;
 }
+.xw-gust-lock {
+  border: 0; background: none; cursor: pointer; padding: 0 2px;
+  font-size: 0.9rem; line-height: 1; vertical-align: baseline; filter: grayscale(0.2);
+}
+.xw-control.locked input[type="range"] { opacity: 0.4; }
 
 /* tick strip under a slider — side margins ~ thumb radius so 0–100% aligns */
 .xw-ticks {

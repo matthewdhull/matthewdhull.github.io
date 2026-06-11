@@ -64,8 +64,28 @@ function comps(d) {
   };
 }
 
-// apply a tour scenario; gust defaults to the steady speed (no gust) unless given
-function setScenario(o) { setState({ gust: o.windSpeed, ...o }); }
+// ---- gust lock: gust is pinned to the steady wind unless explicitly unlocked,
+// so a panel/scenario can't leave a stale gust factor lurking over the limit ----
+const elGustLock = document.getElementById("xw-gust-lock");
+let gustUnlocked = false;
+function setGustLock(locked) {
+  gustUnlocked = !locked;
+  elWindGust.disabled = locked;
+  elGustLock.innerHTML = locked ? "&#128274;" : "&#128275;";   // 🔒 / 🔓
+  elGustLock.title = locked ? "Unlock to set a gust" : "Lock gust to the steady wind";
+  elWindGust.closest(".xw-control").classList.toggle("locked", locked);
+}
+elGustLock.addEventListener("click", () => {
+  const nowLock = gustUnlocked;        // currently unlocked -> lock it
+  setGustLock(nowLock);
+  if (nowLock) setState({ gust: state.windSpeed });   // drop the gust factor on lock
+});
+
+// apply a tour scenario; gust pinned to steady unless the scenario sets a real gust
+function setScenario(o) {
+  setGustLock(!(o.gust != null && o.gust > o.windSpeed));
+  setState({ gust: o.windSpeed, ...o });
+}
 
 // ---------------- Guided tour (explainer panels) ----------------
 // Each panel starts from a preset scenario (enter) but its copy is a function of
@@ -124,10 +144,12 @@ const tour = createTour([
       return `<p>Your airplane has a <span class="em-xw">maximum demonstrated crosswind</span> — about ` +
         `<b>15 kt</b> for a typical trainer.</p>` +
         `<p>It's the <span class="em-xw">crosswind component</span> that matters, not the total wind. ` +
-        `Right now your crosswind is <b>${c.xwR} kt</b> — ` +
-        `${over ? `<b style="color:#d6336c">over the limit</b>` : `within limits`}.</p>`;
+        `Your crosswind is <b>${c.xwR} kt</b> — ` +
+        `${over ? `<b style="color:#d6336c">over the limit</b>. <b>Drag the wind speed down</b> until it's within limits.`
+                : `within limits.`}</p>`;
     },
     enter() { setScenario({ runwayHeading: 20, windDir: 80, windSpeed: 22 }); chart.tour.limit(15); },
+    point(ctx) { ctx.pointAt(elWindSpd, "down"); },
     exit() { chart.tour.limit(0); },
   },
   {
@@ -140,10 +162,11 @@ const tour = createTour([
         : `both stay within the 15 kt limit (gust ${c.gustXwR} kt).`;
       return `<p>A gust report like <span class="em">${fmt3(d.windDir)}/${pad2(d.windSpeed)}G${pad2(d.gustSpeed)}</span> ` +
         `gives a <b>peak</b>. Check your <span class="em-xw">crosswind limit against the gust</span>, not the steady wind.</p>` +
-        `<p>Here, ${verdict}</p>`;
+        `<p>Here, ${verdict} The gust control is normally <b>locked</b> to the steady wind — ` +
+        `tap the <b>🔓</b> to set your own peak.</p>`;
     },
     enter() { setScenario({ runwayHeading: 20, windDir: 70, windSpeed: 12, gust: 22 }); chart.tour.limit(15); },
-    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); },
+    point(ctx) { ctx.pointAt(chart.els.gustDot, "left"); ctx.pointAt(elGustLock, "down"); },
     exit() { chart.tour.limit(0); },
   },
   {
@@ -323,12 +346,14 @@ makeTicks(elWindGust, { max: 40, minorStep: 5, majors: [0, 10, 20, 30, 40] });
 
 elHeading.addEventListener("input", (e) => setState({ runwayHeading: +e.target.value }));
 elWindDir.addEventListener("input", (e) => setState({ windDir: +e.target.value }));
-// keep gust >= steady as either slider moves
 elWindSpd.addEventListener("input", (e) => {
   const v = +e.target.value;
-  setState({ windSpeed: v, gust: Math.max(state.gust, v) });
+  // locked: gust tracks the steady wind; unlocked: keep gust >= steady
+  setState({ windSpeed: v, gust: gustUnlocked ? Math.max(state.gust, v) : v });
 });
-elWindGust.addEventListener("input", (e) => setState({ gust: Math.max(+e.target.value, state.windSpeed) }));
+elWindGust.addEventListener("input", (e) => {
+  if (gustUnlocked) setState({ gust: Math.max(+e.target.value, state.windSpeed) });
+});
 
 // kick off the chart's self-drawing intro
 chart.play({ reduced });
