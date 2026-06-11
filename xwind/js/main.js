@@ -93,8 +93,9 @@ function windsockProfileSVG(speed, gust, withArrow) {
   for (let i = 0; i <= N; i++) {
     pts.push([x, y]);
     const t = (i + 0.5) / N;
-    const past = Math.max(0, t - inflated) / Math.max(0.06, 1 - inflated);  // 0..1 beyond the reach
-    let ang = Math.pow(past, 1.5) * 1.6;                                     // up to ~90° below horizontal
+    // droop grows with the ACTUAL un-inflated length, so a light wind hangs a lot
+    // (folding under near the tip) and a strong wind barely droops
+    let ang = Math.min(2.15, Math.pow(Math.max(0, t - inflated), 1.8) * 3.05);
     if (gust && t > 0.35) ang += Math.sin(t * 26 + 1) * 0.17;               // flutter the outer half
     x += Math.cos(ang) * seg;
     y = Math.min(GROUND - 3, y + Math.sin(ang) * seg);
@@ -149,7 +150,7 @@ function startWindsockPlayer() {
     const s = WS_STEPS[wsIdx % WS_STEPS.length];
     setState({ runwayHeading: 0, windDir: 270, windSpeed: s.windSpeed, gust: s.gust ?? s.windSpeed, gustLock: !(s.gust > s.windSpeed) });
     wsIdx++;
-    wsTimer = setTimeout(tick, 1700);
+    wsTimer = setTimeout(tick, 2400);
   };
   tick();
 }
