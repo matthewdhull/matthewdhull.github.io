@@ -1,3 +1,24 @@
+- venue: IEEE/CVF Winter Conference on Applications of Computer Vision
+  venue-shorthand: WACV
+  venue-at: WACV
+  years:
+    - year: 2027
+      url: https://wacv.thecvf.com/
+
+- venue: Conference on Neural Information Processing Systems
+  venue-shorthand: NeurIPS
+  venue-at: NeurIPS
+  years:
+    - year: 2026
+      url: https://neurips.cc/Conferences/2026
+
+- venue: British Machine Vision Conference
+  venue-shorthand: BMVC
+  venue-at: BMVC
+  years:
+    - year: 2026
+      url: https://bmvc2026.bmva.org/
+
 - venue: IEEE Visualization
   venue-shorthand: VIS
   venue-at: VIS
