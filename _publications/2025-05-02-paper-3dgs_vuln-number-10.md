@@ -4,7 +4,7 @@ authors: "Matthew Hull, Haoyang Yang, Pratham Mehta, Mansi Phute, Aeree Cho, Hao
 venue: "CVPR Workshop on Neural Fields Beyond Conventional Cameras (NFBCC)"
 venue-shorthand: CVPR'25
 location: Nashville, TN
-featured: true
+featured: false
 year: 2025
 pdf: https://poloclub.github.io/papers/25-cvpr-nfbcc-workshop-3dgs-attack.pdf
 paper-home: https://poloclub.github.io/papers/25-cvpr-nfbcc-workshop-3dgs-attack.pdf
