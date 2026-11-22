@@ -3,7 +3,7 @@ title: "ComplicitSplat: Downstream Models are Vulnerable to Blackbox Attacks by 
 shorttitle: "ComplicitSplat"
 authors: "Matthew Hull, Haoyang Yang, Pratham Mehta, Mansi Phute, Aeree Cho, Haoran Wang, Matthew Lau, Wenke Lee, Willian Lunardi, Martin Andreoni, and Duen Horng Chau"
 venue: "British Machine Vision Conference"
-venue-shorthand: BMVC
+venue-shorthand: BMVC'26
 location: Lancaster, UK
 featured: True
 year: 2026
